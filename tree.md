@@ -1,4 +1,5 @@
-EXPRESSION TREE
+**EXPRESSION TREE**
+
 * construction
   * construction from infix/postfix/prefix expression https://www.geeksforgeeks.org/expression-tree/
      * infix expr -> postfix expr tree -> 
@@ -14,11 +15,15 @@ EXPRESSION TREE
 
 #Amazon
 给一个expression tree，子节点都是数字，其他节点都是符号，比如+， -， *， /。 设计一个这样的树的数据结构，实现返回运算结果的方法
+
+```
 e.g.                 +
                  /       \ 
                *          -
              /   \      /    \  
            5     10    9      7
+```
+
 表达式就是（5*10） + （9 - 7）返回52
 
 Assumption & clarification
