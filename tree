@@ -3,7 +3,9 @@ EXPRESSION TREE
   * construction from post expression https://www.geeksforgeeks.org/expression-tree/
 * evaluation
   * evaluate the expression represented by expression tree
-  * evaluate prefix/postfix/infix expression by using stack https://blog.csdn.net/linraise/article/details/20459751 (楼主的data structure考的是波兰表达式和逆波兰表达式。楼主用stack做的，但最后面试官告诉我他的本意是想考我expression tree的。我这才慌不择路一样把expression tree说了一遍，来不及在白板上写代码了。不过面试官说stack也可以。#Fastest)
+  * evaluate prefix/postfix/infix expression by using stack https://blog.csdn.net/linraise/article/details/20459751 (楼主的data structure考的是波兰表达式和逆波兰表达式。
+  楼主用stack做的，但最后面试官告诉我他的本意是想考我expression tree的。我这才慌不择路一样把expression tree说了一遍，来不及在白板上写代码了。
+  不过面试官说stack也可以。#Fastest)
 
 
 Design #Amazon
