@@ -44,7 +44,8 @@ Build expression tree (lintcode 原题，给定3*2+（5-7）*8 一个expression�
 好在面试10分钟之前看了glassdoor的面经，挺经典的Convert Ternary Expression to a Binary Tree。我用的two stacks
 https://www.geeksforgeeks.org/convert-ternary-expression-binary-tree/
 
-HUFFMAN TREE
+**HUFFMAN TREE**
+
 #Google 给一个list，建一个 huffman tree 
 https://www.siggraph.org/education/materials/HyperGraph/video/mpeg/mpegfaq/huffman_tutorial.html
 
