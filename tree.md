@@ -45,6 +45,6 @@ Build expression tree (lintcode 原题，给定3*2+（5-7）*8 一个expression�
 https://www.geeksforgeeks.org/convert-ternary-expression-binary-tree/
 
 HUFFMAN TREE
-给一个list，建一个 huffman tree #Google 
+#Google 给一个list，建一个 huffman tree 
 https://www.siggraph.org/education/materials/HyperGraph/video/mpeg/mpegfaq/huffman_tutorial.html
 
