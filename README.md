@@ -1,4 +1,4 @@
 # data-structure
 
 
-[TREE](tree.md)
+* [TREE](tree.md)
