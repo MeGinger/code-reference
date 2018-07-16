@@ -5,6 +5,27 @@
 * Maximum Sum of 3 Non-Overlapping Subarrays (https://leetcode.com/problems/maximum-sum-of-3-non-overlapping-subarrays)
 
 ```java
+  /*
+    byte: 8 bits
+    int : 32 bits
+
+    a(byte) ^ b(byte)
+        24 | 8
+    11..11 | result
+
+    0xFF
+        24 | 8
+    00..00 | 1111 1111
+
+    (c & (c - 1)) used to remove last one bit
+
+    TEST CASE
+    a: 3 (0000 0011)
+    b: 7 (0000 0111)
+    c:
+        24 | 8
+    11..11 | 0000 0100
+  */
   public static boolean grayCode(byte a, byte b) {
       int c = (a ^ b) & 0xFF;
       System.out.println(Integer.toBinaryString(c));
