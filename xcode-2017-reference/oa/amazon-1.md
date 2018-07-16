@@ -1,4 +1,4 @@
-* Gray Code
+* Gray Code (判断两个byte number 是不是互为gray code. The gray code is a binary numeral system where two successive values differ in only one bit)
 * K Closest Points (http://www.lintcode.com/en/problem/k-closest-points/)
 * Kth Largest Element in an Array (https://leetcode.com/problems/kth-largest-element-in-an-array/)
 * Longest Palindrome (https://leetcode.com/problems/longest-palindrome/)
