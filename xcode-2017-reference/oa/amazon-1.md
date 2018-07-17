@@ -180,32 +180,6 @@
 ```
 
 ```java
-  public String longestPalindrome(String s) {
-      int len = s.length();
-      while (len >= 0) {
-          for (int i = 0; i + len - 1 < s.length(); i++) {
-              int left = i;
-              int right = i + len - 1;
-              boolean good = true;
-              while (left < right) {
-                  if (s.charAt(left) != s.charAt(right)) {
-                      good = false;
-                      break;
-                  }
-                  left++;
-                  right--;
-              }
-              if (good) {
-                  return s.substring(i, i + len);
-              }
-          }
-          --len;
-      }
-      return "";
-  }
-```
-
-```java
 
     // https://leetcode.com/problems/kth-largest-element-in-an-array/description/
     /*
@@ -254,6 +228,32 @@
         swap(nums, end, pivot);
         return end;
     }
+```
+
+```java
+  public String longestPalindrome(String s) {
+      int len = s.length();
+      while (len >= 0) {
+          for (int i = 0; i + len - 1 < s.length(); i++) {
+              int left = i;
+              int right = i + len - 1;
+              boolean good = true;
+              while (left < right) {
+                  if (s.charAt(left) != s.charAt(right)) {
+                      good = false;
+                      break;
+                  }
+                  left++;
+                  right--;
+              }
+              if (good) {
+                  return s.substring(i, i + len);
+              }
+          }
+          --len;
+      }
+      return "";
+  }
 ```
 
 ```java
