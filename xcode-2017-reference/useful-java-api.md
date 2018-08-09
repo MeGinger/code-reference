@@ -5,7 +5,9 @@ Integer.bitCount(int) -> int
 * 170 -> 4
 
 Collections.emptyList() - Returns the empty list (immutable).
+
 Collections.emptyMap() - Returns the empty map (immutable).
+
 Collections.emptySet() - Returns the empty set (immutable).
 
 
