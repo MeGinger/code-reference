@@ -10,13 +10,14 @@ Collections.emptyMap() - Returns the empty map (immutable).
 
 Collections.emptySet() - Returns the empty set (immutable).
 
-
+```java
 public List<List<String>> method(...) {
 	if (invalidInputCondition) {
 		return Collections.emptyList(); // more readable
 	}
   ......
 }
-  
+```
+
 Collections.emptyList() returns an immutable list, i.e., a list to which you cannot add elements.
 In the rare cases in which you do want to modify the returned list, this would thus not be an option.
