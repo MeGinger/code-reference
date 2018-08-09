@@ -33,12 +33,9 @@ Character.isLowCase(char ch) - 'a' ~ 'z' <br/>
 Character.toLowerCase(char ch) <br/>
 Character.toUpperCase(char ch) <br/>
 
-List<E>	list.subList(int fromIndex, int toIndex) <br/>
-Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive. <br/>
+List<E>	list.subList(int fromIndex, int toIndex) - Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive. <br/>
 
-E list.set(int index, E element) <br/>
-Replaces the element at the specified position in this list with the specified element (optional operation). <br/>
+E list.set(int index, E element) - Replaces the element at the specified position in this list with the specified element (optional operation). <br/>
 
-void list.add(int index, E element) <br/>
-Inserts the specified element at the specified position in this list (optional operation). <br/>
+void list.add(int index, E element) - Inserts the specified element at the specified position in this list (optional operation). <br/>
 
