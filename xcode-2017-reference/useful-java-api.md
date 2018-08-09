@@ -8,6 +8,7 @@ Collections.emptyList() - Returns the empty list (immutable).
 Collections.emptyMap() - Returns the empty map (immutable).
 Collections.emptySet() - Returns the empty set (immutable).
 
+
 public List<List<String>> method(...) {
 	if (invalidInputCondition) {
 		return Collections.emptyList(); // more readable
