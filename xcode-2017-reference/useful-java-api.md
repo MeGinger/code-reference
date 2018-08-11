@@ -53,3 +53,72 @@ E list.set(int index, E element) <br/>
 void list.add(int index, E element) <br/>
 * Inserts the specified element at the specified position in this list (optional operation). <br/>
 
+
+Collections
+
+
+Collection -> ArrayList <br/>
+ArrayList(Collection<? extends E> c) <br/>
+e.g., new ArrayList<>(map.values()); <br/>
+
+Clone an integer array <br/>
+1.
+int[] clone = new int[arr.length];
+Arrays.fill(clone, 3);
+2. 
+int clone = arr.clone();
+
+Comparator - Lambda
+
+## Sorting 
+### Array
+Arrays.sort(arr); // ascending order  <br/>
+Arrays.sort(arr, (e1, e2) -> {return e1 - e2;}); // ascending order   <br/>
+Arrays.sort(arr, Collections.reverseOrder()); // descending order   <br/>
+Arrays.sort(arr, (e1, e2) -> {return e2 - e1;}); // descending order   <br/>
+#### examples:
+Arrays.sort(word);  <br/>
+output: word -> e, ew, ewq, ewqc, c, ca, cat, t, tt, ttq
+
+### Collection
+Collections.sort(list); // ascending order   <br/>
+Collections.sort(list, Collections.reverseOrder()); // descending order   <br/>
+
+### PriorityQueue
+PriorityQueue<Map.Entry<Integer, Integer>> maxHeap =
+  new PriorityQueue<>((a, b) -> (b.getValue() - a.getValue()));
+
+## Collection CRUD API
+### PriorityQueue
+Add - pq.offer(object); <br/>
+Read - Object obj = pq.peek(); <br/>
+Remove - Object obj = pq.poll(); pq.remove(object); <br/>
+
+ELSE  - common in Collections  <br/>
+pq.clear();  <br/>
+pq.contains();  <br/>
+pq.size();  <br/>
+pq.toArray();  <br/>
+
+### List
+Add - list.add(pos, elem); // add elem into position pos, the elements behind it should shift to right   <br/>
+
+
+## Conversion between Array and Collection
+### Conversion between Array and List
+#### convert from Array to List
+List<Character> list = Arrays.asList(‘A’, ‘B’, ‘C’);  <br/>
+List<Integer> list = Arrays.asList(new int[]{1, 2, 3});  <br/>
+List<String> list = Arrays.asList(arr);  <br/>
+#### convert from List to Array
+String[] arr = list.toArray(new String[list.size()]);  <br/>
+int[][] res = list.toArray(people); // list object is of type List<int[]>   <br/>
+#### convert from List to Set
+Set<T> set = new HashSet<>(collection); // collection like list   <br/>
+
+
+
+
+
+
+
