@@ -116,7 +116,32 @@ int[][] res = list.toArray(people); // list object is of type List<int[]>   <br/
 #### convert from List to Set
 Set<T> set = new HashSet<>(collection); // collection like list   <br/>
 
+```java
+	private static final int[][] dir = new int[][]{ 
+							  {0, -1},
+							  {0, 1},
+							  {1, 0},
+							  {-1, 0}
+						   };
+						   
+	/*  System.arraycopy(src, srcPos, dest, destPos, length);
+		src − This is the source array.
+		srcPos − This is the starting position in the source array.
+		dest − This is the destination array.
+		destPos − This is the starting position in the destination data.
+		length − This is the number of array elements to be copied.
+	*/
 
+	// Arrays.toString(arr)
+	// Collection (list, set) 可以直接打 .toString()
+
+	/*  Arrays.copyOfRange(original, from, to);
+		original − This is the array from which a range is to to be copied.
+		from − This is the initial index of the range to be copied, inclusive.
+		to − This is the final index of the range to be copied, exclusive.
+	*/						   
+
+```
 
 
 
