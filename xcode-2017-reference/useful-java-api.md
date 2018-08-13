@@ -123,6 +123,13 @@ Set<T> set = new HashSet<>(collection); // collection like list   <br/>
 							  {1, 0},
 							  {-1, 0}
 						   };
+	int[] myIntArray = new int[3];
+	int[] myIntArray = {1,2,3};
+	int[] myIntArray = new int[]{1,2,3};
+
+	String[] myStringArray = new String[3];
+	String[] myStringArray = {"a","b","c"};
+	String[] myStringArray = new String[]{"a","b","c"};
 						   
 	/*  System.arraycopy(src, srcPos, dest, destPos, length);
 		src − This is the source array.
