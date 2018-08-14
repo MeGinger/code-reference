@@ -150,6 +150,13 @@ Set<T> set = new HashSet<>(collection); // collection like list   <br/>
 
 ```
 
+Exception Handling
+```java
+if (invalidInputCondition) {
+   throw new IllegalArgumentException();
+}
+```
+
 
 
 
