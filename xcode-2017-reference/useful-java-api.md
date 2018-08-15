@@ -157,7 +157,19 @@ if (invalidInputCondition) {
 }
 ```
 
+Math.floorDiv(a, b) - returns largest integer that less than or equal to the quotient <br/> 
+* Math.floorDiv(25, 5) = 5 <br/>
+* Math.floorDiv(123, 50) = 2 <br/>
+* public static int floorDiv(data_type x, data_type y), data_type could be int or long
 
+Math.floorMod(a, b) - returns (a - floorDiv(a, b) * b) <br/>
+* Math.floorMod(123, 50) - 23
 
-
+int e = 123, f = -50;
+System.out.println(Math.floorMod(e, f));
+//-27
+ 
+int g = -123, h = 50;
+System.out.println(Math.floorMod(g, h));
+//27
 
