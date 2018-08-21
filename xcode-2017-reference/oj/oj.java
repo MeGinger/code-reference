@@ -4657,7 +4657,7 @@ public class SentenceSimilarityII {
 		return maxLen;
 	}
 
- /**
+  /**
     * Remove Invalid Parentheses
 	*Remove the minimum number of invalid parentheses in order to make the input string valid. Return all possible results.
 	*Note: The input string may contain letters other than the parentheses ( and ).
@@ -4759,6 +4759,268 @@ public class SentenceSimilarityII {
 		// checked both ordered and reverse ordered
 		return reversed;
 	}
+
+	/**MOCK QUESTION
+	 * Wildcard Matching
+	Implement wildcard pattern matching with support for '?' and '*'.
+
+	'?' Matches any single character.
+	'*' Matches any sequence of characters (including the empty sequence).
+
+	The matching should cover the entire input string (not partial).
+
+	The function prototype should be:
+	bool isMatch(const char *s, const char *p)
+
+	Some examples:
+	isMatch("aa","a") → false
+	isMatch("aa","aa") → true
+	isMatch("aaa","aa") → false
+	isMatch("aa", "*") → true
+	isMatch("aa", "a*") → true
+	isMatch("ab", "?*") → true
+	isMatch("aab", "c*a*b") → false
+	 */
+	public boolean isMatch(String s, String p) {
+		if (p.equals("")) {
+			return s.equals("");
+		}
+
+		LinkedList<String> splits = splitPatternByStar(p);
+		if (splits.isEmpty()) {
+			return true;
+		}
+		if (!p.startsWith("*")) {
+			String first = splits.getFirst();
+			if (!isMatchWithoutStar(s, first, 0)) {
+				return false;
+			}
+			s = s.substring(first.length());
+			splits.removeFirst();
+		}
+		if (!p.endsWith("*")) {
+			if (splits.isEmpty()) {
+				return s.equals("");
+			}
+			String last = splits.getLast();
+			int sBeg = s.length() - last.length();
+			if (!isMatchWithoutStar(s, last, sBeg)) {
+				return false;
+			}
+			s = s.substring(0, sBeg);
+			splits.removeLast();
+		}
+		int sBeg = 0;
+		for (String part : splits) {
+			while (sBeg <= s.length() - part.length()) {
+				if (isMatchWithoutStar(s, part, sBeg)) {
+					break;// continue to next part
+				}
+				sBeg++; // Use * to eat current sBeg and try next
+			}
+
+			sBeg += part.length();
+			if (sBeg > s.length()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// e.g. "**ab*c**d*" => [ab, c, d]
+	private LinkedList<String> splitPatternByStar(String p) {
+		LinkedList<String> ret = new LinkedList<>();
+		int left = -1, right = -1;
+		while (right < p.length()) {
+			while (++left < p.length() && '*' == p.charAt(left)) {
+				;
+			}
+			right = left;
+			while (++right < p.length() && '*' != p.charAt(right)) {
+				;
+			}
+			if (left < p.length() && right <= p.length() && right > left) {
+				ret.add(p.substring(left, right));
+			}
+			left = right;
+		}
+		return ret;
+	}
+
+	private boolean isMatchWithoutStar(String s, String p, int sBeg) {
+		if (s.length() < p.length()) {
+			return false;
+		}
+
+		for (int i = 0; i < p.length(); i++) {
+			if (p.charAt(i) != s.charAt(sBeg + i) && '?' != p.charAt(i)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private LinkedList<String> splitPatternByStar2(String p) {
+		LinkedList<String> ret = new LinkedList<>();
+		for (String s : p.split("\\*")) {
+			if (!s.isEmpty()) {
+				ret.add(s);
+			}
+		}
+
+		return ret;
+	}
+
+	public boolean isMatch4(String s, String p) {
+		int sIndex = 0, pIndex = 0, match = 0, starIndex = -1;
+		while (sIndex < s.length()) {
+			// advancing both pointers
+			if (pIndex < p.length() && (p.charAt(pIndex) == '?' || s.charAt(sIndex) == p.charAt(pIndex))) {
+				sIndex++;
+				pIndex++;
+			}
+			// * found, only advancing pattern pointer
+			else if (pIndex < p.length() && p.charAt(pIndex) == '*') {
+				starIndex = pIndex;
+				match = sIndex;
+				pIndex++;
+			}
+			// last pattern pointer was *, advancing string pointer
+			else if (starIndex != -1) {
+				pIndex = starIndex + 1;
+				sIndex = ++match;
+			}
+			// current pattern pointer is not star, last pattern pointer was not
+			// *
+			// characters do not match
+			else {
+				return false;
+			}
+		}
+
+		// check for remaining characters in pattern
+		while (pIndex < p.length() && p.charAt(pIndex) == '*') {
+			pIndex++;
+		}
+
+		return pIndex == p.length();
+	}
+	/**DP Q1
+	 * Min Cost Climbing Stairs
+	On a staircase, the i-th step has some non-negative cost cost[i] assigned (0 indexed).
+
+	Once you pay the cost, you can either climb one or two steps. You need to find minimum cost to reach the top of the floor, and you can either start from the step with index 0, or the step with index 1.
+
+	Example 1:
+	Input: cost = [10, 15, 20]
+	Output: 15
+	Explanation: Cheapest is start on cost[1], pay that cost and go to the top.
+	Example 2:
+	Input: cost = [1, 100, 1, 1, 1, 100, 1, 1, 100, 1]
+	Output: 6
+	Explanation: Cheapest is start on cost[0], and only step on 1s, skipping cost[3].
+	Note:
+	cost will have a length in the range [2, 1000].
+	Every cost[i] will be an integer in the range [0, 999].
+	 */
+	public int minCostClimbingStairs(int[] cost) {
+		int n = cost.length;
+		int[] f = new int[n + 2];
+		for (int i = 2; i < f.length; i++) {
+			f[i] = Math.min(f[i - 1], f[i - 2]) + cost[i - 2];
+		}
+		return Math.min(f[f.length - 1], f[f.length - 2]);
+	}
+
+	public int minCostClimbingStairs2(int[] cost) {
+		int n = cost.length;
+		int f1 = 0, f2 = 0;
+		for (int i = 0; i < n; i++) {
+			int f0 = Math.min(f1, f2) + cost[i];
+			// shift: f2, f1 = f1, f0
+			f2 = f1;
+			f1 = f0;
+		}
+		return Math.min(f1, f2);
+	}
+	
+	public int minCostClimbingStairs3(int[] cost) {
+		return minCostClimbingStairs(cost, cost.length, new HashMap<Integer, Integer>());
+	}
+
+	private int minCostClimbingStairs(int[] cost, int n, Map<Integer, Integer> m) {
+		Integer result = m.get(n);
+		if (result != null) {
+			return result;
+		}
+
+		// base case
+		if (n < 2) {
+			return 0;
+		}
+
+		if (n == 2) {
+			return Math.min(cost[0], cost[1]);
+		}
+		if (n == 3) {
+			return Math.min(cost[2] + minCostClimbingStairs(cost, 2, m), cost[1]);
+		}
+
+		result = Math.min(cost[n - 1] + minCostClimbingStairs(cost, n - 1, m),
+				cost[n - 2] + minCostClimbingStairs(cost, n - 2, m));
+		m.put(n, result);
+		return result;
+	}
+
+   /** DPQ2
+	 * Delete and Earn
+	Given an array nums of integers, you can perform operations on the array.
+
+	In each operation, you pick any nums[i] and delete it to earn nums[i] points. After, you must delete every element equal to nums[i] - 1 or nums[i] + 1.
+
+	You start with 0 points. Return the maximum number of points you can earn by applying such operations.
+
+	Example 1:
+	Input: nums = [3, 4, 2]
+	Output: 6
+	Explanation: 
+	Delete 4 to earn 4 points, consequently 3 is also deleted.
+	Then, delete 2 to earn 2 points. 6 total points are earned.
+	Example 2:
+	Input: nums = [2, 2, 3, 3, 3, 4]
+	Output: 9
+	Explanation: 
+	Delete 3 to earn 3 points, deleting both 2's and the 4.
+	Then, delete 3 again to earn 3 points, and 3 again to earn 3 points.
+	9 total points are earned.
+	 */
+	public int deleteAndEarn(int[] nums) {
+		Map<Integer, Integer> counts = new TreeMap<>();
+		for (int x : nums) {
+			counts.put(x, counts.getOrDefault(x, 0) + 1);
+		}
+		int a = 0, b = 0, prev = -1;
+
+		for (Map.Entry<Integer, Integer> entry : counts.entrySet()) {
+			int cur = entry.getKey();
+			int count = entry.getValue();
+			int sum = cur * count;
+			int c;
+			if (cur - 1 != prev) {
+				c = Math.max(a, b) + sum;
+			} else {
+				c = Math.max(a + sum, b);
+			}
+			// a, b = b, c
+			a = b;
+			b = c;
+			prev = cur;
+		}
+		return Math.max(a, b);
+	}
+
+
+
 
 
 
