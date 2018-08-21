@@ -4623,34 +4623,37 @@ public class SentenceSimilarityII {
 		return stack.isEmpty();
 	}
 
-	/**
+   /**
 	 *  Longest Valid Parentheses 
 		Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
 		For "(()", the longest valid parentheses substring is "()", which has length = 2.
 		Another example is ")()())", where the longest valid parentheses substring is "()()", which has length = 4. 
 	 */
+
+	// find longest valid parentheses substring	
 	public int longestValidParentheses(String s) {
-		int maxLen = 0, last = -1;
+		int maxLen = 0, last = -1; // last is used as starting index for substring
 		Stack<Integer> lefts = new Stack<>();
 		for (int i = 0; i < s.length(); ++i) {
 			if (s.charAt(i) == '(') {
 				lefts.push(i);
 				continue;
 			}
+
+			// s.charAt(i) == ')'
 			if (lefts.isEmpty()) {
 				// no matching left
-				// last is the position of last invalid ')'
+
+				// last is the position of last invalid ')', which is this current ')'
 				last = i;
-			} else {
+			} else { 
 				// find a matching pair
 				lefts.pop();
 				if (lefts.isEmpty()) {
 					maxLen = Math.max(maxLen, i - last);
 				} else {
-					// stack is not empty, so the current length is current
-					// position i- last second position of '(' in stack
-					// for example "(()()"
-					maxLen = Math.max(maxLen, i - lefts.peek());
+					// for example "(()()" lefts.peek() is the leftmost '('
+					maxLen = Math.max(maxLen, i - lefts.peek()); 
 				}
 			}
 		}
@@ -4659,27 +4662,28 @@ public class SentenceSimilarityII {
 
   /**
     * Remove Invalid Parentheses
-	*Remove the minimum number of invalid parentheses in order to make the input string valid. Return all possible results.
-	*Note: The input string may contain letters other than the parentheses ( and ).
+	* Remove the minimum number of invalid parentheses in order to make the input string valid. Return all possible results.
+	* Note: The input string may contain letters other than the parentheses ( and ).
 	*
-	*Examples:
-	*"()())()" -> ["()()()", "(())()"]
-	*"(a)())()" -> ["(a)()()", "(a())()"]
-	*")(" -> [""]
+	* Examples:
+	* "()())()" -> ["()()()", "(())()"]
+	* "(a)())()" -> ["(a)()()", "(a())()"]
+	* ")(" -> [""]
+	*/
+	
+  /** DFS:
+	* We all know how to check a string of parentheses is valid using a stack. Or even simpler use a counter.
+	* The counter will increase when it is â€˜(â€˜ and decrease when it is â€˜)â€™. Whenever the counter is negative, we have more â€˜)â€™ than â€˜(â€˜ in the prefix.
 	*
-	*DFS:
-	*We all know how to check a string of parentheses is valid using a stack. Or even simpler use a counter.
-	*The counter will increase when it is â€˜(â€˜ and decrease when it is â€˜)â€™. Whenever the counter is negative, we have more â€˜)â€™ than â€˜(â€˜ in the prefix.
+	* To make the prefix valid, we need to remove a â€˜)â€™. The problem is: which one? The answer is any one in the prefix. However, if we remove any one, we will generate duplicate results, for example: s = ()), we can remove s[1] or s[2] but the result is the same (). Thus, we restrict ourself to remove the first ) in a series of concecutive )s.
 	*
-	*To make the prefix valid, we need to remove a â€˜)â€™. The problem is: which one? The answer is any one in the prefix. However, if we remove any one, we will generate duplicate results, for example: s = ()), we can remove s[1] or s[2] but the result is the same (). Thus, we restrict ourself to remove the first ) in a series of concecutive )s.
+	* After the removal, the prefix is then valid. We then call the function recursively to solve the rest of the string. However, we need to keep another information: the last removal position. If we do not have this position, we will generate duplicate by removing two â€˜)â€™ in two steps only with a different order.
+	* For this, we keep tracking the last removal position and only remove â€˜)â€™ after that.
 	*
-	*After the removal, the prefix is then valid. We then call the function recursively to solve the rest of the string. However, we need to keep another information: the last removal position. If we do not have this position, we will generate duplicate by removing two â€˜)â€™ in two steps only with a different order.
-	*For this, we keep tracking the last removal position and only remove â€˜)â€™ after that.
-	*
-	*Now one may ask. What about â€˜(â€˜? What if s = â€˜(()(()â€™ in which we need remove â€˜(â€˜?
-	*The answer is: do the same from right to left.
-	*However a cleverer idea is: reverse the string and reuse the code!
-	*O(n)
+	* Now one may ask. What about â€˜(â€˜? What if s = â€˜(()(()â€™ in which we need remove â€˜(â€˜?
+	* The answer is: do the same from right to left.
+	* However a cleverer idea is: reverse the string and reuse the code!
+	* O(n)
 	*/
 	private static final char[] ORDERED_PARENTHESES = new char[] { '(', ')' };
 	private static final char[] REVERSED_PARENTHESES = new char[] { ')', '(' };
