@@ -4667,6 +4667,8 @@ public class SentenceSimilarityII {
 	*
 	* Examples:
 	* "()())()" -> ["()()()", "(())()"]
+	* "()(()()" -> ["()()()", "()(())"]
+	*
 	* "(a)())()" -> ["(a)()()", "(a())()"]
 	* ")(" -> [""]
 	*/
@@ -4685,6 +4687,8 @@ public class SentenceSimilarityII {
 	* However a cleverer idea is: reverse the string and reuse the code!
 	* O(n)
 	*/
+	
+	// FB, Whatsapp
 	private static final char[] ORDERED_PARENTHESES = new char[] { '(', ')' };
 	private static final char[] REVERSED_PARENTHESES = new char[] { ')', '(' };
 
@@ -4701,17 +4705,28 @@ public class SentenceSimilarityII {
 				count--;
 			}
 			if (count >= 0) {
-				continue;
+				continue; // 
 			}
 			// count < 0 => need to remove extra ')'
 			for (int slow = lastSlow; slow <= fast; ++slow) {
+				// the below condition satisfies when first ')' comes by from slow index, like the below 2 indices:
+				// "()())()"
+				//   |  |
+				//  idx idx
+				// first round: (())()
+				// second round: ()()()
 				if (s.charAt(slow) == par[1] && (slow == lastSlow || s.charAt(slow - 1) != par[1])) {
 					// (slow == lastSlow || s.charAt(slow - 1) != par[1]) is for avoiding duplicate strings in ans
+					
+					// eliminate s.charAt(slow)
 					remove(s.substring(0, slow) + s.substring(slow + 1, s.length()), ans, fast, slow, par);
 				}
 			}
-			return ans;
+			return ans; // if only having extra ')', early return
+						// if having extra both ')' and '(', also return here in the perspective of parent function
 		}
+		
+		
 		String reversed = new StringBuilder(s).reverse().toString();
 		// check if the current 's' is reversed version
 		if (par[0] == '(') { // finished left to right
@@ -4721,7 +4736,7 @@ public class SentenceSimilarityII {
 			// checked both ordered and reverse ordered
 			ans.add(reversed);
 		}
-		return ans;
+		return ans; // if only having extra '(', return here
 	}
 	
 	// return first one
@@ -4929,7 +4944,7 @@ public class SentenceSimilarityII {
 	 */
 	public int minCostClimbingStairs(int[] cost) {
 		int n = cost.length;
-		int[] f = new int[n + 2];
+		int[] f = new int[n + 2]; // so there is no initialization
 		for (int i = 2; i < f.length; i++) {
 			f[i] = Math.min(f[i - 1], f[i - 2]) + cost[i - 2];
 		}
@@ -4945,7 +4960,7 @@ public class SentenceSimilarityII {
 			f2 = f1;
 			f1 = f0;
 		}
-		return Math.min(f1, f2);
+		return Math.min(f1, f2); // since in the last loop, f2 = f1, f1 = f0, f1 and f2 are last two.
 	}
 	
 	public int minCostClimbingStairs3(int[] cost) {
@@ -4990,21 +5005,24 @@ public class SentenceSimilarityII {
 	Explanation: 
 	Delete 4 to earn 4 points, consequently 3 is also deleted.
 	Then, delete 2 to earn 2 points. 6 total points are earned.
+	
 	Example 2:
 	Input: nums = [2, 2, 3, 3, 3, 4]
 	Output: 9
 	Explanation: 
 	Delete 3 to earn 3 points, deleting both 2's and the 4.
 	Then, delete 3 again to earn 3 points, and 3 again to earn 3 points.
-	9 total points are earned.
+		9 total points are earned.
 	 */
 	public int deleteAndEarn(int[] nums) {
 		Map<Integer, Integer> counts = new TreeMap<>();
 		for (int x : nums) {
 			counts.put(x, counts.getOrDefault(x, 0) + 1);
 		}
-		int a = 0, b = 0, prev = -1;
-
+		int a = 0, b = 0, prev = -1; 
+		// a and b are represented as the previous two values
+		// c is represented as the current value
+		
 		for (Map.Entry<Integer, Integer> entry : counts.entrySet()) {
 			int cur = entry.getKey();
 			int count = entry.getValue();
@@ -5012,8 +5030,10 @@ public class SentenceSimilarityII {
 			int c;
 			if (cur - 1 != prev) {
 				c = Math.max(a, b) + sum;
+				// if cur and prev and not adjacent, sum is must taken and choose max between a and b
 			} else {
 				c = Math.max(a + sum, b);
+				// if adjacent, pick b or a as starting point, if a is picked, cur can be picked as well
 			}
 			// a, b = b, c
 			a = b;
@@ -5022,6 +5042,1690 @@ public class SentenceSimilarityII {
 		}
 		return Math.max(a, b);
 	}
+
+	
+	
+// tasks: a bunch of tasks to be executed
+// n: the minimal intervals between two same tasks to be executed in order
+public void leastIntervals(char[] tasks, int n) {
+  int[] c = new int[26]; // assume that tasks are only represented as A to Z
+  for (char task : tasks) {
+      c[task - 'A']++;
+  }
+  Arrays.sort(c); // !
+  int index = c.length - 1;
+  while (index >= 0 && c[index] == c[c.length - 1]) {
+    index--;
+  }
+  
+  return Math.max(tasks.length, (c[c.length - 1] - 1) * (n + 1) + c.length - 1 - index);
+}
+
+9 lines (35 sloc)  1.26 KB
+/**
+*Word Break
+*Given a non-empty string s and a dictionary wordDict containing a list of non-empty words,
+*determine if s can be segmented into a space-separated sequence of one or more dictionary words.
+*You may assume the dictionary does not contain duplicate words.
+*
+*For example, given
+*s = "leetcode",
+*dict = ["leet", "code"].
+*Return true because "leetcode" can be segmented as "leet code". 
+*/
+
+
+// input: s = "leetcoder", dict = ["leet", "code"]
+// thought: scan from left to right, check whether substring/prefix of s from index 0 to i 
+// either is a single word in dictionary (substring "leet")
+// or can be segmeneted into multiple words in dictionary (substring "leetcode") 
+// record every such index i 
+// finally, we check if index (last index of input string s -> s.length() - 1) is present
+
+// dynamic programming
+public boolean wordBreak(String s, Set<String> dict) {
+	// invalid input - "leetcode"
+	if (a == null || s.isEmpty()) {
+		return false; 
+	}
+	
+	// index in this list is to indicate string s[0...i] can be segmented into words in dictionary
+	List<Integer> breakableIndex = new ArrayList<>(s.length());
+	
+	// scan string s from left to right
+	for (int i = 0; i < s.length(); i++) {
+		// check whether substring of s from index 0 to i is in dict 
+		// if it is, it can be segmented into a single word in dictionary		
+		if (dict.contains(s.substring(0, i + 1)) {
+			breakableIndex.add(i);
+			continue;
+		}
+		
+		// if not, check if the substring can be break into multiple words
+		Iterator<Integer> itr = breakableIndex.iterator();
+		while (itr.hasNext()) {
+			if (dict.contains(s.substring(itr.next() + 1, i + 1))) {
+				breakableIndex.add(i);
+				break;
+			}
+		}
+	}
+		
+    // check if the last index in breakableIndex is equal to s.length() - 1
+	// as mentione before, the index is used to indicate ....
+	// which means the string s can be segmented into words in dictionary
+	return !breakableIndex.isEmpty() && breakableIndex.get(breakableIndex.size() - 1) == (s.lenght() - 1);
+}
+
+// runtime
+// best: O(n)
+// worst: O(n^2)
+
+
+/**
+*Word Break II
+*Given a non-empty string s and a dictionary wordDict containing a list of non-empty words,
+*add spaces in s to construct a sentence where each word is a valid dictionary word.
+*You may assume the dictionary does not contain duplicate words.
+*Return all such possible sentences.
+*For example, given
+*s = "catsanddog",
+*dict = ["cat", "cats", "and", "sand", "dog"].
+*A solution is ["cats and dog", "cat sand dog"]. 
+*/
+
+// input: s = "catsanddog"
+// thought: 
+// So i should implement a method that we can get a sentence list where each sentence is constructed by valid dictionary words separated by space
+// The basic idea is to scan input string from left to right, check if prefix ["cat"] of s from index 0 to i is a dictionary word
+// if it is, do recursion to get a sentence list of the suffix ["sanddog"], then we append each sentence to prefix 
+// to get the sentence list that corresponds to string s.
+
+// recursion
+public List<String> wordBreak2(String s, Set<String> dict) {
+	return breakIntoWordList(s, dict, new HashMap<>());
+}
+
+// What method breakIntoWordList does?
+// return a sentence list where each sentence is constructed by valid dictionary words seperated by space
+
+// memorized (
+//	 key: string, 
+//   value: a list of sentences 
+//          where each sentence is constructed by valid dictionary words seperated by space
+// )
+private breakIntoWordList(String s, Set<String> dict, Map<String, List<String>> memorized) {
+	// result: a list of sentences
+	// finally result is added to memorized along with s
+	List<String> result = new ArrayList<>();
+	if (s == null || s.length() == 0) {
+		return result;
+	}
+	
+	if (memorized.containsKey(s)) {
+		return memorized.get(s);
+	}
+	
+	for (int i = 1; i <= s.length(); i++){
+		String prefix = s.substring(0, i);
+		if (!dict.contains(prefix) {
+			continue;
+		}
+		
+		// i: s.length() -> no suffix
+		if (i == s.length()) {
+			result.add(s);
+			
+			// can we change these two lines to continue/break
+			continue;
+			// memorized.put(s, result);
+			// return result;
+		}
+		
+		// i: 1 to s.length() - 1 -> suffix
+		String suffix = s.substring(i, s.length());
+		List<String> segSuffix = breakIntoWordList(suffix, dict, memorized);
+		for (String suffixWord : segSuffix) {
+			result.add(prefix + " " + suffixWord);
+		}
+	}
+	
+	memorized.put(s, result);
+	return result;
+}
+// runtime: O(n^2) 
+// best: O(n)
+// example intput - all prefix are not dictionary words - no recursion happens
+// s: "aaaaaaaaaaaaaaaaaa"
+// dict: ["b"]
+
+// worst: O(n^2)
+// example intput - every prefix is dicionary word 
+// s: "aaaaaaaaaaaaaaaaaa"
+// dict: ["a"]
+/**
+* Word Search
+* Given a 2D board and a word, find if the word exists in the grid.
+* 
+* The word can be constructed from letters of sequentially adjacent cell,
+* where "adjacent" cells are those horizontally or vertically neighboring.
+* The same letter cell may not be used more than once.
+* 
+* For example, Given board =
+* 
+* [ ["ABCE"], ["SFCS"], ["ADEE"] ]
+* 
+* word = "ABCCED", -> returns true, word = "SEE", -> returns true, word =
+* "ABCB", -> returns false.
+*/
+
+// thought: scan the matrix from left to right, row by row from up to bottom,
+// check whether we can start from point (i, j) can search the word
+// how to check? I use depth-first search from the starting point, 
+// check if the character of the current point matches with that of the corresponding position of the word
+// if not we can just return false; if it is, we continue to iterate the left, right, upper and lower points 
+// and do the recursion
+// finally if we reach out of the index of the word, i.e., word.length(), means the word is found.
+public boolean exists(char[][] board, String word) {
+	if (board.length == 0 || word.length() == 0) {
+		return false;
+	}
+	
+	int m = board.length;
+	int n = board[0].length;
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			if (exists(board, word, 0, i, j)) { // start point (i, j)
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+// this dir two-dimensional array is used to
+// simplify the traversal of left, right, upper and lower nodes/points in a matrix
+//          (x-1, y) 
+// (x, y-1) (x  , y) (x, y+1)
+//          (x+1, y)  
+private static final int[][] dir = new int[][]{
+											    {0, 1},
+											    {0, -1},
+											    {1, 0},
+											    {-1, 0}
+											  };
+
+// this exists method check
+// whether substring of word from index i to the end can be found in the board starting from point (x, y) 											   
+private boolean exists(char[][] board, String word, int i, int x, int y) {
+	// found
+	if (i == word.length()) {
+		return true;
+	} 
+	// out of boundary
+	if (x < 0 || y < 0 || x == board.length || y == board[0].length) {
+		return false;
+	}
+	char old = board[x][y];
+	// not found
+	if (old != word.charAt(i)) {
+		return false;
+	}
+	board[x][y] = '#'; // avoid traversal back to visited position
+	for (int[] dir : dirs) {
+		if (exists(board, word, i + 1, x + dir[0], y + dir[1])) {
+			board[x][y] = old; // restore before method ends
+			return true;
+		}
+	}
+	board[x][y] = old // restore before method ends
+	return false; 
+}
+
+// run time:
+// best:
+// worst: O(n^2 * 4^(n^2))
+
+/**
+*Word Search II
+*Given a 2D board and a list of words from the dictionary, find all words in the board.
+*Each word must be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring. The same letter cell may not be used more than once in a word.
+*
+*For example,
+*Given words = ["oath","pea","eat","rain"] and board
+*=
+*[
+*['o','a','a','n'],
+*['e','t','a','e'],
+*['i','h','k','r'],
+*['i','f','l','v']
+*]
+*
+*Return ["eat","oath"].
+*You may assume that all inputs are consist of lowercase letters a-z.
+*/
+
+public List<String> findWords(char[][] board, String[] words) {
+	List<String> result = new ArrayList<>();
+	
+	// build Trie
+	Trie trie = new Trie();
+	for (String word : words) {
+		trie.insert(word);
+	}
+	
+	for (int i = 0; i < board.length; i++) {
+		for (int j = 0; j < board.length[0]; j++) {
+			dfsFindWords(board, result, trie, null, i, j);
+		}
+	}
+	
+	return result;
+}
+
+private void dfsFindWords(char[][] board, List<String> result, Trie trie, TrieNode node, int x, int y) {
+	char c = board[x][y];
+	TrieNode nextNode = trie.searchNextNode(node, c);
+	// if not found
+	if (nextNode == null) {
+		return; // early return if there is no matching dictionary word
+	}
+	// if found
+	if (nextNode.word != null) {
+		result.add(nextNode.word);
+		nextNode.word = null; // de-duplicate
+		// trie.delete(nextNode.word);
+	}
+	board[x][y] = '#';
+	for (Point neighbor : getWordSearchNeighbors(board, x, y)) {
+		dfsFindWords(board, result, trie, nextNode, neighbor.x, neighbor.y);
+	}
+	board[x][y] = c;
+}
+
+private List<Point> getWordSearchNeighbors(char[][] board, int x, int y) {
+	List<Point> neighbors = new ArrayList<>(4);
+	for (Point candidate : new Point[] { new Point(x - 1, y), new Point(x + 1, y), new Point(x, y - 1),
+			new Point(x, y + 1) }) {
+		if (0 <= candidate.x && candidate.x < board.length && 0 <= candidate.y && candidate.y < board[0].length
+				&& board[candidate.x][candidate.y] != '#') {
+			neighbors.add(candidate);
+		}
+	}
+
+	return neighbors;
+}
+
+// runtime:
+// best: 
+// worst: 
+
+/**
+* Word Ladder
+Given two words (beginWord and endWord), and a dictionary's word list, find the length of shortest transformation sequence from beginWord to endWord, such that:
+Only one letter can be changed at a time.
+Each transformed word must exist in the word list. Note that beginWord is not a transformed word.
+For example,
+Given:
+beginWord = "hit"
+endWord = "cog"
+wordList = ["hot","dot","dog","lot","log","cog"]
+As one shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog",
+return its length 5.
+Note:
+Return 0 if there is no such transformation sequence.
+All words have the same length.
+All words contain only lowercase alphabetic characters.
+You may assume no duplicates in the word list.
+You may assume beginWord and endWord are non-empty and are not the same.
+
+Reference https://discuss.leetcode.com/topic/29303/two-end-bfs-in-java-31ms/27
+*/
+
+// thought: Use double-ended breath-first search for traversal.
+// Use two sets to maintain transformed words at the initial state where we only have beginWord,
+// and at the final state where we have endWord.
+// In each time of traversal, I work on the set which is smaller.
+// iterate every word in the smaller set, get all possible one-edit-words
+// if the other set contains one of the words, indicate we found
+// otherwise we will add the valid dictionary word into a new set, which will be next-level set. 
+// do this util we cannot find any transformed words
+
+// ladder length: the count of nodes 
+public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+	Set<String> dict = new HashSet<>(wordList);
+	// corner case
+	if (!dict.contains(endWord)) {
+		return 0;
+	}
+	
+	// Two-end BFS - work on the set which is smaller each time
+	Set<String> set1 = new HashSet<>();
+	set1.add(beginWord);
+	Set<String> set2 = new HashSet<>();
+	set2.add(endWord);
+	
+	int len = 2; // beginWord -> endWord, assume beginWord and endWord are non-empty and are not the same.
+	while (true) {
+		if (set1.size() > set2.size()) {
+			Set<String> temp = set1;
+			set1 = set2;
+			set2 = temp;
+		}
+		// set1.size() <= set2.size() - make sure working on the set which is smaller
+		
+		
+		if (set1.isEmpty()) {
+			break;
+		}
+		
+		// set for the next level
+		Set<String> set = new HashSet<>();
+		for (String str : set1) {
+			for (String word : getOneEditWords(str)) {
+				if (set2.contains(word)) { // found
+					return len;
+				}
+				if (dict.contains(word)) {
+					set.add(word);
+					dict.remove(word); // de-duplicate
+				}
+			}
+		}
+		
+		set1 = set;
+		len++;
+	}
+	return 0; // no path connect 'start' and 'end'
+}
+
+// return all the possible words of one-edit character of given word
+// return iterator with lazy return or just inline this function will save space
+private Set<String> getOneEditWords(String str) {
+	Set<String> words = new HashSet<>();
+	for (int i = 0; i < str.length(); i++) {
+		for (char c = 'a'; c <= 'z'; c++) {
+			String tmp = str.substring(0, i) + c + str.substring(i + 1, str.length());
+			words.add(tmp);
+		}
+	}
+	return words;
+}
+
+// runtime: 
+// best:
+// worst: 
+
+
+/**
+* Word Ladder II
+* Graph of example: |--- dot --- dog ---| hit --- hot -- | |
+*                   | |--- cog |--- lot --- log ---|
+* 
+* backward adjacent list: 
+*  hit => hot => dot => dog => cog 
+*             => lot => log
+* Given two words (start and end), and
+* a dictionary, find all shortest transformation sequence(s) from start to
+* end, such that:
+* 
+* Only one letter can be changed at a time Each intermediate word must
+* exist in the dictionary
+* 
+* For example,
+* 
+* Given: start = "hit" end = "cog" dict = ["hot","dot","dog","lot","log"]
+* 
+* Return
+* 
+* [ ["hit","hot","dot","dog","cog"], ["hit","hot","lot","log","cog"] ]
+* 
+* Note:
+* 
+* All words have the same length. All words contain only lowercase
+* alphabetic characters.
+*/
+
+// find all shortest transformation sequence(s) from start to end
+// two-end BFS
+public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+	Set<String> dict = new HashSet<>(wordList);
+	if (!wordList.contains(endWord)) {
+		return Collections.emptyList(); // !!!!!!
+	}
+	
+	// hash set for both ends
+	Set<String> set1 = new HashSet<>();
+	Set<String> set2 = new HashSet<>();
+	
+	// initial words in both ends
+	set1.add(beginWord);
+	set2.add(endWord);
+	
+	// we use a map to help construct the final result
+	Map<String, List<String>> backtrace = new HashMap<>();
+	if (!findLadders(dict, set1, set2, backtrace, false)) {
+		return Collections.emptyList();
+	}
+	
+	return generateList(beingWord, endWord, backtrace, new ArrayList<>(), new ArrayList<>());
+}
+
+private boolean findLadders(Set<String> dict, Set<String> set1, Set<String> set2, Map<String, List<String>> backtrace, boolean flip) {
+	if (set1.size() > set2.size()) {
+		return findLadders(dict, set2, set1, backtrace, !flip);
+	}
+
+	// set1.size() <= set2.size()
+	if (set1.isEmpty()) {
+		return false;
+	}
+
+	// remove words on current both ends from the dict
+	dict.removeAll(set1);
+	dict.removeAll(set2);
+
+	// as we only need the shortest paths
+	// we use a boolean value help early termination
+	boolean done = false;
+	// set for the next level
+	Set<String> set = new HashSet<>();
+	for (String str : set1) {
+		for (String word : getOneEditWords(str)) {
+			// make sure we construct the tree in the correct direction
+			String key = flip ? word : str;
+			String val = flip ? str : word;
+
+			if (set2.contains(word)) {
+				done = true;
+				backtrace.computeIfAbsent(key, k -> new ArrayList<>()).add(val);
+				// not early terminate here - find all possible shortest paths
+			}
+
+			if (!done && dict.contains(word)) {
+				set.add(word);
+				backtrace.computeIfAbsent(key, k -> new ArrayList<>()).add(val);
+			}
+		}
+	}
+
+	// early terminate if done is true
+	return done || findLadders(dict, set2, set, backtrace, !flip);
+}
+
+// backtrace/dfs
+// find all the paths from startWord to endWord, given by map (represent the connection between 
+// words - key is a word and value is a list of dicionary words that key word is transformed into)
+// and those paths are considered to be shortest, since we use early termination once done.
+private List<List<String>> generateList(String start, String end, Map<String, List<String>> map,
+        List<String> path, 
+		List<List<String>> res) {
+	if (start.equals(end)) { // one path is found - early return
+		path.add(start); // add
+		res.add(new ArrayList<>(path));
+		path.remove(path.size() - 1); // restore
+		return res;
+	}
+
+	List<String> words = map.get(start);
+	if (words == null) {
+		return res;
+	}
+ 
+	path.add(start); // add
+	for (String word : words) {
+		generateList(word, end, map, path, res);
+	}
+	path.remove(path.size() - 1); // restore
+	return res;
+}
+	
+private static final char[] charSet = new char[] {'A', 'C', 'G', 'T'};
+
+// mutation distance: the count of edges = ladder length - 1
+public int findMutationDistance(String start, String end, String[] bank) {
+	Set<String> dict = new HashSet<>(Arrays.asList(bank);
+	if (!dict.contains(end)) {
+		return -1;
+	}
+	
+	Set<String> set1 = new HashSet<>();
+	set1.add(start);
+	Set<String> set2 = new HashSet<>();
+	set2.add(end);
+	
+	int len = 1;
+	while (true) {
+		if (set1.size() > set2.size()) {
+			Set<String> temp = set1;
+			set1 = set2;
+			set2 = temp;
+		}
+		
+		if (set1.isEmpty()) {
+			break;
+		}
+			
+		HashSet<String> set = new HashSet<>();
+		for (String str : set1) {
+			for (String mutation : getOneEditWord(str)) {
+				if (set2.contains(mutation)) {
+					return len;
+				}
+				
+				if (bank.contains(mutation)) {
+					set.add(mutation);
+					bank.remove(mutation);
+				}
+			}
+		}
+		
+		set1 = set;
+		len++;
+	}
+	
+	return -1;
+}
+
+// return all the possible words of one-edit character of given word
+// return iterator with lazy return or just inline this function will save space
+public static Set<String> getOneEditWord(String str) {
+	Set<String> result = new ArrayList<>();
+	for (int i = 0; i < str.length(); i++) {
+		for (char c : charSet) {
+			String tmp = str.substring(0, i) + c + str.substring(i + 1, str.length());
+			words.add(tmp);
+		}
+	}
+			
+	return result;
+}
+
+
+// Information Masking
+// thought: separate email string into two parts:
+// - the first part is from index 0 to the index before the index of character '@' 
+//   - get the 1st and last character of the first part and reconstruct the first part by 
+//     1st charcter, 5 star signs and last character in order
+// - the second part is the rest of the string - no change
+// - combine these two parts
+public String maskEmail(String email) {
+	// clean code
+	int index = email.indexOf('@');
+	return email.charAt(0) + "*****" + email.charAt(index - 1) + email.substring(index);
+}
+
+// thought: scan from right to left of phone string. 
+// ignore any white space character, parenthesis and minus sign.
+// append to result the first 4 digits, the rest of digits are represented as star sign.
+// when the 5tb, 8th and 11th digit come in, append minus sign before appending the star sign
+public String maskPhone(String phone) {
+	StringBuilder res = new StringBuilder();
+	int count = 0;
+	// scan from right to left ... and return reversed result string
+	for (int i = phone.length() - 1; i >= 0; i--) {
+		char c = phone.charAt(i);
+		// character: white-space, '(', ')', '-'
+		if (Character.isWhitespace(c) || c == '(' || c == ')' || c == '-') {
+			continue;
+		}
+		// character: '0' ~ '9'
+		if (Character.isDigit(c)) {
+			count++;
+			if (count < 5) {
+				res.append(c);
+			} else {
+				if (count == 5 || count == 8 || count == 11) {
+					res.append('-');
+				}
+				res.append('*');
+			}
+		// other character: '+'
+		} else {
+			res.append(c);
+		}
+	}
+	
+	return res.reverse().toString();
+}
+
+public static void main(String[] args) {
+	InformationMasking i = new InformationMasking();
+	System.out.println(i.maskEmail("jackAndJill@gmail.com"));
+	System.out.println(i.maskEmail("jackAndJill@twitter.com"));
+	System.out.println(i.maskPhone("+1 (333) 444-5678"));
+	System.out.println(i.maskPhone("+91 (333) 444-5678"));
+	System.out.println(i.maskPhone("+111 (333) 444-5678"));
+	System.out.println(i.maskPhone("333 444 5678"));
+	System.out.println(i.maskPhone("(333) 444-5678"));
+	System.out.println(i.maskPhone("3334445678"));
+	System.out.println(i.maskPhone("+13334445678"));
+	System.out.println(i.maskPhone("+1(333) 444-5678"));
+}
+
+/* Find K Closest Elements
+ * Given a sorted array, two integers k and x, find the k closest elements to x in the array. 
+ * The result should also be sorted in ascending order. 
+ * If there is a tie, the smaller elements are always preferred.
+ * 
+ * Example 1:
+ * Input: [1,2,3,4,5], k=4, x=3
+ * Output: [1,2,3,4]  pick 1 instead of 5
+ * 
+ * Example 2:
+ * Input: [1,2,3,4,5], k=4, x=-1
+ * Output: [1,2,3,4]
+ * 
+ * Note:
+ * The value k is positive and will always be smaller than the length of the sorted array.
+ * Length of the given array is positive and will not exceed 104
+ * Absolute value of elements in the array and x will not exceed 104
+ */
+
+ // input array arr is sorted
+ // If there is a tie, the smaller elements are always preferred.
+public class FindKClosestElements {
+    public List<Integer> findClosestElements(List<Integer> arr, int k, int x) {
+        int n = arr.size();
+        if (x <= arr.get(0)) {
+            return arr.subList(0, k);
+        } else if (arr.get(n - 1) <= x) {
+            return arr.subList(n - k, n);
+        } else {
+            int index = Collections.binarySearch(arr, x);
+            if (index < 0)
+                index = -index - 1;
+            int low = Math.max(0, index - k - 1), high = Math.min(arr.size() - 1, index + k - 1);
+
+            while (high - low > k - 1) {
+				// is it possible that low < 0? Impossible verified by Leetcode
+				
+				// what if (x - arr.get(low)) == (arr.get(high) - x)?
+                // smaller one is preferred
+				if (low < 0 || (x - arr.get(low)) <= (arr.get(high) - x)) 
+                    high--;
+				// is it possible that high > ...? Impossible verified by Leetcode
+                else if (high > arr.size() - 1 || (x - arr.get(low)) > (arr.get(high) - x))
+                    low++;
+                else
+                    System.out.println("unhandled case: " + low + " " + high);
+            }
+            return arr.subList(low, high + 1);
+        }
+    }
+}
+
+public class FindKClosestElements {
+    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+        int n = arr.length;
+        if (x <= arr[0]) {
+            return arr.subList(0, k);
+        } else if (arr[n - 1] <= x) {
+            return arr.subList(n - k, n);
+        } else {
+            int index = Collections.binarySearch(arr, x);
+            if (index < 0)
+                index = -index - 1;
+            int low = Math.max(0, index - k - 1), high = Math.min(arr.size() - 1, index + k - 1);
+
+            while (high - low > k - 1) {
+				// is it possible that low < 0? Impossible verified by Leetcode
+                if (low < 0 || (x - arr[low]) <= (arr[high] - x)) 
+                    high--;
+				// is it possible that high > ...? Impossible verified by Leetcode
+                else if ((x - arr[low]) > (arr[high] - x))
+                    low++;
+                else
+                    System.out.println("unhandled case: " + low + " " + high);
+            }
+            return arr.subList(low, high + 1);
+        }
+    }
+}
+
+
+
+/**
+ * Maximum Binary Tree 
+Given an integer array with no duplicates. A maximum tree building on this array is defined as follow:
+The root is the maximum number in the array.
+The left subtree is the maximum tree constructed from left part subarray divided by the maximum number.
+The right subtree is the maximum tree constructed from right part subarray divided by the maximum number.
+Construct the maximum tree by the given array and output the root node of this tree.
+Example 1:
+Input: [3,2,1,6,0,5]
+Output: return the tree root node representing the following tree:
+  6
+/   \
+3     5
+\    / 
+ 2  0   
+   \
+	1
+Note:
+The size of the given array will be in the range [1,1000].
+*/
+
+    // This question can be asked as 
+	// Use input array to build a binary tree£¬satisfying max heap property 
+	// and inorder traversal preserve original order of the array
+    
+	// thought: given an integer array, use recursion to construct the tree
+	// first to find the index of maximum value in the array
+	// second to do the recursion for the left part of the array and right part as well
+	// the recursion returns the root node of those two subtrees - left and right subtrees
+	// and they are left and right children of this current tree node.
+	// lastly, return the root node.
+	
+	// use left and right index to specify the subarray this recursion method currently working on
+	// the base case of the recursion is left index is equal to right index, which indicates
+	// 
+	
+	// Basically, we are doing pre-order traversal to construct the maximum binary tree
+	
+	// 3,2,1,6,0,5
+	//       6
+	// 3         5   
+	//   2     0
+	//     1 
+	public TreeNode constructMaximumBinaryTree(int[] nums) {
+		return construct(nums, 0, nums.length);
+	}
+
+	// l is inclusive and r is exclusive
+	// pre-order traversal
+	private TreeNode construct(int[] nums, int l, int r) {
+		// leaf node: l + 1 = r
+		// base case: l = r, r is excluisve and l as well
+		if (l == r) {
+			return null;
+		}
+
+		int maxIndex = max(nums, l, r);
+		TreeNode root = new TreeNode(nums[maxIndex]);
+		root.left = construct(nums, l, maxIndex); // l is inclusive and maxIndex is exclusive
+		root.right = construct(nums, maxIndex + 1, r); // maxIndex+1 is inclusive and r is exclusive
+		return root;
+	}
+
+	private int max(int[] nums, int l, int r) {
+		int maxIndex = l;
+		// condition i < r, since r is exclusive
+		for (int i = l; i < r; i++) {
+			if (nums[maxIndex] < nums[i]) {
+				maxIndex = i;
+			}
+		}
+
+		return maxIndex;
+	}
+
+
+/**
+ * Given an integer array, find number of subsets that its sum of min and max is less than k.
+ *
+ * Refer: Valid Triangle Number 
+ */
+ 
+ // Use two pointers to find [min, max], then the subsets need to include min
+ // while max is optional, since we can pick max from the range from [min+1, max]
+	public int numOfSubsetsWithMinAndMaxSumLessThanK(int[] nums, int k) {
+		Arrays.sort(nums);
+		int count = 0;
+		int l = 0, r = nums.length - 1;
+		while (l <= r) {
+			if (nums[l] + nums[r] >= k) {
+				r--;
+				continue;
+			}
+			// l needs to be included while we have [l + 1 to r] possibility to picked as max
+			// l, [l+1, ..., r-1, r]
+			int n = r - l; // r - (l + 1) + 1;
+			count += 1 << n; // 2 ^ (n)
+			l++;
+		}
+		return count;
+	}
+
+/**
+* Longest Word in Dictionary
+Given a list of strings words representing an English Dictionary, find the longest word in words that can be built one character at a time by other words in words. If there is more than one possible answer, return the longest word with the smallest lexicographical order.
+If there is no answer, return the empty string.
+Example 1:
+Input: 
+words = ["w","wo","wor","worl", "world"]
+Output: "world"
+Explanation: 
+The word "world" can be built one character at a time by "w", "wo", "wor", and "worl".
+Example 2:
+Input: 
+words = ["a", "banana", "app", "appl", "ap", "apply", "apple"]
+Output: "apple"
+Explanation: 
+Both "apply" and "apple" can be built from other words in the dictionary. However, "apple" is lexicographically smaller than "apply".
+Note:
+All the strings in the input will only contain lowercase letters.
+The length of words will be in the range [1, 1000].
+The length of words[i] will be in the range [1, 30].
+*/
+public class LongestWordInDictionary {
+	private static class Node {
+		char c;
+		Map<Character, Node> children = new HashMap<>();
+		int end;
+
+		public Node(char c) {
+			this.c = c;
+		}
+	}
+
+	private static class Trie {
+		Node root;
+		String[] words;
+
+		public Trie() {
+			root = new Node('0');
+		}
+
+		public void insert(String word, int index) {
+			Node cur = root;
+			for (char c : word.toCharArray()) {
+				cur.children.putIfAbsent(c, new Node(c));
+				cur = cur.children.get(c);
+			}
+			cur.end = index;
+		}
+
+		public String dfs() {
+			String ans = "";
+			Stack<Node> stack = new Stack<>();
+			stack.push(root);
+			// DFS
+			while (!stack.empty()) {
+				Node node = stack.pop();
+				// ap -> appl, step app is missing
+				// but app is in the TRIE, yet the end of app TRIE node is 0
+				// so it will be skipped to be processed.
+				if (node.end > 0 || node == root) {
+					if (node != root) {
+						String word = words[node.end - 1];
+						if (word.length() > ans.length() || word.length() == ans.length() && word.compareTo(ans) < 0) {
+							ans = word;
+						}
+					}
+					for (Node nei : node.children.values()) {
+						stack.push(nei);
+					}
+				}
+			}
+			return ans;
+		}
+	}
+
+	public String longestWord(String[] words) {
+		Trie trie = new Trie();
+		int index = 0;
+		for (String word : words) {
+			trie.insert(word, ++index); // indexed by 1
+		}
+		trie.words = words;
+		return trie.dfs();
+	}
+
+	public static void main(String[] args) {
+	}
+}
+
+
+// maze
+// 0: walkable
+// 1: blocked or visited
+// 9: destination
+public boolean maze(int[][] matrix) {
+	if(matrix == null || matrix.length == 0 || matrix[0].length ==0) {
+		return false;
+	}
+	if (matrix[0][0] == 9) {
+		return true;
+	}
+	int m = matrix.length, n = matrix[0].length;
+	Queue<int[]> queue = new LinkedList<>();
+	queue.offer(new int[]{0,0});
+	matrix[0][0] = 1;
+	while(!queue.isEmpty()) {
+		int[] cur = queue.poll();
+		for (int[] dir : dirs ) {
+			int x = cur[0] + dir[0];
+			int y = cur[1] + dir[1];
+			if (x >= 0 && x < m && y >= 0 && y < n) {
+				if(matrix[x][y] == 9){
+					return true;
+				}
+				if (matrix[x][y] ==0) {
+					queue.offer(new int[] {x, y});
+					matrix[x][y] = 1;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+
+/* Parenthesis */
+
+/**
+ * Longest Valid Parentheses 
+Given a string containing just the characters '(' and ')',++ find the length of the longest valid (well-formed) parentheses substring.
+For "(()", the longest valid parentheses substring is "()", which has length = 2.
+Another example is ")()())", where the longest valid parentheses substring is "()()", which has length = 4. 
+ */
+	public int longestValidParentheses(String s) {
+		int maxLen = 0, last = -1;
+		Stack<Integer> lefts = new Stack<>();
+		for (int i = 0; i < s.length(); ++i) {
+			if (s.charAt(i) == '(') {
+				lefts.push(i);
+				continue;
+			}
+			if (lefts.isEmpty()) {
+				// no matching left
+				// last is the position of last invalid ')'
+				
+				// ')' or ')...)'
+				last = i; // last is always updated as the last invalid ')'
+			} else {
+				// found a matching pair
+				lefts.pop();
+				if (lefts.isEmpty()) {
+					maxLen = Math.max(maxLen, i - last);
+				} else {
+					// stack is not empty, so the current length is current
+					// position i- last second position of '(' in stack
+					// for example "(()()"
+					maxLen = Math.max(maxLen, i - lefts.peek());
+				}
+			}
+		}
+		return maxLen;
+	}
+
+	/**
+	 * Valid Parentheses
+	 * Given a string containing just the characters '(', ')',
+	 * '{', '}', '[' and ']', determine if the input string is valid. The
+	 * brackets must close in the correct order, "()" and "()[]{}" are all valid
+	 * but "(]" and "([)]" are not.
+	 */
+	public boolean isValid(String s) {
+		long result = 0; // There may be cases that long is not enough to hold
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			int n = 0;
+			switch (c) {
+			case '(':
+				n = 1;
+				break;
+			case ')':
+				n = -1;
+				break;
+			case '[':
+				n = 2;
+				break;
+			case ']':
+				n = -2;
+				break;
+			case '{':
+				n = 3;
+				break;
+			case '}':
+				n = -3;
+				break;
+			}
+			if (n > 0) {
+				// base is 4 instead of 10, 10 is ok as well
+				result = result * 4 + n; // {( + [ -> {([ append to end 
+			} else {
+				// n < 0
+				if (result % 4 + n != 0) { // grad the last edit and check if it is same type of parenthesis
+					return false;
+				} 
+				result /= 4; // extract the last edit out 
+			}
+		}
+
+		return result == 0;
+	}
+
+	public boolean isValid2(String s) {
+		Stack<Character> stack = new Stack<>();
+		for (char c : s.toCharArray()) {
+			if (c == '(') {
+				stack.push(')');
+			} else if (c == '{') {
+				stack.push('}');
+			} else if (c == '[') {
+				stack.push(']');
+			} else if (stack.isEmpty() || stack.pop() != c) {
+				return false;
+			}
+		}
+		return stack.isEmpty(); // string s may end up with some left parentheses to be paired
+	}
+
+/**
+*Accounts Merge
+*Given a list accounts, each element accounts[i] is a list of strings, where the first element accounts[i][0] is a name, and the rest of the elements are emails representing emails of the account.
+*
+*Now, we would like to merge these accounts. Two accounts definitely belong to the same person if there is some email that is common to both accounts. Note that even if two accounts have the same name, they may belong to different people as people could have the same name. A person can have any number of accounts initially, but all of their accounts definitely have the same name.
+*
+*After merging the accounts, return the accounts in the following format: the first element of each account is the name, and the rest of the elements are emails in sorted order. The accounts themselves can be returned in any order.
+*
+*Example 1:
+*Input: 
+*accounts = [["John", "johnsmith@mail.com", "john00@mail.com"], ["John", "johnnybravo@mail.com"], ["John", "johnsmith@mail.com", "john_newyork@mail.com"], ["Mary", "mary@mail.com"]]
+*Output: [["John", 'john00@mail.com', 'john_newyork@mail.com', 'johnsmith@mail.com'],  ["John", "johnnybravo@mail.com"], ["Mary", "mary@mail.com"]]
+*Explanation: 
+*The first and third John's are the same person as they have the common email "johnsmith@mail.com".
+*The second John and Mary are different people as none of their email addresses are used by other accounts.
+*We could return these lists in any order, for example the answer [['Mary', 'mary@mail.com'], ['John', 'johnnybravo@mail.com'], 
+*['John', 'john00@mail.com', 'john_newyork@mail.com', 'johnsmith@mail.com']] would still be accepted.
+*Note:
+*
+*The length of accounts will be in the range [1, 1000].
+*The length of accounts[i] will be in the range [1, 10].
+*The length of accounts[i][j] will be in the range [1, 30].
+*/
+	public List<List<String>> accountsMerge(List<List<String>> accounts) {
+		Map<String, String> emailToName = new HashMap<>();
+		Map<String, Integer> emailToID = new HashMap<>();
+		int id = 0;
+		for (List<String> account : accounts) {
+			String name = "";
+			for (String email : account) {
+				if (name == "") {
+					name = email;
+					continue;
+				}
+				emailToName.put(email, name);
+				if (!emailToID.containsKey(email)) {
+					emailToID.put(email, id++);
+				}
+			}
+		}
+
+		UnionFind u = new UnionFind(emailToID.size());
+		for (int i = 0; i < emailToID.size(); i++) {
+			u.id[i] = i;
+			u.size[i] = 1;
+		}
+		for (List<String> account : accounts) {
+			for (int i = 2; i < account.size(); i++) {
+				u.union(emailToID.get(account.get(i)), emailToID.get(account.get(1)));
+			}
+		}
+
+		Map<Integer, List<String>> ans = new HashMap<>();
+		for (String email : emailToName.keySet()) {
+			int index = u.root(emailToID.get(email));
+			ans.computeIfAbsent(index, x -> new ArrayList<>()).add(email);
+		}
+		for (List<String> component : ans.values()) {
+			Collections.sort(component);
+			component.add(0, emailToName.get(component.get(0)));
+		}
+		return new ArrayList<>(ans.values());
+	}
+	
+	// Contiguous Array (leetcode 525)
+	// problem: Given a binary array, find the maximum length of a contiguous subarray with equal number of 0 and 1.
+	// Example 1:
+	// Input: [0,1]
+	// Output: 2
+	// Explanation: [0, 1] is the longest contiguous subarray with equal number of 0 and 1.
+	// Example 2:
+	// Input: [0,1,0]
+	// Output: 2
+	// Explanation: [0, 1] (or [1, 0]) is a longest contiguous subarray with equal number of 0 and 1.
+	// Note: The length of the given binary array will not exceed 50,000.
+
+	// The idea is to change 0 in the original array to -1. Thus, if we find SUM[i, j] == 0 then we know there are even number of -1 and 1 between index i and j. Also put the sum to index mapping to a HashMap to make search faster.
+
+    public int findMaxLength(int[] nums) {
+        // 改input不好
+        // for (int i = 0; i < nums.length; i++) {
+        //     if (nums[i] == 0) nums[i] = -1;
+        // }
+        
+        Map<Integer, Integer> sumToIndex = new HashMap<>();
+        sumToIndex.put(0, -1); // i - index = i - (-1) = i + 1
+        int presum = 0, max = 0;
+        
+        for (int i = 0; i < nums.length; i++) {
+            presum += (nums[i] == 1 ? 1 : -1); // 不用改input
+            if (sumToIndex.containsKey(presum)) { 
+				// .containsKey means sum of values at index from map.get(presum) + 1 to i IS 0
+                max = Math.max(max, i - sumToIndex.get(presum));
+				// sumToIndex: sum to smallest index mapping, so no need to update index
+            }
+            else {
+                sumToIndex.put(presum, i);
+            }
+        }
+        
+        return max;
+    }
+
+	// Exclusive Time of Functions(leetcode 636)
+	// problem: Given the running logs of n functions that are executed in a nonpreemptive single threaded CPU, find the exclusive time of these functions.
+	// Each function has a unique id, start from 0 to n-1. A function may be called recursively or by another function.
+	
+	// A log is a string has this format : function_id:start_or_end:timestamp. For example, "0:start:0" means function 0 starts from the very beginning of time 0. "0:end:0" means function 0 ends to the very end of time 0.
+
+	// Exclusive time of a function is defined as the time spent within this function, the time spent by calling other functions should not be considered as this function's exclusive time. You should return the exclusive time of each function sorted by their function id.
+	
+	// Example 1:
+	// Input:
+	// n = 2
+	// logs = 
+	/* 
+	["0:start:0",
+	 "1:start:2",
+	 "1:end:5",
+	 "0:end:6"]
+	 
+	 0 0 1 1 1 1 0
+	 |_|_|_|_|_|_|_|
+	 0 1 2 3 4 5 6
+	 
+	 Output:[3, 4]
+	*/
+	/*
+	Explanation:
+	Function 0 starts at time 0, then it executes 2 units of time and reaches the end of time 1. 
+	Now function 0 calls function 1, function 1 starts at time 2, executes 4 units of time and end at time 5.
+	Function 0 is running again at time 6, and also end at the time 6, thus executes 1 unit of time. 
+	So function 0 totally execute 2 + 1 = 3 units of time, and function 1 totally execute 4 units of time.
+	*/
+
+    public int[] exclusiveTime(int n, List < String > logs) {
+        Stack<Integer> stack = new Stack<>();
+        int[] res = new int[n];
+        String[] s = logs.get(0).split(":");
+        stack.push(Integer.parseInt(s[0]));
+        int i = 1, prev = Integer.parseInt(s[2]); // start as prev
+        while (i < logs.size()) {
+            s = logs.get(i).split(":");
+            if (s[1].equals("start")) {
+                if (!stack.isEmpty())
+                    res[stack.peek()] += Integer.parseInt(s[2]) - prev; // start as cur
+                stack.push(Integer.parseInt(s[0]));
+                prev = Integer.parseInt(s[2]); // start as prev
+            } else {
+                res[stack.peek()] += Integer.parseInt(s[2]) - prev + 1; // end as cur
+                stack.pop();
+                prev = Integer.parseInt(s[2]) + 1; // end as prev -> 
+            }
+            i++;
+        }
+        return res;
+    }
+
+	// Find K Closest Elements(leetcode )
+	// Given a sorted array, two integers k and x, find the k closest elements to x in the array. The result should also be sorted in ascending order. If there is a tie, the smaller elements are always preferred.
+	// Example 1:
+	// Input: [1,2,3,4,5], k=4, x=3
+	// Output: [1,2,3,4]
+	// Example 2:
+	// Input: [1,2,3,4,5], k=4, x=-1
+	// Output: [1,2,3,4]
+	// Note:
+	// The value k is positive and will always be smaller than the length of the sorted array.
+	// Length of the given array is positive and will not exceed 104
+	// Absolute value of elements in the array and x will not exceed 104
+
+	// use two pointers, move towards the center util the difference reaches k - 1
+	public List<Integer> findClosestElements(List<Integer> arr, int k, int x) {
+		int n = arr.size();
+		if (x <= arr.get(0)) {
+			return arr.subList(0, k);
+		} else if (arr.get(n - 1) <= x) {
+			return arr.subList(n - k, n);
+		} else {
+			int index = Collections.binarySearch(arr, x);
+			if (index < 0)
+				index = -index - 1;
+			int low = Math.max(0, index - k - 1), high = Math.min(arr.size() - 1, index + k - 1);
+// high - low == k - 1 => [low, high] 里面有K个数
+			while (high - low > k - 1) {
+				if (low < 0 || (x - arr.get(low)) <= (arr.get(high) - x))
+					high--;
+				else if (high > arr.size() - 1 || (x - arr.get(low)) > (arr.get(high) - x))
+					low++;
+				else
+					System.out.println("unhandled case: " + low + " " + high);
+			}
+			return arr.subList(low, high + 1);
+		}
+	}
+
+	// Longest Palindromic Subsequence(leetcode 516) // LinkedIn
+	// Problem: Given a string s, find the longest palindromic subsequence's length in s. You may assume that the maximum length of s is 1000.
+	// Example 1:
+	// Input: "bbbab"
+	// Output: 4
+	// One possible longest palindromic subsequence is "bbbb".
+	// Example 2:
+	// Input: "cbbd"
+	// Output: 2
+	// One possible longest palindromic subsequence is "bb".
+
+	// dp[i][j]: the longest palindromic subsequence's length of substring(i, j)
+	// state transition: 
+	// i, i+1, ..., j-1, j
+	// dp[i][j] = dp[i+1][j-1] + 2 if s.charAt(i) == s.charAt(j)
+	// otherwise, dp[i][j] = Math.max(dp[i+1][j], dp[i][j-1])
+	// Initialization: dp[i][i] = 1
+    public int longestPalindromeSubseq(String s) {
+        int[][] dp = new int[s.length()][s.length()];
+        
+		
+		/*    a b a a
+			a *\* * *
+			b * *\* *
+			a * * *\*
+			a * * * *\
+		*/
+		
+        for (int i = s.length() - 1; i >= 0; i--) {
+            dp[i][i] = 1;
+            for (int j = i+1; j < s.length(); j++) {
+                if (s.charAt(i) == s.charAt(j)) {
+                    dp[i][j] = dp[i+1][j-1] + 2;
+                } else {
+                    dp[i][j] = Math.max(dp[i+1][j], dp[i][j-1]);
+                }
+            }
+        }
+        return dp[0][s.length()-1];
+    }
+    public int longestPalindromeSubseq2(String s) {
+        
+    }
+
+	// Next Closest Time(leetcode 681)
+	// Problem: 
+	// Given a time represented in the format "HH:MM", form the next closest time by reusing the current digits. There is no limit on how many times a digit can be reused.
+	// You may assume the given input string is always valid. For example, "01:34", "12:09" are all valid. "1:34", "12:9" are all invalid.
+	// Example 1:
+	// Input: "19:34"
+	// Output: "19:39"
+	// Explanation: The next closest time choosing from digits 1, 9, 3, 4, is 19:39, which occurs 5 minutes later.  It is not 19:33, because this occurs 23 hours and 59 minutes later.
+	// Example 2:
+	// Input: "23:59"
+	// Output: "22:22"
+	// Explanation: The next closest time choosing from digits 2, 3, 5, 9, is 22:22. It may be assumed that the returned time is next day's time since it is smaller than the input time numerically.
+
+	public String nextClosestTime(String time) {
+		int start = 60 * Integer.parseInt(time.substring(0, 2));
+        start += Integer.parseInt(time.substring(3));
+        int ans = start;
+        int elapsed = 24 * 60;
+        Set<Integer> allowed = new HashSet();
+        for (char c : time.toCharArray()) if (c != ':') {
+            allowed.add(c - '0');
+        }
+
+        for (int h1: allowed) for (int h2: allowed) if (h1 * 10 + h2 < 24) {
+            for (int m1: allowed) for (int m2: allowed) if (m1 * 10 + m2 < 60) {
+                int cur = 60 * (h1 * 10 + h2) + (m1 * 10 + m2);
+				// cur - start <, >, = 0
+				// Math.floorMod(3, 5)  = 3
+				// Math.floorMod(-3, 5) = 5 - 3 = 2 -> complement number
+				
+				// cur - start is in the range of [-24*60+1, 24*60-1].
+                int candElapsed = Math.floorMod(cur - start, 24 * 60);
+                if (0 < candElapsed && candElapsed < elapsed) {
+                    ans = cur;
+                    elapsed = candElapsed;
+                }
+            }
+        }
+	
+        return String.format("%02d:%02d", ans / 60, ans % 60);
+    }
+	
+	
+
+class File {
+	boolean isFile = false;
+	Map<String, File> children = new HashMap<>();
+	String content = "";
+}
+
+/**
+ * Design In-Memory File System
+ Design an in-memory file system to simulate the following functions:
+ 
+ ls: Given a path in string format. If it is a file path, return a list that only contains this file's name. If it is a directory path, return the list of file and directory names in this directory. Your output (file and directory names together) should in lexicographic order.
+ 
+ mkdir: Given a directory path that does not exist, you should make a new directory according to the path. If the middle directories in the path don't exist either, you should create them as well. This function has void return type.
+ 
+ addContentToFile: Given a file path and file content in string format. If the file doesn't exist, you need to create that file containing given content. If the file already exists, you need to append given content to original content. This function has void return type.
+ 
+ readContentFromFile: Given a file path, return its content in string format.
+ 
+ Example:
+ 
+ Input:
+ ["FileSystem","ls","mkdir","addContentToFile","ls","readContentFromFile"]
+ [[],["/"],["/a/b/c"],["/a/b/c/d","hello"],["/"],["/a/b/c/d"]]
+ Output:
+ [null,[],null,null,["a"],"hello"]
+ Explanation:
+ filesystem
+ 
+ Note:
+ 
+ You can assume all file or directory paths are absolute paths which begin with / and do not end with / except that the path is just "/".
+ You can assume that all operations will be passed valid parameters and users will not attempt to retrieve file content or list a directory or file that does not exist.
+ You can assume that all directory names and file names only contain lower-case letters, and same names won't exist in the same directory.
+ */
+class FileSystem {
+	private static final String SEPARATOR = "/";
+	private final File root;
+	
+	public FileSystem() {
+		this.root = new File();
+	}
+	
+	/**
+	 * Given a path in string format. If it is a file path, return a list that only contains this file's name.
+	 * If it is a directory path, return the list of file and directory names in this directory.
+	 * Your output (file and directory names together) should in lexicographic order.
+	 */
+	public List<String> ls(String path) {
+		String[] dirs = path.split(SEPARATOR);
+		File current = this.root;
+		String name = "";
+		for (String dir : dirs) {
+			if (dir.isEmpty()) { // corner case: "/a/b/c///d/e"
+				continue;
+			}
+			File child = current.children.get(dir);
+			if (child == null) {
+				return Collections.emptyList();
+			}
+			current = child;
+			name = dir;
+		}
+		
+		if (current.isFile) { // is file
+			List<String> result = new ArrayList<>(1);
+			result.add(name);
+			return result;
+		}
+		
+		// is directory path
+		return current.children.keySet()
+							.stream()
+							.sorted()
+							.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Given a directory path that does not exist, you should make a new directory according to the path.
+	 * If the middle directories in the path don't exist either, you should create them as well.
+	 * This function has void return type.
+	 */
+	public void mkdir(String path) {
+		upsertDir(path);
+	}
+	
+	/**
+	 * Given a file path and file content in string format.
+	 * If the file doesn't exist, you need to create that file containing given content.
+	 * If the file already exists, you need to append given content to original content.
+	 * This function has void return type.
+	 */
+	public void addContentToFile(String filePath, String content) {
+		File current = upsertDir(filePath);
+		current.isFile = true;
+		current.content += content;
+	}
+	
+	/**
+	 * Given a file path, return its content in string format.
+	 */
+	public String readContentFromFile(String filePath) {
+		return upsertDir(filePath).content;
+	}
+	
+	private File upsertDir(String path) {
+		String[] dirs = path.split(SEPARATOR);
+		File current = this.root;
+		for (String dir : dirs) {
+			if (dir.isEmpty()) {
+				continue;
+			}
+			current = current.children.computeIfAbsent(dir, k -> new File());
+		}
+		return current;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println("/a/b".split("/")[0].isEmpty());
+	}
+}
+
+class ImageDirectory {
+	int sum;
+	int numberOfimg;
+	
+	private static final String[] suffixes = new String[] { ".jpeg", ".gif", ".png" };
+	
+	// https://leetcode.com/problems/longest-absolute-file-path/description/
+	// use stack to keep track of its parent directories
+	// every time we go into a further directory, we push the parent directory into the stack,
+	// and the stack is keeping track of length - "absolute path length of parent directory"
+	
+	// string input "dir\n\tsubdir1\n\tsubdir2\n\t\tfile.ext" is represented as 
+	// dir
+	// 	  subdir1
+	//    subdir2
+	//       file.ext	  
+	public int solution2(String input) {
+		// iterative approach
+		
+		// STACK: this stack stores path length of every directory
+		Stack<Integer> stack = new Stack<>();
+		stack.push(1); // "dummy" length => "/", lev is 0 now
+		int res = 0;
+		for (String s : input.split("\n")) {
+			int lev = s.lastIndexOf("\t") + 1; // number of "\t" or " "
+			while (lev + 1 < stack.size()) {
+				// lev + 1 = stack.size() iterate over sibling element under the same parent directory
+				// lev + 1 > stack.size() go over child element under the same parent directory
+				stack.pop(); // find parent
+			}
+			
+			// remove: "/t" -> - lev
+			// add:    "/"  -> + 1
+			int l = stack.peek();
+			int len = l + s.length() - lev + 1; 
+			
+			stack.push(len);
+			// check if it is file
+			for (String suffix : suffixes) {
+				if (s.endsWith(suffix)) {
+					res += l - 1; // find all path length
+							      // -1 removes dummy length "/" ?
+					break;
+				}
+			}
+		}
+		return res;
+	}
+	
+	public int solution(String S) {
+		sum = 0;
+		numberOfimg = 0;
+		String[] ss = S.split("\n");
+		helper(ss);
+		return sum == 0 ? numberOfimg : sum;
+	}
+	
+	public void helper(String[] ss) {
+		Set<String> set = new HashSet<>();
+		StringBuilder b = new StringBuilder();
+		Stack<Integer> st = new Stack<>();
+		int index = 0;
+		boolean[] visit = new boolean[ss.length];
+		int num = 0;
+		
+		while (index < ss.length) {
+			st.push(index++);
+			while (!st.empty()) {
+				int s = st.peek();
+				if (!visit[s]) {
+					visit[s] = true;
+					if (!ss[s].contains(".")) {
+						num = num + 1 + ss[s].trim().length();
+						b.append('/');
+						b.append(ss[s].trim());
+					}
+				}
+				
+				if (check(ss[s]) && set.add(b.toString())) {
+					numberOfimg++;
+					sum = sum + num;
+				}
+				
+				if (index < ss.length && isNextLev(ss[index], ss[s])) {
+					st.push(index++);
+				} else {
+					int s1 = st.pop();
+					if (!ss[s1].contains(".")) {
+						b.delete(b.length() - ss[s1].trim().length() - 1, b.length());
+						num = num - 1 - ss[s1].trim().length();
+					}
+				}
+			}
+		}
+	}
+	
+	public boolean isNextLev(String s1, String s) {
+		int a = 0;
+		int b = 0;
+		for (int i = 0; i < s.length(); i++) {
+			if (s.charAt(i) != ' ') {
+				a = i;
+				break;
+			}
+		}
+		for (int j = 0; j < s1.length(); j++) {
+			if (s1.charAt(j) != ' ') {
+				b = j;
+				break;
+			}
+		}
+		return b - a == 1;
+	}
+	
+	public boolean check(String s) {
+		String s2 = s.trim();
+		int a = 0;
+		for (int i = 0; i < s2.length(); i++) {
+			if (s2.charAt(i) == '.') {
+				a = i;
+				break;
+			}
+		}
+		String s1 = s2.substring(a);
+		return s1.equals(".jpeg") || s1.equals(".gif") || s1.equals(".png");
+	}
+	
+	public static void main(String[] args) {
+		ImageDirectory s = new ImageDirectory();
+		String lines = "dir1\n" +
+				" dir11\n" + " dir12\n" + "  picture.jpeg\n" + "  dir121\n" + "  file1.txt\n" +
+				"dir2\n" + " file2.gif\n";
+		System.out.println(s.solution(lines));
+		System.out.println(s.solution2(lines));
+	}
+}
+
+class nextCloestTime {
+	/**
+	 * Next Closest Time
+	 Given a time represented in the format "HH:MM", form the next closest time by reusing the current digits. There is no limit on how many times a digit can be reused.
+	 
+	 You may assume the given input string is always valid. For example, "01:34", "12:09" are all valid. "1:34", "12:9" are all invalid.
+	 
+	 Example 1:
+	 
+	 Input: "19:34"
+	 Output: "19:39"
+	 Explanation: The next closest time choosing from digits 1, 9, 3, 4, is 19:39, which occurs 5 minutes later.  It is not 19:33, because this occurs 23 hours and 59 minutes later.
+	 
+	 Example 2:
+	 
+	 Input: "23:59"
+	 Output: "22:22"
+	 Explanation: The next closest time choosing from digits 2, 3, 5, 9, is 22:22. It may be assumed that the returned time is next day's time since it is smaller than the input time numerically
+	 */
+	public String nextClosestTime(String time) {
+		Set<Integer> s = new TreeSet<>();
+		for (int i : new int[] { 0, 1, 3, 4 }) {
+			s.add(time.charAt(i) - '0');
+		}
+		List<Integer> l = getCombo(s);
+		Collections.sort(l); // unnecessary?
+		int curH = Integer.parseInt(time.substring(0, 2));
+		int curM = Integer.parseInt(time.substring(3));
+		// First try m > curM
+		int index = Collections.binarySearch(l, curM); // curM must in the list l, index >= 0
+		if (index < l.size() - 1) {
+			return String.format("%02d:%02d", curH, l.get(index + 1));
+		}
+		
+		index = Collections.binarySearch(l, curH); // curH must in the list l, index >= 0
+		if (index == l.size() - 1 || l.get(index + 1) > 23) {
+			index = -1; // to get the smallest hour like 22 in the example2
+		}
+		return String.format("%02d:%02d", l.get(index + 1), l.get(0));
+	}
+	
+	private List<Integer> getCombo(Set<Integer> s) {
+		List<Integer> l = new ArrayList<>(s);
+		List<Integer> res = new ArrayList<>();
+		for (int i = 0; i < l.size(); i++) {
+			int h = l.get(i);
+			if (h >= 6) {
+				return res;
+			}
+			for (int j = 0; j < l.size(); j++) {
+				int c = h * 10 + l.get(j);
+				res.add(c);
+			}
+		}
+		return res;
+	}
+}
+
+public class Code13 {
+	public static void main (String[] args) {
+		//@1 In-Memory File System
+		FileSystem testFileSystem = new FileSystem();
+		testFileSystem.main(args);
+		//@2 Image Directory
+		ImageDirectory testImageDirectory = new ImageDirectory();
+		testImageDirectory.main(args);
+		//@3 Find kth largest num from remote machine -> See the video
+		//@4 Next Cloest Time
+		
+	}
+}
 
 
 
