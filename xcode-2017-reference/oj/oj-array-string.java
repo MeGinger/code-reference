@@ -242,149 +242,6 @@ public class DuplicateNumver {
 
 
 
-import java.util.*;
-
-
-public class Code14 {
-
-
-public class RegularExpressionMatching {
-
-	/**
-	 * Regular Expression Matching
-	Implement regular expression matching with support for '.' and '*'.
-
-	'.' Matches any single character.
-	'*' Matches zero or more of the preceding element.
-
-	The matching should cover the entire input string (not partial).
-
-	The function prototype should be:
-	bool isMatch(const char *s, const char *p)
-
-	Some examples:
-	isMatch("aa","a") false
-	isMatch("aa","aa") true
-	isMatch("aaa","aa") false
-	isMatch("aa", "a*") true
-	isMatch("aa", ".*") true
-	isMatch("ab", ".*") true
-	isMatch("aab", "c*a*b") true
-	 */
-
-	// recursion
-	public boolean isMatch2(String s, String p) {
-		if (p.length() == 0) {
-			return s.length() == 0;
-		}
-		// p's length 1 is special case
-		if (p.length() == 1 || p.charAt(1) != '*') {
-			if (s.length() == 0
-					|| (p.charAt(0) != '.' && s.charAt(0) != p.charAt(0))) {
-				return false;
-			}
-			return isMatch2(s.substring(1), p.substring(1));
-		}
-		
-		// p.length() >= 2 && p.charAt(1) == '*'
-		int len = s.length();
-		int i = -1;
-		while (i < len
-				&& (i < 0 || p.charAt(0) == '.' || p.charAt(0) == s
-						.charAt(i))) {
-			if (isMatch2(s.substring(i + 1), p.substring(2))) {
-				return true;
-			}
-			i++;
-		}
-		return false;
-	}
-
-	/**
-		Here are some conditions to figure out, then the logic can be very straightforward.
-		1, If p.charAt(j) == s.charAt(i) :  dp[i][j] = dp[i-1][j-1];
-		2, If p.charAt(j) == '.' : dp[i][j] = dp[i-1][j-1];
-		3, If p.charAt(j) == '*': 
-		here are two sub conditions:
-			1, If p.charAt(j-1) != s.charAt(i) : dp[i][j] = dp[i][j-2]  //in this case, a* only counts as empty
-			2, If p.charAt(j-1) == s.charAt(i) or p.charAt(j-1) == '.':
-	           dp[i][j] = dp[i-1][j]    //in this case, a* counts as multiple a 
-	        or dp[i][j] = dp[i][j-1]   // in this case, a* counts as single a
-	        or dp[i][j] = dp[i][j-2]   // in this case, a* counts as empty
-	 */
-    // iterative dp - 2 dimensional
-	public boolean isMatch3(String s, String p) {
-		if (s == null || p == null) {
-			return false;
-		}
-		// dp[i + 1][j + 1] is s[0 ~ i] of length i + 1 and p[0 ~ j] of length j + 1
-		boolean[][] dp = new boolean[s.length() + 1][p.length() + 1];
-		dp[0][0] = true;
-		for (int j = 1; j < p.length(); j += 2) {
-			if (p.charAt(j) == '*' && dp[0][j - 1]) {
-				// s = "" && p = "a*b*c*"
-				dp[0][j + 1] = true;
-			} else {
-				break;
-			}
-		}
-		for (int i = 1; i <= s.length(); i++) {
-			for (int j = 1; j <= p.length(); j++) {
-				if (p.charAt(j - 1) == '.' || p.charAt(j - 1) == s.charAt(i - 1)) {
-					dp[i][j] = dp[i - 1][j - 1];
-				} else if (p.charAt(j - 1) == '*') {
-					if (p.charAt(j - 2) != s.charAt(i - 1) && p.charAt(j - 2) != '.') {
-						dp[i][j] = dp[i][j - 2];
-					} else {
-						dp[i][j] = dp[i][j - 1] || dp[i - 1][j] || dp[i][j - 2];
-					}
-				}
-			}
-		}
-		return dp[s.length()][p.length()];
-	}
-	// iterative dp - 1 dimensional - follow up
-	public boolean isMatch5(String s, String p) {
-		if (s == null || p == null) {
-			return false;
-		}
-		// dp[i + 1][j + 1] is s[0 ~ i] of length i + 1 and p[0 ~ j] of length j + 1
-		boolean[] dp = new boolean[p.length() + 1];
-		dp[0] = true;
-		for (int j = 1; j < p.length(); j += 2) {
-			if (p.charAt(j) == '*' && dp[j - 1]) {
-				// s = "" && p = "a*b*c*"
-				// only character in odd index can be '*'
-				dp[j + 1] = true;
-			} else {
-				break;
-			}
-		}
-
-		for (int i = 1; i <= s.length(); i++) {
-			boolean pre = dp[0];
-			dp[0] = false;
-			for (int j = 1; j <= p.length(); j++) {
-				if (p.charAt(j - 1) == '.' || p.charAt(j - 1) == s.charAt(i - 1)) {
-					dp[j] = pre;
-				} else if (p.charAt(j - 1) == '*') {
-					if (p.charAt(j - 2) != s.charAt(i - 1) && p.charAt(j - 2) != '.') {
-						dp[j] = dp[j - 2];
-					} else {
-						dp[j] = dp[j - 1] || dp[j] || dp[j - 2];
-					}
-				}
-				pre = dp[j];
-			}
-		}
-		return dp[p.length()];
-	}
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-
-}
 
   /**
    * Isomorphic Strings
@@ -473,58 +330,7 @@ public class RegularExpressionMatching {
   // preprocess - remove unnecessary words
   // ?
 
-   /**
-    * Kth Smallest Number in Multiplication Table 
- 	Nearly every one have used the Multiplication Table. But could you find out the k-th smallest number quickly from the multiplication table?
-
-	Given the height m and the length n of a m * n Multiplication Table, and a positive integer k, you need to return the k-th smallest number in this table.
-
-	Example 1:
-
-	Input: m = 3, n = 3, k = 5
-	Output: 
-	Explanation: 
-	The Multiplication Table:
-	1 2 3
-	2 4 6
-	3 6 9
-
-	The 5-th smallest number is 3 (1, 2, 2, 3, 3).
-
-	Example 2:
-
-	Input: m = 2, n = 3, k = 6
-	Output: 
-	Explanation: 
-	The Multiplication Table:
-	1 2 3
-	2 4 6
-
-	The 6-th smallest number is 6 (1, 2, 2, 3, 4, 6).
-    */
-  public int findKthNumber(int m, int n, int k) {
-    int low = 1, high = m * n + 1;
-
-    while (low < high) {
-      int mid = low + (high - low) / 2;
-      int c = count(mid, m, n);
-      if (c >= k) {
-        high = mid;
-      } else {
-        low = mid + 1;
-      }
-    }
-
-    return high;
-  }
-
-  private int count(int v, int m, int n) {
-    int count = 0;
-    for (int i = 1; i <= m; i++) {
-      count += Math.min(v / i, n);
-    }
-    return count;
-  }
+  
 
   /**
    * Longest Substring with At Most K Distinct Characters
@@ -947,54 +753,7 @@ public class AddBoldTagInString {
         return res.toString();
     }
 }
- 
 
-
-import java.util.*;
-
-/**
- * My Calendar I
-Implement a MyCalendar class to store your events. A new event can be added if adding the event will not cause a double booking.
-
-Your class will have the method, book(int start, int end). Formally, this represents a booking on the half open interval [start, end), the range of real numbers x such that start <= x < end.
-
-A double booking happens when two events have some non-empty intersection (ie., there is some time that is common to both events.)
-
-For each call to the method MyCalendar.book, return true if the event can be added to the calendar successfully without causing a double booking. Otherwise, return false and do not add the event to the calendar.
-
-Your class will be called like this: MyCalendar cal = new MyCalendar(); MyCalendar.book(start, end)
-Example 1:
-MyCalendar();
-MyCalendar.book(10, 20); // returns true
-MyCalendar.book(15, 25); // returns false
-MyCalendar.book(20, 30); // returns true
-Explanation: 
-The first event can be booked.  The second can't because time 15 is already booked by another event.
-The third event can be booked, as the first event takes every time less than 20, but not including 20.
-Note:
-
-The number of calls to MyCalendar.book per test case will be at most 1000.
-In calls to MyCalendar.book(start, end), start and end are integers in the range [0, 10^9].
- */
-public class MyCalendar {
-	private TreeMap<Integer, Integer> calendar;
-
-	public MyCalendar() {
-		this.calendar = new TreeMap<>();
-	}
-
-	public boolean book(int start, int end) {
-		// .floorKey(key) - returns the greatest key less than or equal to the given key, or null if there is no such key.
-		// .ceilingKey(key) - Returns the least key greater than or equal to the given key, or null if there is no such key.
-		Integer prev = calendar.floorKey(start), next = calendar.ceilingKey(start);
-		if ((prev == null || calendar.get(prev) <= start) && 
-			(next == null || end <= next)) {
-			calendar.put(start, end);
-			return true;
-		}
-		return false;
-	}
-}
 
 
 
@@ -1091,10 +850,6 @@ public class ReadNCharactersGivenRead4 {
         return sb.toString();
     }
 }
-
-
-
-
 
 
 	/**MOCK QUESTION
@@ -1242,138 +997,6 @@ public class ReadNCharactersGivenRead4 {
 
 		return pIndex == p.length();
 	}
-	/**DP Q1
-	 * Min Cost Climbing Stairs
-	On a staircase, the i-th step has some non-negative cost cost[i] assigned (0 indexed).
-
-	Once you pay the cost, you can either climb one or two steps. You need to find minimum cost to reach the top of the floor, and you can either start from the step with index 0, or the step with index 1.
-
-	Example 1:
-	Input: cost = [10, 15, 20]
-	Output: 15
-	Explanation: Cheapest is start on cost[1], pay that cost and go to the top.
-	Example 2:
-	Input: cost = [1, 100, 1, 1, 1, 100, 1, 1, 100, 1]
-	Output: 6
-	Explanation: Cheapest is start on cost[0], and only step on 1s, skipping cost[3].
-	Note:
-	cost will have a length in the range [2, 1000].
-	Every cost[i] will be an integer in the range [0, 999].
-	 */
-	public int minCostClimbingStairs(int[] cost) {
-		int n = cost.length;
-		int[] f = new int[n + 2]; // so there is no initialization
-		for (int i = 2; i < f.length; i++) {
-			f[i] = Math.min(f[i - 1], f[i - 2]) + cost[i - 2];
-		}
-		return Math.min(f[f.length - 1], f[f.length - 2]);
-	}
-
-	public int minCostClimbingStairs2(int[] cost) {
-		int n = cost.length;
-		int f1 = 0, f2 = 0;
-		for (int i = 0; i < n; i++) {
-			int f0 = Math.min(f1, f2) + cost[i];
-			// shift: f2, f1 = f1, f0
-			f2 = f1;
-			f1 = f0;
-		}
-		return Math.min(f1, f2); // since in the last loop, f2 = f1, f1 = f0, f1 and f2 are last two.
-	}
-	
-	public int minCostClimbingStairs3(int[] cost) {
-		return minCostClimbingStairs(cost, cost.length, new HashMap<Integer, Integer>());
-	}
-
-	private int minCostClimbingStairs(int[] cost, int n, Map<Integer, Integer> m) {
-		Integer result = m.get(n);
-		if (result != null) {
-			return result;
-		}
-
-		// base case
-		if (n < 2) {
-			return 0;
-		}
-
-		if (n == 2) {
-			return Math.min(cost[0], cost[1]);
-		}
-		if (n == 3) {
-			return Math.min(cost[2] + minCostClimbingStairs(cost, 2, m), cost[1]);
-		}
-
-		result = Math.min(cost[n - 1] + minCostClimbingStairs(cost, n - 1, m),
-				cost[n - 2] + minCostClimbingStairs(cost, n - 2, m));
-		m.put(n, result);
-		return result;
-	}
-
-   /** DPQ2
-	 * Delete and Earn
-	Given an array nums of integers, you can perform operations on the array.
-
-	In each operation, you pick any nums[i] and delete it to earn nums[i] points. After, you must delete every element equal to nums[i] - 1 or nums[i] + 1.
-
-	You start with 0 points. Return the maximum number of points you can earn by applying such operations.
-
-	Example 1:
-	Input: nums = [3, 4, 2]
-	Output: 6
-	Explanation: 
-	Delete 4 to earn 4 points, consequently 3 is also deleted.
-	Then, delete 2 to earn 2 points. 6 total points are earned.
-	
-	Example 2:
-	Input: nums = [2, 2, 3, 3, 3, 4]
-	Output: 9
-	Explanation: 
-	Delete 3 to earn 3 points, deleting both 2's and the 4.
-	Then, delete 3 again to earn 3 points, and 3 again to earn 3 points.
-		9 total points are earned.
-	 */
-	public int deleteAndEarn(int[] nums) {
-		Map<Integer, Integer> counts = new TreeMap<>();
-		for (int x : nums) {
-			counts.put(x, counts.getOrDefault(x, 0) + 1);
-		}
-		int a = 0, b = 0, prev = -1; 
-		// a and b are represented as the previous two values
-		// c is represented as the current value
-		
-		for (Map.Entry<Integer, Integer> entry : counts.entrySet()) {
-			int cur = entry.getKey();
-			int count = entry.getValue();
-			int sum = cur * count;
-			int c;
-			if (cur - 1 != prev) {
-				c = Math.max(a, b) + sum;
-				// if cur and prev and not adjacent, sum is must taken and choose max between a and b
-			} else {
-				c = Math.max(a + sum, b);
-				// if adjacent, pick b or a as starting point, if a is picked, cur can be picked as well
-			}
-			// a, b = b, c
-			a = b;
-			b = c;
-			prev = cur;
-		}
-		return Math.max(a, b);
-	}
-
-	
-	
-
-
-
-
-
-
-
-
-
-
-
 
 
 // Information Masking
@@ -1437,21 +1060,6 @@ public static void main(String[] args) {
 	System.out.println(i.maskPhone("+1(333) 444-5678"));
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	// Exclusive Time of Functions(leetcode 636)
 	// problem: Given the running logs of n functions that are executed in a nonpreemptive single threaded CPU, find the exclusive time of these functions.
 	// Each function has a unique id, start from 0 to n-1. A function may be called recursively or by another function.
@@ -1507,43 +1115,6 @@ public static void main(String[] args) {
         return res;
     }
 
-	// Find K Closest Elements(leetcode )
-	// Given a sorted array, two integers k and x, find the k closest elements to x in the array. The result should also be sorted in ascending order. If there is a tie, the smaller elements are always preferred.
-	// Example 1:
-	// Input: [1,2,3,4,5], k=4, x=3
-	// Output: [1,2,3,4]
-	// Example 2:
-	// Input: [1,2,3,4,5], k=4, x=-1
-	// Output: [1,2,3,4]
-	// Note:
-	// The value k is positive and will always be smaller than the length of the sorted array.
-	// Length of the given array is positive and will not exceed 104
-	// Absolute value of elements in the array and x will not exceed 104
-
-	// use two pointers, move towards the center util the difference reaches k - 1
-	public List<Integer> findClosestElements(List<Integer> arr, int k, int x) {
-		int n = arr.size();
-		if (x <= arr.get(0)) {
-			return arr.subList(0, k);
-		} else if (arr.get(n - 1) <= x) {
-			return arr.subList(n - k, n);
-		} else {
-			int index = Collections.binarySearch(arr, x);
-			if (index < 0)
-				index = -index - 1;
-			int low = Math.max(0, index - k - 1), high = Math.min(arr.size() - 1, index + k - 1);
-// high - low == k - 1 => [low, high] 里面有K个数
-			while (high - low > k - 1) {
-				if (low < 0 || (x - arr.get(low)) <= (arr.get(high) - x))
-					high--;
-				else if (high > arr.size() - 1 || (x - arr.get(low)) > (arr.get(high) - x))
-					low++;
-				else
-					System.out.println("unhandled case: " + low + " " + high);
-			}
-			return arr.subList(low, high + 1);
-		}
-	}
 
 
 	// Next Closest Time(leetcode 681)
