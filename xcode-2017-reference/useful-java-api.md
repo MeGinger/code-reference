@@ -6,6 +6,11 @@ for (...) {
     ...
 }
 ```
+* initialize array of list
+```java
+RIGHT: List<Character> [] bucket = new List[s.length() + 1]; 
+WRONG: List<Character> [] bucket = new List<Character>[s.length() + 1];
+```
 
 
 ### Java APIs
