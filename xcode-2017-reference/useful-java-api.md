@@ -1,5 +1,5 @@
 ### Frequently Made Mistakes
-* initialize all reference variable to null
+* initialize all reference variables to null
 ```java
 ListNode cur = null, pre = null;
 for (...) { 
