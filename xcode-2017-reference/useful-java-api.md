@@ -1,3 +1,12 @@
+### Frequently Made Mistakes
+* initialize all reference variable to null
+```java
+ListNode cur = null, pre = null;
+for (...) { 
+    ...
+}
+```
+
 Integer.toBinaryString(int) -> String // easy to debug
 * 170 -> "10101010" NOT "00...0010101010"
 
