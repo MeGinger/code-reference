@@ -1,3 +1,19 @@
+### Frequently Made Mistakes
+* initialize all reference variables to null
+```java
+ListNode cur = null, pre = null;
+for (...) { 
+    ...
+}
+```
+* initialize array of list
+```java
+RIGHT: List<Character> [] bucket = new List[s.length() + 1]; 
+WRONG: List<Character> [] bucket = new List<Character>[s.length() + 1];
+```
+
+
+### Java APIs
 Integer.toBinaryString(int) -> String // easy to debug
 * 170 -> "10101010" NOT "00...0010101010"
 
