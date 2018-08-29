@@ -49,7 +49,9 @@
       [1,2],
       []
     ]
-  */
+    */
+
+    // recursion - dfs
     public List<List<Integer>> subsets(int[] nums) {
         List<List<Integer>> res = new ArrayList<>(1 << nums.length);
         Arrays.sort(nums);
@@ -57,16 +59,29 @@
         subsets(nums, new int[nums.length], 0, 0, res);
         return res;
     }
-
+    
+    // in: {1, 2, 3}
+    
+    // l:
+    
+    // {1} 
+    // {1, 2}
+    // {1, 2, 3}
+    // {1, 3}
+    
+    // {2}
+    // {2, 3}
+    
+    // {3} 
     private void subsets(int[] in, int[] out, int recurlen, int start,
        List<List<Integer>> res) {
        for (int i = start; i < in.length; i++) {
-            out[recurlen] = in[i];
+            out[recurlen] = in[i]; // 1
             List<Integer> l = new ArrayList<>(recurlen + 1);
             for (int j = 0; j <= recurlen; j++) {
-                l.add(out[j]);
+                l.add(out[j]); // 1 
             }
-            res.add(l);
+            res.add(l); // 1
             if (i < in.length - 1) {
                 subsets(in, out, recurlen + 1, i + 1, res);
             }

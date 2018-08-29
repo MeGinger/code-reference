@@ -505,15 +505,366 @@ class Solution {
 }    
 
 
+/*
+Split BST
+
+Given a Binary Search Tree (BST) with root node root, and a target value V, split the tree into two subtrees where one subtree has nodes that are all smaller or equal to the target value, while the other subtree has all nodes that are greater than the target value.  It's not necessarily the case that the tree contains a node with value V.
+
+Additionally, most of the structure of the original tree should remain.  Formally, for any child C with parent P in the original tree, if they are both in the same subtree after the split, then node C should still have the parent P.
+
+You should output the root TreeNode of both subtrees after splitting, in any order.
+*/
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+
+/*
+The idea is simple by recursion.
+
+Just think about the current root, after processing, it will need to return [smaller/eq, larger] subtrees
+
+if root.val <=V, all nodes under root.left(including root) will be in the smaller/eq tree,
+we then split the root.right subtree into smaller/eq, larger, the root will need to concat the smaller/eq from the subproblem result (recursion).
+
+Similarly for the case root.val>V
+
+The runtime will be O(logn) if the input is balanced BST. Worst case is O(n) if it is not balanced.
+*/
+class Solution {
+    public TreeNode[] splitBST(TreeNode root, int V) {
+        if (root == null) {
+            return new TreeNode[]{null, null};
+        }    
+        // compilation error:  return new TreeNode[2]{null, null};
+
+        
+        TreeNode[] splitted = new TreeNode[2];
+        if (root.val <= V) {
+            splitted = splitBST(root.right, V);
+            root.right = splitted[0];
+            splitted[0] = root;
+        } else {
+            splitted = splitBST(root.left, V);
+            root.left = splitted[1];
+            splitted[1] = root;
+        }
+        
+        return splitted;
+    }
+}
 
 
 
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) {
+            return res;
+        }
+        
+        dfsRightSideView(root, res, 0);
+        return res;        
+    }
+    
+    // reverse pre-order traversal
+    // root -> right -> left
+    private void dfsRightSideView(TreeNode node, List<Integer> list, int depth) {
+        if (node == null) {
+            return;
+        }
+        
+        // the first one we traverse
+        if (depth == list.size()) {
+            list.add(node.val);
+        }
+        
+        dfsRightSideView(node.right, list, depth + 1);
+        dfsRightSideView(node.left, list, depth + 1);
+    }
+
+    // pre-order traversal
+    // root -> left -> right
+    private void dfsLeftSideView(TreeNode node, List<Integer> list, int depth) {
+        if (node == null) {
+            return;
+        }
+        
+        // the first one we traverse
+        if (depth == list.size()) {
+            list.add(node.val);
+        }
+        
+        dfsLeftSideView(node.left, list, depth + 1);
+        dfsLeftSideView(node.right, list, depth + 1);
+    }
+}
+
+// Closest Leaf in a Binary Tree
+/*
+Given a binary tree where every node has a unique value, and a target key k, find the value of the nearest leaf node to target k in the tree.
+
+Here, nearest to a leaf means the least number of edges travelled on the binary tree to reach any leaf of the tree. Also, a node is called a leaf if it has no children.
+
+In the following examples, the input tree is represented in flattened form row by row. The actual root tree given will be a TreeNode object.
+
+Example 3:
+
+Input:
+root = [1,2,3,4,null,null,null,5,null,6], k = 2
+Diagram of binary tree:
+             1
+            / \
+           2   3
+          /
+         4
+        /
+       5
+      /
+     6
+
+Output: 3
+Explanation: The leaf node with value 3 (and not the leaf node with value 6) is nearest to the node with value 2.
 
 
+ */
 
 
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class ResultType {
+    TreeNode leaf;
+    int distToLeaf;
+    boolean exist;
+    int distToTarget;
+    public ResultType(TreeNode leaf, int distToLeaf, boolean exist, int distToTarget) {
+        this.leaf = leaf;
+        this.distToLeaf = distToLeaf;
+        this.exist = exist;
+        this.distToTarget = distToTarget;
+    }
+}
+
+public class Solution {
+    private int shortest = Integer.MAX_VALUE;
+    private TreeNode shortestLeaf = null;
+    private int k;
+    public int findClosestLeaf(TreeNode root, int k) {
+        this.k = k;
+        helper(root);
+        return shortestLeaf.val;
+    }
+    
+    private ResultType helper(TreeNode root) {
+        // initialize result first
+        ResultType crt = new ResultType(null, Integer.MAX_VALUE, false, Integer.MAX_VALUE);
+        if (root == null) {
+            return crt;
+        }
+
+        ResultType left = helper(root.left);
+        ResultType right = helper(root.right);
+
+        // determined if it's a leaf by using leaf properties of left and right
+
+        // .leaf is always the leaf that is closest to cur node (not related to target)
+        // .distToLeaf is also the same
+        
+        if (left.leaf == null && right.leaf == null) {
+            // current node is leaf
+            crt.leaf = root;
+            crt.distToLeaf = 0;
+        } else {
+           // record the shortest path to leaf in one of children route
+            crt.leaf = left.distToLeaf <= right.distToLeaf ? left.leaf : right.leaf;
+            crt.distToLeaf = left.distToLeaf <= right.distToLeaf ? left.distToLeaf + 1 : right.distToLeaf + 1;
+        }
+
+        // update these properties if target found
+
+        // shortestLeaf
+        // shortest
+        if (root.val == k) {
+            // if target found, record the shortest path to leaf in one of its children route
+            shortestLeaf = crt.leaf;
+            shortest = crt.distToLeaf;
+            // start to mark target found, and start count the distance to target (increase level by level for its parents)
+            crt.exist = true;
+            crt.distToTarget = 0;
+        } else if (left.exist || right.exist) {
+            // if left child or right child contains target, meaning we have moved above the target
+            crt.distToTarget = left.exist ? left.distToTarget + 1 : right.distToTarget + 1;
+            crt.exist = true;
+            // Since we have moved above the target node, we have to consider the 3rd path (which goes across the root node) 
+            if (crt.distToTarget + crt.distToLeaf < shortest) {
+                shortest = crt.distToTarget + crt.distToLeaf;
+                shortestLeaf = crt.leaf;
+            }
+        } 
+        return crt;
+    }
+}
+
+        
+        
+// Maximum Width of Binary Tree
+// The width of one level is defined as the length between the end-nodes (the leftmost and right most non-null nodes in the level.
+
+    public int widthOfBinaryTree(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        return dfs(root, 0, 1, new ArrayList<>(), new ArrayList<>()); 
+    }
+    
+    level: 
+    // start from 0, considered as index for each level
+    // used in start and end list
+
+    // level的思路也可以运用于right slide window，求rightmost
+
+    order:
+    // a (full) binary tree can be represented as an array
+    // parent i
+    // left child 2 * i
+    // right chile 2 * i + 1
+    // 序列化tree nodes in full binary tree
+    // 因而可以通过序列数算出两个end points的距离
+
+    private int dfs(TreeNode root, int level, int order,
+                     List<Integer> start,
+                     List<Integer> end) {
+        if (root == null) {
+            return 0;
+        }
+        
+        if (start.size() == level) {
+            start.add(order);
+            end.add(order);
+        } else {
+            end.set(level, order);
+        }
+        
+        int cur = end.get(level) - start.get(level) + 1;
+        int left = dfs(root.left, level + 1, 2 * order, start, end);
+        int right = dfs(root.right, level + 1, 2 * order + 1, start, end);
+        
+        // 不一定是最深一层的距离最大，也可能是中间层的距离最大
+        return Math.max(cur, Math.max(left, right));
+
+    }
 
 
+// Boundary of Binary Tree
+    
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    List<Integer> res = new ArrayList<>();
+    
+    public List<Integer> boundaryOfBinaryTree(TreeNode root) {
+        if (root == null) {
+            return this.res;    
+        }
+        
+        // root
+        this.res.add(root.val);
+        
+        // left (not included root & leaf)
+        leftBoundary(root.left);
+        
+        // leaf (left to right)
+        leaves(root.left);
+        leaves(root.right);
+        
+        // right (not included root & leaf)
+        rightBoundary(root.right);
+        
+        return this.res;
+    }
+    
+    private void leftBoundary(TreeNode node) {
+        if (node == null ||
+            (node.left == null && node.right == null)) {
+            return;
+        }
+        
+        this.res.add(node.val);
+        
+        if (node.left != null) {
+            leftBoundary(node.left);
+        } else {
+            leftBoundary(node.right);
+        }
+    }
+    
+    private void rightBoundary(TreeNode node) {
+        if (node == null ||
+            (node.left == null && node.right == null)) {
+            return;
+        }
+        
+        if (node.right != null) {
+            rightBoundary(node.right);
+        } else {
+            rightBoundary(node.left);
+        }
+        
+        this.res.add(node.val);
+    }
+    
+    private void leaves(TreeNode node) {
+        if (node == null) {
+            return;
+        }
 
-
+        if (node.left == null &&
+            node.right == null) {
+            this.res.add(node.val);
+        }
+        
+        leaves(node.left);
+        leaves(node.right);
+    }
+}
 

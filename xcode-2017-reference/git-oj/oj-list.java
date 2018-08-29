@@ -188,13 +188,17 @@ class Solution {
         // n : minimum guaranteed part size; 
         // r : extra nodes spread to the first r parts;
         
-        ListNode node = root, cur = null;
+        ListNode node = root, cur = null; // dont forget to initialize 
         // outer loop: array
         for (int i = 0; node != null && i < k; i++, r--) {
             parts[i] = node;
 
             // inner loop: sub list
-            for (int j = 0; j < n + (r > 0 ? 1 : 0); j++) {
+
+            // j starts from 0!, though the head is assigned to res
+            // also no need for condition (node != null), 
+            // since it is fixed
+            for (int j = 0; j < n + (r > 0 ? 1 : 0); j++) { 
                 cur = node;
                 node = node.next;
             }
@@ -204,5 +208,86 @@ class Solution {
     }
 }
 
+// Palindrome Linked List
+/* Given a singly linked list, determine if it is a palindrome.
+  Could you do it in O(n) time and O(1) space?
+ */
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+
+Time: O(n) 
+Space: O(1)
+class Solution {
+    // 经典台词 关于input被修改的
+    // this code would destroy the original structure of the linked list
+    // if you do not want to destroy the structure, you can reverse the second part back
+    
+    public boolean isPalindrome(ListNode head) {
+        if (head == null) {
+            return true;
+        }
+        
+        ListNode middle = findMiddle(head);
+        middle.next = reverse(middle.next);
+
+        ListNode p1 = head, p2 = middle.next;
+        while (p1 != null && p2 != null && p1.val == p2.val) {
+            p1 = p1.next;
+            p2 = p2.next;
+        }
+
+        // reverse the second part back
+        middle.next = reverse(middle.next);
+        
+        return p2 == null; // which means
+    }
+    
+    private ListNode findMiddle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head.next;
+        
+        while (fast != null) { // if terminated here, len of list is odd
+            if (fast.next == null) { 
+                return slow; // if terminated here, len of list is even    
+            }
+            
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        return slow;
+    }
+    
+    private ListNode reverse(ListNode node) {
+        ListNode pre = null;
+        /*
+          pre      node
+           |        |
+          null      3 -> 4 -> 5 -> null
+          
+                 pre   node
+                  |     |
+          null <- 3     4 -> 5 -> null
+
+                            pre    node
+                             |      |
+          null <- 3 <-  4 <- 5     null
+         */
+        while (node != null) {
+            ListNode nex = node.next;
+            node.next = pre;
+            pre = node;
+            node = nex;
+        }
+        
+        return pre;
+    }
+}
 
 

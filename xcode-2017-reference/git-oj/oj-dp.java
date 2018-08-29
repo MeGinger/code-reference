@@ -327,7 +327,7 @@
 // dynamic programming
 public boolean wordBreak(String s, Set<String> dict) {
 	// invalid input - "leetcode"
-	if (a == null || s.isEmpty()) {
+	if (s == null || s.isEmpty()) {
 		return false; 
 	}
 	
@@ -338,7 +338,7 @@ public boolean wordBreak(String s, Set<String> dict) {
 	for (int i = 0; i < s.length(); i++) {
 		// check whether substring of s from index 0 to i is in dict 
 		// if it is, it can be segmented into a single word in dictionary		
-		if (dict.contains(s.substring(0, i + 1)) {
+		if (dict.contains(s.substring(0, i + 1)) { 
 			breakableIndex.add(i);
 			continue;
 		}
@@ -472,19 +472,22 @@ private breakIntoWordList(String s, Set<String> dict, Map<String, List<String>> 
         
 		
 		/*    a b a a
-			a *\* * *
-			b * *\* *
-			a * * *\*
-			a * * * *\
+			a 1\* * *
+			b * 1\* *
+			a * * 1\*
+			a * * * 1\
 		*/
 		
         for (int i = s.length() - 1; i >= 0; i--) {
-            dp[i][i] = 1;
+            dp[i][i] = 1; // initialization
             for (int j = i+1; j < s.length(); j++) {
                 if (s.charAt(i) == s.charAt(j)) {
                     dp[i][j] = dp[i+1][j-1] + 2;
+                    // dp[i + 1][j - 1] : 斜下方那个cell (calculated)
                 } else {
                     dp[i][j] = Math.max(dp[i+1][j], dp[i][j-1]);
+                    // dp[i][j - 1] : left (calculated)
+                    // dp[i + 1][j] : bottom (calculated)
                 }
             }
         }

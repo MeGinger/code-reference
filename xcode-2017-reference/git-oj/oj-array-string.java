@@ -1492,7 +1492,123 @@ public class Code13 {
 }
 
 
+// Set Matrix Zeroes
+// Given a m x n matrix, if an element is 0, set its entire row and column to 0. Do it in-place.
+/*
+Follow up:
 
+A straight forward solution using O(mn) space is probably a bad idea.
+A simple improvement uses O(m + n) space, but still not the best solution.
+Could you devise a constant space solution?
+*/
 
+class Solution {
+    public void setZeroes(int[][] matrix) {
+        // invalid input
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return;
+            // // throw new IllegalArgumentException();
+        }
+        
+        // constant space 
+        int col0 = 1, row = matrix.length, col = matrix[0].length;
+        
+        for (int i = 0; i < row; i++) {
+            if (matrix[i][0] == 0) {
+                col0 = 0;
+            }// The reason we treat this the first col separately is that...
+              /* we use first col [0...length - 1] to indicate the whole row should be populated as 0
+                 matrix[2][0] == 0 -> the 3rd row ...
+                 
+                 use first row [1...length - 1] to indicate the whole col should be populated as 0
+                 matrix[0][2] == 0 -> the 3rd col ...
+                 
+                 in this case, the 1st col indicator is missing, 
+                 so I use a single variable as the indicator, only constant space is needed
+                 
+               */
+            for (int j = 1; j < col; j++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = matrix[0][j] = 0;
+                }
+            }
+        }
+        
+        for (int i = row - 1; i >= 0; i--) {            
+            for (int j = col - 1; j >= 1; j--) {
+                if (matrix[i][0] == 0 || matrix[0][j] == 0) {
+                    matrix[i][j] = 0;
+                }                                   
+            }
+            if (col0 == 0) { // put it after loop, NOT before loop
+                matrix[i][0] = 0;
+            }
+        }
+    }
+}
 
+// Global and Local Inversions
+// The number of (global) inversions is the number of i < j with 0 <= i < j < N and A[i] > A[j].
+// The number of local inversions is the number of i with 0 <= i < N and A[i] > A[i+1].
+// Return true if and only if the number of global inversions is equal to the number of local inversions.
+class Solution {
+    public boolean isIdealPermutation(int[] A) {
+        // If it is a local inversion, it is also a (global) inversion.
+        // If the number of local inversions = the number of (global) inversions,
+        // all inversions are local
+        
+        if (A == null || A.length == 0) {
+            return true; // ?
+        }
+        
+        int max = A[0];
+        for (int i = 0; i < A.length - 2; i++) {
+            max = Math.max(max, A[i]);
+            if (max > A[i + 2]) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}
 
+// Partition Labels
+/*
+A string S of lowercase letters is given. We want to partition this string into as many parts as possible so that each letter appears in at most one part, and return a list of integers representing the size of these parts.
+
+Example 1:
+Input: S = "ababcbacadefegdehijhklij"
+Output: [9,7,8]
+Explanation:
+The partition is "ababcbaca", "defegde", "hijhklij".
+This is a partition so that each letter appears in at most one part.
+A partition like "ababcbacadefegde", "hijhklij" is incorrect, because it splits S into less parts.
+*/
+class Solution {
+    public List<Integer> partitionLabels(String S) {
+        List<Integer> res = new ArrayList<>();
+        if (S == null || S.length() == 0) {
+            return res;
+        }    
+        
+        // use map to reduce time - remember
+        // use map to record info - remember
+        int[] map = new int[26];
+        for (int i = 0; i < S.length(); i++) {
+            map[S.charAt(i) - 'a'] = i;
+        }
+        
+        int s = 0, e = 0;
+        for (int i = 0; i < S.length(); i++) {
+            e = Math.max(e, map[S.charAt(i) - 'a']);
+            
+            if (i == e) {
+                res.add(e - s + 1);
+                e = s = i + 1;
+            }
+        }
+        
+        return res;
+    }
+}
