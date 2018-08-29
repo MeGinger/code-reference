@@ -760,10 +760,105 @@ public class RegularExpressionMatching {
 
 }
 
-	
+// Delete Operation for Two Strings	
+Given two words word1 and word2, find the minimum number of steps required to make word1 and word2 the same, where in each step you can delete one character in either string.
 
+Example 1:
+Input: "sea", "eat"
+Output: 2
+Explanation: You need one step to make "sea" to "ea" and another step to make "eat" to "ea".
 
+// longest palindrome subsequence - dp
+class Solution {
+    public int minDistance(String word1, String word2) {
+        // longest palindrome subsequence - dp
+        // longest common subsequence
+        
+        int dp[][] = new int[word1.length() + 1][word2.length() + 1];
+        // dp[i][j]: the length of LCS of word1[0...i] and word2[0...j]
+        for (int i = 0; i <= word1.length(); i++) {
+            for (int j = 0; j <= word2.length(); j++) {
+                if (i == 0 || j == 0) {
+                    dp[i][j] = 0;
+                } else {
+                    dp[i][j] = 
+                        (word1.charAt(i - 1) == word2.charAt(j - 1)) ?
+                        dp[i - 1][j - 1] + 1 :
+                        Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        
+        int val = dp[word1.length()][word2.length()];
+        return word1.length() - val + 
+               word2.length() - val;
+    }
+}
 
+// Edit Distance
+/*
+Given two words word1 and word2, find the minimum number of operations required to convert word1 to word2.
 
+You have the following 3 operations permitted on a word:
+
+Insert a character
+Delete a character
+Replace a character
+Example 1:
+
+Input: word1 = "horse", word2 = "ros"
+Output: 3
+Explanation: 
+horse -> rorse (replace 'h' with 'r')
+rorse -> rose (remove 'r')
+rose -> ros (remove 'e')
+Example 2:
+
+Input: word1 = "intention", word2 = "execution"
+Output: 5
+Explanation: 
+intention -> inention (remove 't')
+inention -> enention (replace 'i' with 'e')
+enention -> exention (replace 'n' with 'x')
+exention -> exection (replace 'n' with 'c')
+exection -> execution (insert 'u')
+*/
+class Solution {
+    public int minDistance(String word1, String word2) {
+        if (word1 == null || word2 == null) {
+            return -1; // !
+        }
+        
+        
+        // f[i][j]: the first i char in word1 and the first j char in word2
+        // min distance
+        // returns f[word1.length()][word2.length()];
+        int[][] f = new int[word1.length() + 1][word2.length() + 1];
+        
+        for (int i = 0; i < word1.length() + 1; i++) {
+            f[i][0] = i;
+        }
+        
+        for (int i = 0; i < word2.length() + 1; i++) {
+            f[0][i] = i;
+        }
+        
+        for (int i = 1; i < word1.length() + 1; i++) {
+            for (int j = 1; j < word2.length() + 1; j++) {
+               if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                   f[i][j] = f[i - 1][j - 1];
+               } else {
+                   
+                   f[i][j] = Math.min(f[i - 1][j - 1], // replace
+                                      Math.min(f[i - 1][j],  // insert char word2[j] in word1
+                                               f[i][j - 1]))  // remove char word2[j] in word2
+                             + 1;
+               }
+            }
+        }
+        
+        return f[word1.length()][word2.length()];
+    }
+}
 
 
