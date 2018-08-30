@@ -1,4 +1,12 @@
-	// tasks: a bunch of tasks to be executed
+http://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect07-greedy-sched.pdf	
+
+* Interval scheduling problem - Earliest Finish First (EFF)
+* Interval Partitioning - First, we sort the requests by increasing
+order of start times. We then assign each request the smallest color (possibly a new color)
+such that it conflicts with no other requests of this color class.
+* Scheduling to Minimize Lateness - Earliest Deadline First (EDF) strategy
+	
+ 	// tasks: a bunch of tasks to be executed
 	// n: the minimal intervals between two same tasks to be executed in order
 	public void leastIntervals(char[] tasks, int n) {
 	  int[] c = new int[26]; // assume that tasks are only represented as A to Z
