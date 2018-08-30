@@ -12,6 +12,13 @@ RIGHT: List<Character> [] bucket = new List[s.length() + 1];
 WRONG: List<Character> [] bucket = new List<Character>[s.length() + 1];
 ```
 
+* add parenthesis to any bit operator
+```java
+if (...&& ((a & b) == 1)) {
+   ...
+}
+```
+
 
 ### Java APIs
 Integer.toBinaryString(int) -> String // easy to debug
