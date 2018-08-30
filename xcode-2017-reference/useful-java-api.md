@@ -19,6 +19,12 @@ if (...&& ((a & b) == 1)) {
 }
 ```
 
+* string.trim()
+```java
+  System.out.println("   Welcome to Tutorialspoint.com   ".trim()); 
+  // OUTPUT: |Welcome to Tutorialspoint.com|
+```
+
 
 ### Java APIs
 Integer.toBinaryString(int) -> String // easy to debug
