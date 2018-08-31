@@ -24,7 +24,10 @@ if (...&& ((a & b) == 1)) {
   System.out.println("   Welcome to Tutorialspoint.com   ".trim()); 
   // OUTPUT: |Welcome to Tutorialspoint.com|
 ```
-
+* Misspelled Java APIs
+```java
+stack/priorityqueue.peek() // NOT peak..
+```
 
 ### Java APIs
 Integer.toBinaryString(int) -> String // easy to debug
