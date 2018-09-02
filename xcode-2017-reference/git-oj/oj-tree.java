@@ -262,73 +262,89 @@ class Solution {
     /** Serialize and Deserialize tree; */
     // preorder serialization
     // preorder deserialization
-    class Codec {
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+import java.util.StringTokenizer;
+// import java.lang.StringBuilder;
 
-        private static final String NULL = "#"; // null child
-        private static final String SEP = ","; // seperator
-        /**
-         * This method will be invoked first, you should design your own algorithm
-         * to serialize a binary tree which denote by a root node to a string which
-         * can be easily deserialized by your own "deserialize" method later.
-         */
-        public String serialize(TreeNode root) {
-            if (root == null) {
-                return "";
-            }
+public class Codec {
+    private static final String NULL = "#"; // null child
+    private static final String SEP = ","; // seperator
 
-            StringBuilder sb = new StringBuilder();
-            // PreOrder traversal
-            Stack<TreeNode> s = new Stack<>();
-            s.push(root);
-            while (!s.isEmpty()) {
-                TreeNode cur = s.pop();
-                if (cur == null) {
-                    sb.append(NULL).append(SEP); // method chain!!
-                    continue;
-                }
-                sb.append(cur.val).append(SEP);
-                s.push(cur.right);
-                s.push(cur.left);
-            }
-
-            sb.setLength(sb.length() - 1); // REMOVE LAST SEP
-            return sb.toString();
+    // Encodes a tree to a single string.
+    // iteration
+    public String serialize(TreeNode root) {
+        if (root == null) {
+            return "";
         }
-
-        /**
-         * This method will be invoked second, the argument data is what exactly
-         * you serialized at method "serialize", that means the data is not given by
-         * system, it's given by your own serialize method. So the format of data is
-         * designed by yourself, and deserialize it here as you serialize it in
-         * "serialize" method.
-         */
-        public TreeNode deserialize(String data) {
-            if (data == null || data.length() == 0) {
-                return null;
+        
+        StringBuilder sb = new StringBuilder();
+        // preorder traversal
+        Stack<TreeNode> s = new Stack<>();
+        s.push(root);
+        while (!s.isEmpty()) {
+            TreeNode cur = s.pop();
+            
+            // handle popped node
+            // - if null
+            if (cur == null) {
+                sb.append(NULL).append(SEP);
+                continue;
             }
-
-            StringTokenizer st = new StringTokenizer(data, SEP);
-            return deseriaHelper(st);
+            // - if not null
+            sb.append(cur.val).append(SEP);
+            
+            // RIGHT first then LEFT
+            s.push(cur.right);
+            s.push(cur.left);
         }
-
-        private TreeNode deseriaHelper(StringTokenizer st) {
-            if (!st.hasMoreTokens()) {
-                return null;
-            }
-
-            String val = st.nextToken();
-            if (val.equals(NULL)) {
-                return null;
-            }
-
-            // preorder dfs traversal 
-            TreeNode root = new TreeNode(Integer.parseInt(val));
-            root.left = deseriaHelper(st);
-            root.right = deseriaHelper(st);
-
-            return root;
-        }
+        
+        sb.setLength(sb.length() - 1); // REMOVE LAST SEP
+        return sb.toString();
     }
+
+    // Decodes your encoded data to tree.
+    // java.util.StringTokenizer
+    public TreeNode deserialize(String data) {
+        if (data == null || data.length() == 0) {
+            return null;
+        }
+        
+        // constructor takes two parameters
+        StringTokenizer st = new StringTokenizer(data, SEP);   
+        return deserialize(st);
+    }
+    
+    // StringTokenizer.hasMoreTakens() -> boolean
+    // StringTokenizer.nextToken() -> String
+    private TreeNode deserialize(StringTokenizer st) {
+        if (!st.hasMoreTokens()) { // the end of st
+            return null;
+        }
+        
+        String val = st.nextToken();
+        if (val.equals(NULL)) {
+            return null;
+        }
+        
+        TreeNode node = new TreeNode(Integer.parseInt(val));
+        node.left = deserialize(st); // ? since it is preorder traversal
+        node.right = deserialize(st); // ? since it is preorder traversal
+        
+        return node;
+    }
+}
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec = new Codec();
+// codec.deserialize(codec.serialize(root));
 
 
 
