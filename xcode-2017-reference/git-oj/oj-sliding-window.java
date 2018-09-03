@@ -248,3 +248,33 @@ public class KEmptySlot {
         
         return max;
     }
+
+    // longest palindrome substring
+    public String longestPalindrome(String s) {
+        int len = s.length(); 
+        while (len >= 1) {  // len at least 1, otherwise empty string
+            // len is the length of longest palindrome substring
+            // starts from the largest
+
+            // left bound is i
+            // right bound is (i + len - 1)
+            for (int i = 0; i + len - 1 < s.length(); i++) {
+                int left = i;
+                int right = i + len - 1;
+                boolean good = true;
+                while (left < right) {
+                    if (s.charAt(left) != s.charAt(right)) {
+                        good = false;
+                        break;
+                    }
+                    left++;
+                    right--;
+                }
+                if (good) {
+                    return s.substring(i, i + len);
+                }
+            }
+            len--;
+        }
+        return "";
+    }

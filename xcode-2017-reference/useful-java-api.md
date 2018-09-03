@@ -29,7 +29,31 @@ if (...&& ((a & b) == 1)) {
 stack/priorityqueue.peek() // NOT peak..
 ```
 
+* empty array initialization 
+
+```java
+RIGHT: return new int[]{};
+RIGHT: return new int[0];
+
+WRONG: return new int[];
+```
+
+* Lambda expression - important
+
+```java
+RIGHT: PriorityQueue<ListNode> queue = new PriorityQueue<ListNode>(lists.length, 
+            (o1, o2) -> o1.val - o2.val); // min-heap
+RIGHT: PriorityQueue<ListNode> queue = new PriorityQueue<ListNode>(lists.length, 
+            (o1, o2) -> {return o1.val - o2.val;}); // min-heap
+
+WRONG: PriorityQueue<ListNode> queue = new PriorityQueue<ListNode>(lists.length, 
+            (o1, o2) -> return o1.val - o2.val); // min-heap
+```
+
+
+
 ### Java APIs
+
 Integer.toBinaryString(int) -> String // easy to debug
 * 170 -> "10101010" NOT "00...0010101010"
 
@@ -200,8 +224,22 @@ Math.floorMod(a, b) - returns (a - floorDiv(a, b) * b) <br/>
 int e = 123, f = -50;
 System.out.println(Math.floorMod(e, f));
 //-27
- 
+
 int g = -123, h = 50;
 System.out.println(Math.floorMod(g, h));
 //27
+
+
+
+
+
+```java
+import java.util.StringTokenizer; // from Java7
+import java.lang.StringBuilder;
+
+// constructor takes two parameters
+StringTokenizer st = new StringTokenizer(data, SEP); 
+st.nextToken(); -> String
+st.hasMoreTokens(); -> boolean
+```
 

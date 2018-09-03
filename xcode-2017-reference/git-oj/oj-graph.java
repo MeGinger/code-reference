@@ -42,6 +42,7 @@ class Solution {
         Map<Integer, Integer> dist = new HashMap();
 
         // BFS traversal to find all shortest paths from source to every target
+        
         // d in PriorityQueue is defined as distance from source K
         while (!heap.isEmpty()) {
             // every loop, handle the node with min dist to the target

@@ -290,4 +290,166 @@ class Solution {
     }
 }
 
+// Merge k Sorted Lists
+// Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
+class Solution {
+    // timw complexity: lists.length * count of all nodes
+    // using priority queue is O(nlgk), 
+    public ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) {
+            return null;
+        }
+        
+        PriorityQueue<ListNode> queue = new PriorityQueue<ListNode>(lists.length, 
+            (o1, o2) -> {return o1.val - o2.val;}); // min-heap
+        
+        ListNode dummy = new ListNode(0);
+        ListNode tail = dummy;
+        for (ListNode node : lists) {
+            if (node != null) {
+                queue.offer(node);
+            }
+        }
+        
+        while (!queue.isEmpty()) {
+            ListNode node = queue.poll();
+            tail.next = node;
+            tail = tail.next;
+            
+            if (node.next != null) {
+                queue.offer(node.next);
+            }
+        }
+        
+        return dummy.next;
+    }
 
+    // Just find min of array heads using O(nk). 
+    public ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) {
+            return null;
+        }
+        
+        ListNode dummy = new ListNode(0);
+        ListNode head = dummy;
+        while (true) {
+            ListNode node = smallest(lists);
+            
+            if (node == null) {
+                break;
+            }
+            
+            head.next = node;
+            head = node;
+        }
+        
+        return dummy.next;
+    }
+    
+    private ListNode smallest(ListNode[] lists) {
+        int min = Integer.MAX_VALUE;
+        ListNode minNode = null;
+        int minIndex = -1;
+        for (int i = 0; i < lists.length; i++) {
+            if (lists[i] != null && lists[i].val < min) {
+                minNode = lists[i];
+                min = lists[i].val;
+                minIndex = i;
+            }
+        }
+        if (minNode == null) {
+            return null;
+        }
+        
+        lists[minIndex] = lists[minIndex].next;
+        return minNode;
+    }
+
+    // using mergesort is O(nklgk)
+    // sorting is the worst solution...
+}
+
+// Add Two Numbers
+
+/*
+You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order and each of their nodes contain a single digit. Add the two numbers and return it as a linked list.
+
+You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+
+Example:
+
+Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
+Output: 7 -> 0 -> 8
+Explanation: 342 + 465 = 807.
+ */
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        if (l1 == null || l2 == null) {
+            return null;
+        }
+        
+        ListNode dummy = new ListNode(0);
+        ListNode tail = dummy;
+        int carry = 0;
+        while (l1 != null || l2 != null) {
+            int v1 = l1 == null ? 0 : l1.val;
+            int v2 = l2 == null ? 0 : l2.val;
+            int sum = v1 + v2 + carry;
+            
+            carry = sum / 10;
+            tail.next = new ListNode(sum % 10);
+            tail = tail.next;
+            
+            l1 = l1 == null ? null : l1.next;
+            l2 = l2 == null ? null : l2.next;
+        }
+        
+        tail.next = carry == 0 ? null : new ListNode(carry);
+        
+        return dummy.next;
+    }
+
+// Intersection of Two Linked Lists
+/*
+Write a program to find the node at which the intersection of two singly linked lists begins.
+For example, the following two linked lists:
+
+A:          a1 → a2
+                   ↘
+                     c1 → c2 → c3
+                   ↗            
+B:     b1 → b2 → b3
+begin to intersect at node c1.
+*/
+
+/*
+We can use two iterations to do that. 
+
+In the first iteration, we will reset the pointer of one linkedlist to the head of another linkedlist after it reaches the tail node. 
+
+In the second iteration, we will move two pointers until they points to the same node. 
+
+Our operations in first iteration will help us counteract the difference. 
+
+So if two linkedlist intersects, the meeting point in second iteration must be the intersection point. 
+If the two linked lists have no intersection at all, 
+then the meeting pointer in second iteration must be the tail node of both lists, which is null
+ */
+public class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        // boundary check
+        if(headA == null || headB == null) return null;
+
+        ListNode a = headA;
+        ListNode b = headB;
+
+        // if a & b have different len, then we will stop the loop after second iteration
+        while(a != b){
+            // for the end of first iteration, 
+            // we just reset the pointer to the head of another linkedlist
+            a = a == null? headB : a.next;
+            b = b == null? headA : b.next;    
+        }
+
+        return a;
+    }
+}

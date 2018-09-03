@@ -454,29 +454,27 @@ The size of the given array will be in the range [1,1000].
     //   2     0
     //     1 
     public TreeNode constructMaximumBinaryTree(int[] nums) {
-        return construct(nums, 0, nums.length);
+        return construct(nums, 0, nums.length - 1);
     }
 
-    // l is inclusive and r is exclusive
+    // l and r are inclusive
     // pre-order traversal
     private TreeNode construct(int[] nums, int l, int r) {
-        // leaf node: l + 1 = r
-        // base case: l = r, r is excluisve and l as well
-        if (l == r) {
+        if (l > r) {
             return null;
         }
 
         int maxIndex = max(nums, l, r);
         TreeNode root = new TreeNode(nums[maxIndex]);
-        root.left = construct(nums, l, maxIndex); // l is inclusive and maxIndex is exclusive
-        root.right = construct(nums, maxIndex + 1, r); // maxIndex+1 is inclusive and r is exclusive
+        root.left = construct(nums, l, maxIndex - 1); 
+        root.right = construct(nums, maxIndex + 1, r);
         return root;
     }
 
     private int max(int[] nums, int l, int r) {
         int maxIndex = l;
-        // condition i < r, since r is exclusive
-        for (int i = l; i < r; i++) {
+        // condition i <= r, since r is inclusive
+        for (int i = l; i <= r; i++) {
             if (nums[maxIndex] < nums[i]) {
                 maxIndex = i;
             }
@@ -883,4 +881,178 @@ class Solution {
         leaves(node.right);
     }
 }
+
+// Validate Binary Search Tree
+/*
+Given a binary tree, determine if it is a valid binary search tree (BST).
+
+Assume a BST is defined as follows:
+
+The left subtree of a node contains only nodes with keys less than the node's key.
+The right subtree of a node contains only nodes with keys greater than the node's key.
+Both the left and right subtrees must also be binary search trees.
+Example 1:
+
+Input:
+    2
+   / \
+  1   3
+Output: true
+Example 2:
+
+    5
+   / \
+  1   4
+     / \
+    3   6
+Output: false
+Explanation: The input is: [5,1,4,null,null,3,6]. The root node's value
+             is 5 but its right child's value is 4.
+ */
+class ResultType {
+    boolean isBst;
+    int maxValue, minValue;
+    
+    public ResultType(boolean isBst, int minValue, int maxValue) {
+        this.isBst = isBst;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+    }
+}
+
+public boolean isValidBST(TreeNode root) {
+    if (root == null) {
+        return true;
+    }
+    
+    return helper(root).isBst;
+}
+
+private ResultType helper(TreeNode root) {
+    if (root == null) {
+        return new ResultType(true, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        // remember this two values are fake values 
+        // Integer.MIN_VALUE, Integer.MAX_VALUE
+        // should not be propogated...
+        // 1. compare root.val & left.maxValue & right.minValue
+        // 2. generate new ResulType
+    }
+    
+    ResultType left = helper(root.left);
+    ResultType right = helper(root.right);
+    
+    if (!left.isBst || !right.isBst) {
+        return new ResultType(false, 0, 0);
+    }
+    
+    if (root.left != null && root.val <= left.maxValue || 
+        root.right != null && root.val >= right.minValue) {
+        return new ResultType(false, 0, 0);
+    }
+    
+    return new ResultType(true, root.left == null ? root.val : left.minValue, 
+                                root.right == null ? root.val : right.maxValue);
+}
+
+
+// Symmetric Tree
+/*
+Given a binary tree, check whether it is a mirror of itself (ie, symmetric around its center).
+
+For example, this binary tree [1,2,2,3,4,4,3] is symmetric:
+
+    1
+   / \
+  2   2
+ / \ / \
+3  4 4  3
+But the following [1,2,2,null,3,null,3] is not:
+    1
+   / \
+  2   2
+   \   \
+   3    3 
+ */
+
+public boolean isSymmetric(TreeNode root) {
+    if (root == null) {
+        return true;
+    }
+    
+    return isSymmetric(root.left, root.right);
+}
+
+private boolean isSymmetric(TreeNode left, TreeNode right) {
+    if (left == null && right == null) {
+        return true;
+    }
+    
+    if (left == null || right == null) {
+        return false;
+    }
+    
+    if (left.val != right.val) {
+        return false;
+    }
+    
+    return isSymmetric(left.left, right.right) &&
+           isSymmetric(left.right, right.left);
+}
+
+// Closest Binary Search Tree Value
+/*
+Given a non-empty binary search tree and a target value, find the value in the BST that is closest to the target.
+
+Note:
+
+Given target value is a floating point.
+You are guaranteed to have only one unique value in the BST that is closest to the target.
+Example:
+
+Input: root = [4,2,5,1,3], target = 3.714286
+
+    4
+   / \
+  2   5
+ / \
+1   3
+
+Output: 4 
+ */
+    private double res = Double.MAX_VALUE;
+    private TreeNode node = null;
+    
+    public int closestValue(TreeNode root, double target) {
+        if (root == null) {
+            return 0;
+        }
+    
+        helper(root, target);
+        return this.node.val; // NullPointerException
+    }
+    
+    private void helper(TreeNode root, double target) {
+        if (root == null) {
+            return;
+        }
+        
+        helper(root.left, target);
+        helper(root.right, target);
+        
+        if (this.res >= Math.abs(target - root.val)) {
+            // >= to avoid NullPointerException
+            this.res = Math.abs(target - root.val);    
+            this.node = root;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
 
