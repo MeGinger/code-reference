@@ -7,7 +7,24 @@
 	 * brackets must close in the correct order, "()" and "()[]{}" are all valid
 	 * but "(]" and "([)]" are not.
 	 */
+
 	public boolean isValid(String s) {
+		Stack<Character> stack = new Stack<>();
+		for (char c : s.toCharArray()) {
+			if (c == '(') {
+				stack.push(')');
+			} else if (c == '{') {
+				stack.push('}');
+			} else if (c == '[') {
+				stack.push(']');
+			} else if (stack.isEmpty() || stack.pop() != c) { // should check if stack empty to avoid exception!!!!!
+				return false;
+			}
+		}
+		return stack.isEmpty(); // cannot just return true..
+	}
+
+	public boolean isValid2(String s) {
 		long result = 0; // There may be cases that long is not enough to hold
 		for (int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
@@ -47,24 +64,8 @@
 		return result == 0;
 	}
 
-	public boolean isValid2(String s) {
-		Stack<Character> stack = new Stack<>();
-		for (char c : s.toCharArray()) {
-			if (c == '(') {
-				stack.push(')');
-			} else if (c == '{') {
-				stack.push('}');
-			} else if (c == '[') {
-				stack.push(']');
-			} else if (stack.isEmpty() || stack.pop() != c) {
-				return false;
-			}
-		}
-		return stack.isEmpty();
-	}
 
-
-   /**
+        /**
 	 *  Longest Valid Parentheses 
 		Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
 		For "(()", the longest valid parentheses substring is "()", which has length = 2.
