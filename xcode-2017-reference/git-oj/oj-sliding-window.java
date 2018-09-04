@@ -22,8 +22,8 @@
 
     /* 
      LinkedList
-     - addLast(a), removeLast()
-     - getFirst(), getLast()
+     - getLast(), addLast(a), removeLast()
+     - getFirst(), addFirst(a), removeFirst()
      */
     public int[] maxSlidingWindow(int[] nums, int k) {
         LinkedList<Integer> l = new LinkedList<>();
@@ -47,8 +47,10 @@
             // build new window
             addToSlidingWindow(nums[i], l);
         }
+	// takes care of last one
         result[n - k] = l.getFirst();
-        return result;
+
+	return result;
     }
     
     private void addToSlidingWindow(int a, LinkedList<Integer> l) {
