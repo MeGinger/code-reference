@@ -133,7 +133,53 @@
             dfsIsland(grid, x + dir[0], y + dir[1]);
         }
     }
+n
+    private static final int[][] dir = new int[][] {
+        {0, 1}, {0, -1}, {1, 0}, {-1, 0}
+    };
+    
+    // char[][] grid !!!
+    public int numIslands(char[][] grid) {
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+            return 0;
+        }
+        
+        int r = grid.length;
+        int c = grid[0].length;
 
+        UnionFind uf = new UnionFind(r * c);
+        // initialization?
+        for (int i = 0; i < uf.count; i++) {
+            uf.id[i] = i;
+            uf.size[i] = 1;
+        }
+        
+        int count = 0;
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                if (grid[i][j] == '0') {
+                    continue;                    
+                }
+                count++;
+                int id = i * c + j;
+                for (int[] d : dir) {
+                    int x = i + d[0];
+                    int y = j + d[1];
+                    
+                    if (0 <= x && x < r && 0 <= y && y < c 
+                        && grid[x][y] == '1') {
+                        
+                        int id2 = x * c + y;
+                        if (!uf.find(id, id2)) {
+                            uf.union(id, id2);     
+                            count--;
+                        }
+                    }
+                }
+            }
+        }
+        return count;
+    }
 
     /**
      * Number of Islands II
@@ -162,7 +208,7 @@
     0 1 0
     We return the result as an array: [1, 1, 2, 3]
     http://segmentfault.com/a/1190000004197552
-     */
+    */
     public List<Integer> numIslands2(int m, int n, int[][] positions) {
         UnionFind set = new UnionFind(m * n);
         Arrays.fill(set.id, -1);
@@ -492,6 +538,7 @@ public class GraphValidTree {
         return set.count == 1; // single tree check
     }
 
+    // inner class
     class UnionFind {
         int[] id, size;
         int count;

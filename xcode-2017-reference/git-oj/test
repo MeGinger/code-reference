@@ -1,0 +1,1 @@
+给一个stock，这只股票在不同的timestamp下有不同的price，(800, 1), (700, 2), (900, 3), (400, 4)。 Looks like this. 需要实现几个方法：1.getMaxHistory, 2.getCurrentPrice, 3.Correction, 4. update。比如说刚才给出的例子是900最高，但是如果调用correction，将ts = 3的price改为600，那么最高的将变为800.

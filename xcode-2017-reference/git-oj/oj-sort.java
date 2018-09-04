@@ -17,7 +17,7 @@
             }
         }
         // 
-        return nums[start];
+        return nums[start]; // not found
 
     }
 
@@ -56,7 +56,8 @@
         // nums[end] <= nums[pivot] < nums[start]
         // so swap end and pivot
         swap(nums, end, pivot);
-        return end;
+        return end; // return end !!!! 
+                    // pivot is the original start...
 
     }
 

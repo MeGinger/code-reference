@@ -1,4 +1,11 @@
+###Terminology
+
+* Binary tree
+  * successor
+  * predecessor
+
 ### Frequently Made Mistakes
+
 * initialize all reference variables to null
 ```java
 ListNode cur = null, pre = null;
@@ -48,6 +55,15 @@ RIGHT: PriorityQueue<ListNode> queue = new PriorityQueue<ListNode>(lists.length,
 
 WRONG: PriorityQueue<ListNode> queue = new PriorityQueue<ListNode>(lists.length, 
             (o1, o2) -> return o1.val - o2.val); // min-heap
+```
+
+```java
+Map<Integer, List<Integer>> map = new HashMap<>();
+RIGHT: List<Integer> list = map.computeIfAbsent(col, c -> new ArrayList<>());
+
+WRONG: List<Integer> list = map.computeIfAbsent(col, c - > new ArrayList<>()); // IMPORTANT
+WRONG: List<Integer> list = map.computeIfAbsent(col, new ArrayList<>());
+
 ```
 
 

@@ -365,9 +365,13 @@ public class Codec {
             while (!st.empty()) {
                 root = st.pop();
                 sb.append(root.val).append(SEP);
+
+                // preorder traversal + iteration using stack 
+                // so right first left then
                 if (root.right != null) {
                     st.push(root.right);
                 }
+
                 if (root.left != null) {
                     st.push(root.left);
                 }
@@ -1051,8 +1055,133 @@ Output: 4
 
 
 
+// Binary Tree Vertical Order Traversal
+/*
+Given a binary tree, return the vertical order traversal of its nodes' values. (ie, from top to bottom, column by column).
+
+If two nodes are in the same row and column, the order should be from left to right.
+
+ */
+
+Examples 3:
+
+Input: [3,9,8,4,0,1,7,null,null,null,2,5] (0's right child is 2 and 1's left child is 5)
+
+     3
+    /\
+   /  \
+   9   8
+  /\  /\
+ /  \/  \
+ 4  01   7
+    /\
+   /  \
+   5   2
+
+Output:
+
+[
+  [4],
+  [9,5],
+  [3,0,1],
+  [8,2],
+  [7]
+]
+
+class Solution {
+    // from top to bottom, "left to right", column by column
+    // if multiple nodes are at the same location, they are ordered from left to right
+    
+    /*
+     * BFS, put NODE, COL ID into queues at the same time
+     * Every left child access col - 1 while right child col + 1
+     * This maps node into different col buckets
+     * Get col boundary min and max on the fly ?
+     * Retrieve result from cols
+     */
+    public List<List<Integer>> verticalOrder(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        
+        if (root == null) {
+            return res;
+        }
+           
+        // map: column id -> list of nodes
+        Map<Integer, ArrayList<Integer>> map = new HashMap<>();
+        
+        // q and cols are used together
+        Queue<TreeNode> q = new LinkedList<>();
+        Queue<Integer> cols = new LinkedList<>();
+ 
+        q.add(root); 
+        cols.add(0);
+
+        // min and max: col id 
+        int min = 0;
+        int max = 0;
+
+        while (!q.isEmpty()) {
+            TreeNode node = q.poll();
+            int col = cols.poll();
+
+            if (!map.containsKey(col)) {
+                map.put(col, new ArrayList<Integer>());
+            }
+            map.get(col).add(node.val);
+
+            if (node.left != null) {
+                q.add(node.left); 
+                cols.add(col - 1);
+                min = Math.min(min, col - 1);
+            }
+
+            if (node.right != null) {
+                q.add(node.right);
+                cols.add(col + 1);
+                max = Math.max(max, col + 1);
+            }
+        }
+
+        for (int i = min; i <= max; i++) {
+            res.add(map.get(i));
+        }
+        
+        return res;
+    }
+}
 
 
+// recursive solution for both getting the successor and predecessor for a given node in BST.
 
+// Successor
+/*
+     2   
+   1     , p = 1
+   
+  */
+public TreeNode successor(TreeNode root, TreeNode p) {
+  if (root == null)
+    return null;
 
+  if (root.val <= p.val) {
+    return successor(root.right, p);
+  } else {
+    TreeNode left = successor(root.left, p);
+    return (left != null) ? left : root;
+  }
+}
+
+// Predecessor
+
+public TreeNode predecessor(TreeNode root, TreeNode p) {
+  if (root == null)
+    return null;
+
+  if (root.val >= p.val) {
+    return predecessor(root.left, p);
+  } else {
+    TreeNode right = predecessor(root.right, p);
+    return (right != null) ? right : root;
+  }
+}
 
