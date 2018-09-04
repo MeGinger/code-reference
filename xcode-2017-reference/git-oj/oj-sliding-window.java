@@ -19,6 +19,12 @@
 	Therefore, return the max sliding window as [3,3,5,5,6,7].
 	You may assume k is always valid, 1 鈮� k 鈮� input array's size
      */
+
+    /* 
+     LinkedList
+     - addLast(a), removeLast()
+     - getFirst(), getLast()
+     */
     public int[] maxSlidingWindow(int[] nums, int k) {
         LinkedList<Integer> l = new LinkedList<>();
         int n = nums.length;
@@ -32,7 +38,7 @@
         }
 
         for (int i = k; i < n; i++) {
-        	// take care of the previous window
+            // take care of the previous window
             result[i - k] = l.getFirst(); 
             if (nums[i - k] == l.getFirst()) {
                 l.removeFirst();
