@@ -66,7 +66,11 @@ WRONG: List<Integer> list = map.computeIfAbsent(col, new ArrayList<>());
 
 ```
 
+* Avoid collection empty exception before doing operations..
+
+```java
 check with stack.isEmpty() before stack.pop()
+```
 
 * SWITCH-CASE STATEMENTS 
 
