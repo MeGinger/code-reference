@@ -1,4 +1,4 @@
-###Terminology
+### Terminology
 
 * Binary tree
   * successor
@@ -66,7 +66,20 @@ WRONG: List<Integer> list = map.computeIfAbsent(col, new ArrayList<>());
 
 ```
 
+check with stack.isEmpty() before stack.pop()
 
+* SWITCH-CASE STATEMENTS 
+
+```java
+    switch(c) {
+	case '(': stack.push(')'); break;
+	case '[': stack.push(']'); break;
+	case '{': stack.push('}'); break;
+	case ')':
+	case ']':
+	case '}': if (stack.isEmpty() || stack.pop() != c) {return false;}
+    }
+```
 
 ### Java APIs
 int[] odd ...
