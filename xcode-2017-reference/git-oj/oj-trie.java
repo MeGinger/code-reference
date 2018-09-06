@@ -21,8 +21,24 @@ private static class Trie1 {
         TrieNode cur = this.root;
         for (int i = 0; i < word.length(); i++) {
             char c = word.charAt(i);
-            cur = cur.children.compu
+            cur = cur.children.computeIfAbsent(c, k -> new TrieNode());
         }
+        cur.isWord = true;
+    }
+    
+    public boolean search(String word) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return false;
+            }
+        } 
+        return cur.isWord;
+    }
+    
+    public List<String> startsWith(String prefix) {
+    
     }
 }
 
