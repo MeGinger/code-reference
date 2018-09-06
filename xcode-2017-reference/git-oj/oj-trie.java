@@ -38,7 +38,28 @@ private static class Trie1 {
     }
     
     public List<String> startsWith(String prefix) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return Collections.emptyList();
+            }
+        }
+        return dfs(cur, new ArrayList<>(), new StringBuilder(prefix));
+    }
     
+    private List<String> dfs(TrieNode cur, List<String> res, StringBuilder sb) {
+        if (cur.isWord) {
+            res.add(sb.toString());
+        }
+        
+        for (Map.Entry<Character, TrieNode> entry : cur.children.entrySet()) {
+             sb.append(entry.getKey());
+             dfs(entry.getValue(), res, sb);
+             sb.setLength(sb.length() - 1);
+        }
+        
+        return res;
     }
 }
 
