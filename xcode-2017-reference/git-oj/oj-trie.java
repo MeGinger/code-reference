@@ -1,3 +1,36 @@
+Three implementations of Trie
+
+1. boolean isWord
+2. String word // reference
+3. List<String> words // a list of passing words
+
+1. boolean insert(String)
+2. boolean search(String)
+3. List<String>/boolean startsWith(String)
+ 
+Implementation I
+private static class Trie1 {
+    private class TrieNode {
+        Map<Character, TrieNode> children = new HashMap<>();
+        boolean isWord;
+    }
+    
+    private TrieNode root = new TrieNode();
+    
+    public void insert(String word) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            char c = word.charAt(i);
+            cur = cur.children.compu
+        }
+    }
+}
+
+Implementation II
+
+Implementation III
+
+
 // word ladder 2
 
 /**
