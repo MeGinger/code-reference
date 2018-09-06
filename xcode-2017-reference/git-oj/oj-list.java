@@ -56,8 +56,10 @@ public class Solution {
         return dummy.next;
     }
 }
-time complexity: O(n)
-space complexity: O(n)
+// time complexity: O(n)
+// space complexity: O(n)
+
+
 
 // solution 2: without map
 /**
@@ -248,6 +250,8 @@ class Solution {
         return p2 == null; // which means
     }
     
+    // odd  3->5->7 return 5
+    // even 3->5->7->9 return 5
     private ListNode findMiddle(ListNode head) {
         ListNode slow = head;
         ListNode fast = head.next;
@@ -255,6 +259,27 @@ class Solution {
         while (fast != null) { // if terminated here, len of list is odd
             if (fast.next == null) { 
                 return slow; // if terminated here, len of list is even    
+            }
+            
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        return slow;
+    }
+
+    // Middle of the Linked List
+    // odd  3->5->7 return 5
+    // even 3->5->7->9 return 7
+    public ListNode middleNode(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        
+        ListNode slow = head, fast = head.next;
+        while (fast != null) { // odd
+            if (fast.next == null) { // even
+                return slow.next; // next
             }
             
             slow = slow.next;

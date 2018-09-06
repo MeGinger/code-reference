@@ -654,6 +654,7 @@ public List<List<String>> findLadders(String beginWord, String endWord, List<Str
     set2.add(endWord);
     
     // we use a map to help construct the final result
+    // mapping: word -> ?
     Map<String, List<String>> backtrace = new HashMap<>();
     if (!findLadders(dict, set1, set2, backtrace, false)) {
         return Collections.emptyList();
@@ -662,6 +663,7 @@ public List<List<String>> findLadders(String beginWord, String endWord, List<Str
     return generateList(beingWord, endWord, backtrace, new ArrayList<>(), new ArrayList<>());
 }
 
+// flip helps construct string in a correct direction
 private boolean findLadders(Set<String> dict, Set<String> set1, Set<String> set2, Map<String, List<String>> backtrace, boolean flip) {
     if (set1.size() > set2.size()) {
         return findLadders(dict, set2, set1, backtrace, !flip);
@@ -718,10 +720,11 @@ private List<List<String>> generateList(String start, String end, Map<String, Li
         return res;
     }
 
-    List<String> words = map.get(start);
-    if (words == null) {
+    if (!map.containsKey(start)) {
         return res;
     }
+
+    List<String> words = map.get(start);
  
     path.add(start); // add
     for (String word : words) {

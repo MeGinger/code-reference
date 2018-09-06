@@ -31,7 +31,7 @@ if (...&& ((a & b) == 1)) {
   System.out.println("   Welcome to Tutorialspoint.com   ".trim()); 
   // OUTPUT: |Welcome to Tutorialspoint.com|
 ```
-* Misspelled Java APIs
+* misspelled Java APIs
 ```java
 stack/priorityqueue.peek() // NOT peak..
 ```
@@ -66,7 +66,7 @@ WRONG: List<Integer> list = map.computeIfAbsent(col, new ArrayList<>());
 
 ```
 
-* Avoid collection empty exception before doing operations..
+* avoid collection empty exception before doing operations..
 
 ```java
 check with stack.isEmpty() before stack.pop()
@@ -130,7 +130,10 @@ Character.isWhitespace(char ch) - space, tab, or new line <br/>
 
 Character.isDigit(char ch) - '0' ~ '9' <br/>
 Character.isLetter(char ch) - 'a' ~ 'z', 'A' ~ 'Z' <br/>
-<br/>
+Character.isLetterOrDigit(char ch) - **alphanumeric**
+
+
+
 Character.isUpperCase(char ch) - 'A' ~ 'Z' <br/>
 Character.isLowCase(char ch) - 'a' ~ 'z' <br/>
 Character.toLowerCase(char ch) <br/>
@@ -204,7 +207,11 @@ List<Integer> list = Arrays.asList(new int[]{1, 2, 3});  <br/>
 List<String> list = Arrays.asList(arr);  <br/>
 #### convert from List to Array
 String[] arr = list.toArray(new String[list.size()]);  <br/>
+
+String[] arr = list.toArray(new String[0]);  <br/>
+
 int[][] res = list.toArray(people); // list object is of type List<int[]>   <br/>
+
 #### convert from List to Set
 Set<T> set = new HashSet<>(collection); // collection like list   <br/>
 
