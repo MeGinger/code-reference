@@ -210,7 +210,11 @@ String[] arr = list.toArray(new String[list.size()]);  <br/>
 
 String[] arr = list.toArray(new String[0]);  <br/>
 
-int[][] res = list.toArray(people); // list object is of type List<int[]>   <br/>
+```java
+List<Integer> list = new ArraryList<>();
+......
+int[] array = list.stream().mapToInt(i->i).toArray();
+```
 
 #### convert from List to Set
 Set<T> set = new HashSet<>(collection); // collection like list   <br/>

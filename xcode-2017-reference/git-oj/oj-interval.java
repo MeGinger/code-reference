@@ -351,15 +351,22 @@ such that it conflicts with no other requests of this color class.
 	 Reference: Non-overlapping Intervals
 	*/
 
+	HOW IT WORKS - 
 	/** 
-	 o understand why it works, first let’s define two events:
+	 My understanding of the solution: 
+
+	 the minimal number of rooms equal to the max number of overlapping meeting in any time point. 
+
+	 The code is actually counting the number of overlapping meetings throughout the timeline and recording the maximum.
+
+	 Understand why it works, first let’s define two events:
 	 Meeting Starts
 	 Meeting Ends
 	 
 	 Next, we acknowledge three facts:
-	 The numbers of the intervals give chronological orders
-	 When an ending event occurs, there must be a starting event has happened before that, where “happen before” is defined by the chronological orders given by the intervals
-	 Meetings that started which haven’t ended yet have to be put into different meeting rooms, and the number of rooms needed is the number of such meetings
+	 1. The numbers of the intervals give chronological orders
+	 2. When an ending event occurs, there must be a starting event has happened before that, where “happen before” is defined by the chronological orders given by the intervals
+	 3. Meetings that started which haven’t ended yet have to be put into different meeting rooms, and the number of rooms needed is the number of such meetings
 	 
 	 So, what this algorithm works as follows:
 	 
@@ -401,8 +408,12 @@ such that it conflicts with no other requests of this color class.
 		int endIndex = 0;
 		for (int startIndex = 0; startIndex < starts.length; startIndex++) {
 			if (starts[startIndex] < ends[endIndex]) {
+				// counting the number of overlapping intervals/meetings
+                // throughout the timeline
+                // and recording the maximum
 				rooms++;
 			} else {
+				// the interval can be put into one of the rooms
 				endIndex++;
 			}
 		}
@@ -410,6 +421,7 @@ such that it conflicts with no other requests of this color class.
 	}
 	
 	// follow up: print out all meeting rooms with their assigned intervals
+	// ?
 	public int minMeetingRooms2(Interval[] intervals) {
 		if (intervals == null || intervals.length == 0) {
 			return 0;
