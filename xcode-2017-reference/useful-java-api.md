@@ -109,6 +109,9 @@ public List<List<String>> method(...) {
 }
 ```
 
+
+
+
 Collections.emptyList() returns an immutable list, i.e., a list to which you cannot add elements.
 In the rare cases in which you do want to modify the returned list, this would thus not be an option.
 
@@ -290,3 +293,19 @@ st.nextToken(); -> String
 st.hasMoreTokens(); -> boolean
 ```
 
+
+
+
+deleteCharAt or setLength, which way is better to remove last char from a StringBuilder/StringBuffer
+```java
+sb.deleteCharAt(sb.length() - 1);
+sb.setLength(sb.length() - 1);
+```
+
+Actually, there is very little in it and is probably dependent on hardware and other factors.
+
+The setLength() method simply alters the count and overwrites the unwanted value in the array with a zero byte.
+
+The deleteCharAt() performs an array copy internally, before altering the count. That sounds dramatic, but the array being copied is actually zero-length because you're removing the last character.
+
+I would recommend going for setLength() as it is shorter to type and I think makes it clearer what you are doing. If performance is an issue and, on measuring, you find this is the bottleneck for you, then perhaps you could consider a different algorithm that doesn't require changing the size (as per JB Nizet's answer).

@@ -1,3 +1,167 @@
+Three implementations of Trie
+
+1. boolean isWord
+2. String word // reference
+3. List<String> words // a list of passing words
+
+1. boolean insert(String)
+2. boolean search(String)
+3. List<String>/boolean startsWith(String)
+ 
+Implementation I
+private static class Trie1 {
+    private class TrieNode {
+        Map<Character, TrieNode> children = new HashMap<>();
+        boolean isWord;
+    }
+    
+    private TrieNode root = new TrieNode();
+    
+    public void insert(String word) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            char c = word.charAt(i);
+            cur = cur.children.computeIfAbsent(c, k -> new TrieNode());
+        }
+        cur.isWord = true;
+    }
+    
+    public boolean search(String word) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return false;
+            }
+        } 
+        return cur.isWord;
+    }
+    
+    public List<String> startsWith(String prefix) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return Collections.emptyList();
+            }
+        }
+        return dfs(cur, new ArrayList<>(), new StringBuilder(prefix));
+    }
+    
+    private List<String> dfs(TrieNode cur, List<String> res, StringBuilder sb) {
+        if (cur.isWord) {
+            res.add(sb.toString());
+        }
+        
+        for (Map.Entry<Character, TrieNode> entry : cur.children.entrySet()) {
+             sb.append(entry.getKey());
+             dfs(entry.getValue(), res, sb);
+             sb.setLength(sb.length() - 1);
+        }
+        
+        return res;
+    }
+}
+
+Implementation II
+private static class Trie2 {
+    private class TrieNode {
+        Map<Character, TrieNode> children = new HashMap<>();
+        String word;
+    }
+    
+    private TrieNode root = new TrieNode();
+    
+    public void insert(String word) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            char c = word.charAt(i);
+            cur = cur.children.computeIfAbsent(c, k -> new TrieNode());
+        }
+        cur.word = word;
+    }
+    
+    public boolean search(String word) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return false;
+            }
+        } 
+        return cur.word != null;
+    }
+    
+    public List<String> startsWith(String prefix) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return Collections.emptyList();
+            }
+        }
+        return dfs(cur, new ArrayList<>());
+    }
+    
+    private List<String> dfs(TrieNode cur, List<String> res) {
+        if (cur.word != null) {
+            res.add(cur.word);
+        }
+        
+        for (Map.Entry<Character, TrieNode> entry : cur.children.entrySet()) {
+             dfs(entry.getValue(), res);
+        }
+        
+        return res;
+    }
+}
+
+Implementation III
+private static class Trie3 {
+    private class TrieNode {
+        Map<Character, TrieNode> children = new HashMap<>();
+        List<String> words;
+    }
+    
+    private TrieNode root = new TrieNode();
+    
+    public void insert(String word) {
+        if (root.words.contains(word)) {
+            return;
+        } 
+        
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur.words.add(word);
+            char c = word.charAt(i);
+            cur = cur.children.computeIfAbsent(c, k -> new TrieNode());
+        }
+        cur.words.add(word);
+    }
+    
+    public boolean search(String word) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return false;
+            }
+        } 
+        return cur.word != null;
+    }
+    
+    public List<String> startsWith(String prefix) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return Collections.emptyList();
+            }
+        }
+        return cur.words;
+    }
+}
+
 // word ladder 2
 
 /**
