@@ -168,6 +168,7 @@ public class KEmptySlot {
         int[] days = new int[flowers.length];
         for (int i = 0; i < flowers.length; i++) {
             days[flowers[i] - 1] = i + 1;  // day: i + 1, plus one, so start from 1 to N
+					   // position: start from 0 to N - 1
             // day[0] = d: flower at position 1 booms at day d
         }
 
@@ -183,8 +184,9 @@ public class KEmptySlot {
             }
             window.pollFirst();
             // The window is maintained as [i - k + 1, i]
-            if (k == 0 || days[i - k] < window.min() && days[i + 1] < window.min()) {
-                ans = Math.min(ans, Math.max(days[i - k], days[i + 1]));
+	    // actually are position window ....
+            if (k == 0 || days[i - k] < window.min() && days[i + 1] < window.min()) { // min
+                ans = Math.min(ans, Math.max(days[i - k], days[i + 1])); // max
             }
         }
 
