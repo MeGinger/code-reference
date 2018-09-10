@@ -157,14 +157,22 @@ public class KEmptySlot {
     Space Complexity: O(N), the size of our window.
     Reference: Sliding Window Maximum
     */
+    
+    // FIND a day, k = 3, like this 
+    // *: blooming, -: not blooming
+    /*
+       * - - - *   
+       | | | | |   
+     */
     public int kEmptySlots(int[] flowers, int k) {
         int[] days = new int[flowers.length];
         for (int i = 0; i < flowers.length; i++) {
-            days[flowers[i] - 1] = i + 1;
+            days[flowers[i] - 1] = i + 1;  // day: i + 1, plus one, so start from 1 to N
+            // day[0] = d: flower at position 1 booms at day d
         }
 
         MinQueue<Integer> window = new MinQueue<>();
-        int ans = days.length;
+        int ans = days.length; // impossible answer, but the largest limit
 
         // we can skip last flower
         for (int i = 0; i < days.length - 1; i++) {
