@@ -4,6 +4,10 @@
   * successor
   * predecessor
 
+* Collections
+  * Queue/PriorityQueue: poll, offer, peek
+  * Stack: pop, push, peek
+
 ### Frequently Made Mistakes
 
 * initialize all reference variables to null
