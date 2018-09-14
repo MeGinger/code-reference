@@ -85,7 +85,14 @@ check with stack.isEmpty() before stack.pop()
     }
 ```
 
+
+
+void Collections.reverse(list) 
+
+
+
 ### Java APIs
+
 int[] odd ...
 Arrays.toString(odd)
 
@@ -111,10 +118,15 @@ public List<List<String>> method(...) {
 
 
 
-
 Collections.emptyList() returns an immutable list, i.e., a list to which you cannot add elements.
 In the rare cases in which you do want to modify the returned list, this would thus not be an option.
 
+
+
+```java
+Arrays.binarySearch(array, key);
+Collections.binarySearch(collection, key);
+```
 
 // Returns index of key in sorted list sorted in ascending order <br/>
 public static int binarySearch(List slist, T key) <br/>
@@ -208,6 +220,7 @@ Add - list.add(pos, elem); // add elem into position pos, the elements behind it
 List<Character> list = Arrays.asList(‘A’, ‘B’, ‘C’);  <br/>
 List<Integer> list = Arrays.asList(new int[]{1, 2, 3});  <br/>
 List<String> list = Arrays.asList(arr);  <br/>
+
 #### convert from List to Array
 String[] arr = list.toArray(new String[list.size()]);  <br/>
 

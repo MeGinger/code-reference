@@ -580,130 +580,117 @@ public class GraphValidTree {
     }
 }
 
+import java.util.HashSet;
+import java.util.Set;
 
+public class SentenceSimilarity {
+    /**
+     * Sentence Similarity
+     Given two sentences words1, words2 (each represented as an array of strings), and a list of similar word pairs pairs, determine if two sentences are similar.
 
-package amazon;
+     For example, "great acting skills" and "fine drama talent" are similar, if the similar word pairs are pairs = [["great", "fine"], ["acting","drama"], ["skills","talent"]].
 
-import java.util.*;
+     Note that the similarity relation is not transitive. For example, if "great" and "fine" are similar, and "fine" and "good" are similar, "great" and "good" are not necessarily similar.
 
-/**
- * Minimum Spanning Tree
- * connection cost node1 node2: {¡°Acity¡±,¡±Bcity¡±,1}
- * (¡°Acity¡±,¡±Ccity¡±,2} (¡°Bcity¡±,¡±Ccity¡±,3} Êä³ö£º (¡°Acity¡±,¡±Bcity¡±,1}
- * (¡°Acity¡±,¡±Ccity¡±,2} ²¹³äÒ»¾ä£¬test caseÒ»¹²ÓÐ6¸ö¡£
- */
-class Connection {
-    String node1;
-    String node2;
-    int cost;
+     However, similarity is symmetric. For example, "great" and "fine" being similar is the same as "fine" and "great" being similar.
 
-    public Connection(String a, String b, int c) {
-        node1 = a;
-        node2 = b;
-        cost = c;
+     Also, a word is always similar with itself. For example, the sentences words1 = ["great"], words2 = ["great"], pairs = [] are similar, even though there are no specified similar word pairs.
+
+     Finally, sentences can only be similar if they have the same number of words. So a sentence like words1 = ["great"] can never be similar to words2 = ["doubleplus","good"].
+
+     Note:
+
+     The length of words1 and words2 will not exceed 1000.
+     The length of pairs will not exceed 2000.
+     The length of each pairs[i] will be 2.
+     The length of each words[i] and pairs[i][j] will be in the range [1, 20].
+     */
+    public boolean areSentencesSimilar(String[] words1, String[] words2, String[][] pairs) {
+        if (words1.length != words2.length) {
+            return false;
+        }
+
+        Set<String> pairSet = new HashSet<>();
+        for (String[] pair : pairs) {
+            pairSet.add(pair[0] + "#" + pair[1]);
+        }
+
+        for (int i = 0; i < words1.length; ++i) {
+            if (!words1[i].equals(words2[i]) && !pairSet.contains(words1[i] + "#" + words2[i])
+                    && !pairSet.contains(words2[i] + "#" + words1[i])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 
-public class MST {
-    static class DisjointSet {
-        Set<String> set;
-        Map<String, String> map;
-        int count;
+import java.util.HashMap;
+import java.util.Map;
 
-        public DisjointSet() {
-            this.count = 0;
-            this.set = new HashSet<>();
-            this.map = new HashMap<>();
+public class SentenceSimilarityII {
+    /**
+     * Sentence Similarity II
+     Given two sentences words1, words2 (each represented as an array of strings), and a list of similar word pairs pairs, determine if two sentences are similar.
+
+     For example, words1 = ["great", "acting", "skills"] and words2 = ["fine", "drama", "talent"] are similar, if the similar word pairs are pairs = [["great", "good"], ["fine", "good"], ["acting","drama"], ["skills","talent"]].
+
+     Note that the similarity relation is transitive. For example, if "great" and "good" are similar, and "fine" and "good" are similar, then "great" and "fine" are similar.
+
+     Similarity is also symmetric. For example, "great" and "fine" being similar is the same as "fine" and "great" being similar.
+
+     Also, a word is always similar with itself. For example, the sentences words1 = ["great"], words2 = ["great"], pairs = [] are similar, even though there are no specified similar word pairs.
+
+     Finally, sentences can only be similar if they have the same number of words. So a sentence like words1 = ["great"] can never be similar to words2 = ["doubleplus","good"].
+
+     Note:
+
+     The length of words1 and words2 will not exceed 1000.
+     The length of pairs will not exceed 2000.
+     The length of each pairs[i] will be 2.
+     The length of each words[i] and pairs[i][j] will be in the range [1, 20].
+     */
+    public boolean areSentencesSimilarTwo(String[] words1, String[] words2, String[][] pairs) {
+        if (words1.length != words2.length) {
+            return false;
         }
 
-        public void makeSet(String s) {
-            if (this.set.contains(s)) { // remove duplicate
-                return;
-            }
-            this.count++;
-            this.set.add(s);
-            this.map.put(s, s);
-        }
-
-        public String root(String s) {
-            if (!this.set.contains(s)) {
-                return null;
-            }
-            String v = this.map.get(s);
-            if (s.equals(v)) {
-                return s;
-            }
-            String root = this.root(v);
-            this.map.put(s, root);
-            return root;
-        }
-
-        public void union(String s, String t) {
-            if (!this.set.contains(s) || !this.set.contains(t)) {
-                return;
-            }
-            if (s.equals(t)) {
-                return;
-            }
-            this.count--;
-            this.map.put(s, t);
-        }
-    }
-
-    public static List<Connection> getMST(List<Connection> connections) {
-        Collections.sort(connections, (a, b) -> Integer.compare(a.cost, b.cost));
-        DisjointSet set = new DisjointSet();
-        List<Connection> res = new ArrayList<>();
-        for (Connection connection : connections) {
-            set.makeSet(connection.node1);
-            set.makeSet(connection.node2);
-        }
-        for (Connection connection : connections) {
-            String s = set.root(connection.node1);
-            String t = set.root(connection.node2);
-            if (!s.equals(t)) {
-                set.union(s, t);
-                res.add(connection);
-                if (set.count == 1) { // which means all nodes get connected together
-                    break;
+        Map<String, Integer> index = new HashMap<>();
+        int count = 0; 
+        for (String[] pair : pairs) {
+            for (String p : pair) {
+                if (!index.containsKey(p)) {
+                    index.put(p, count++); // count : represented as id
                 }
             }
         }
-        if (set.count == 1) {
-            Collections.sort(res, (a, b) -> {
-                if (a.node1.equals(b.node1)) {
-                    return a.node2.compareTo(b.node2); // ascending order (a, b)
-                }
-                return a.node1.compareTo(b.node1); // ascending order (a, b)
-            });
-            return res;
+
+        UnionFind u = new UnionFind(index.size());
+        for (int i = 0; i < index.size(); i++) {
+            u.id[i] = i;
+            u.size[i] = 1;
+        }
+        for (String[] pair : pairs) {
+            u.union(index.get(pair[0]), index.get(pair[1]));
         }
 
-        return Collections.emptyList();
-    }
-
-    public static void main(String[] args) {
-        ArrayList<Connection> connections = new ArrayList<>();
-        // connections.add(new Connection("Acity","Bcity",1));
-        // connections.add(new Connection("Acity","Ccity",2));
-        // connections.add(new Connection("Bcity","Ccity",3));
-        connections.add(new Connection("A", "B", 6));
-        connections.add(new Connection("B", "C", 4));
-        connections.add(new Connection("C", "D", 5));
-        connections.add(new Connection("D", "E", 8));
-        connections.add(new Connection("E", "F", 1));
-        connections.add(new Connection("B", "F", 10));
-        connections.add(new Connection("E", "C", 9));
-        connections.add(new Connection("F", "C", 7));
-        connections.add(new Connection("B", "E", 3));
-        connections.add(new Connection("A", "F", 1));
-
-        List<Connection> res = getMST(connections);
-        for (Connection c : res) {
-            System.out.println(c.node1 + " -> " + c.node2 + " cost : " + c.cost);
+        for (int i = 0; i < words1.length; ++i) {
+            String w1 = words1[i], w2 = words2[i];
+            if (w1.equals(w2)) {
+                continue;
+            }
+            if (!index.containsKey(w1) || 
+                !index.containsKey(w2) ||
+                u.root(index.get(w1)) != u.root(index.get(w2))) {
+                return false;
+            }
         }
+
+        return true;
     }
 }
+
 
 
 

@@ -68,6 +68,107 @@
     }
 
 
+Sort Colors
+/*
+Given an array with n objects colored red, white or blue, sort them in-place so that objects of the same color are adjacent, with the colors in the order red, white and blue.
+
+Here, we will use the integers 0, 1, and 2 to represent the color red, white, and blue respectively.
+
+Note: You are not suppose to use the library's sort function for this problem.
+
+Example:
+
+Input: [2,0,2,1,1,0]
+Output: [0,0,1,1,2,2]
+Follow up:
+
+A rather straight forward solution is a two-pass algorithm using counting sort.
+First, iterate the array counting number of 0's, 1's, and 2's, then overwrite array with total number of 0's, then 1's and followed by 2's.
+Could you come up with a one-pass algorithm using only constant space?
+ */
+
+
+// two pointers - left one for 0, right one for 2, the rest of them are one in between
+public void sortColors(int[] nums) {
+    // 1-pass
+    int p1 = 0, p2 = nums.length - 1, index = 0;
+    while (index <= p2) {
+        if (nums[index] == 0) {
+        	// swap
+            nums[index] = nums[p1];
+            nums[p1] = 0;
+            p1++;
+        }
+        if (nums[index] == 2) {
+        	// swap
+            nums[index] = nums[p2];
+            nums[p2] = 2;
+            p2--;
+            index--;
+        }
+        index++;
+    }
+}
+
+
+class Solution {
+    public void sortColors(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return;
+        }
+    
+        // preprocess - make sure value of index 0 is 1 as pivot
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == 1) {
+                swap(nums, 0, i);
+                break;
+            }
+        }
+        //                p_i
+        // 0 1 0 1 1 1 1 0 1   2 2 2 2 
+        int oneIndex = partition(nums, 0, nums.length - 1);
+        System.out.println("arr 1: " + Arrays.toString(nums));
+        
+        // preprocess - make sure value of index oneIndex is 2 as pivot
+        for (int i = 0; i <= oneIndex; i++) {
+            if (nums[i] == 0) {
+                swap(nums, 0, i);
+                break;
+            }
+        }
+        
+        partition(nums, 0, oneIndex);
+    }
+    
+    // quick select - sort color & kth largest element
+    // boilerplate - everything should be the same ... cannot change!
+    public int partition(int[] nums, int low, int high) {  
+        int pivot = low; // pivot = 1
+        while (low <= high) {
+            while (low <= high && nums[pivot] >= nums[low]) {  // 1, 0 // 0
+                low++;
+            }
+            while (low <= high && nums[pivot] < nums[high]) {  // 2 // 1
+                high--;
+            }  
+            
+            if (low <= high) {
+                swap(nums, low, high);
+            }
+        }
+        
+        swap(nums, pivot, high);
+        return high;
+    }
+    
+    
+    public void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+}
+
 // Alien Dictionary 
 /*
 There is a new alien language which uses the latin alphabet. However, the order among letters are unknown to you. You receive a list of non-empty words from the dictionary, where words are sorted lexicographically by the rules of this new language. Derive the order of letters in this language.
@@ -346,3 +447,119 @@ class Solution {
     }
 }
 
+
+// Bucket sort
+// Sort Characters By Frequency
+Given a string, sort it in decreasing order based on the frequency of characters.
+Example 1:
+Input:
+"tree"
+Output:
+"eert"
+
+Explanation:
+'e' appears twice while 'r' and 't' both appear once.
+So 'e' must appear before both 'r' and 't'. Therefore "eetr" is also a valid answer.
+Example 2:
+Input:
+"cccaaa"
+Output:
+"cccaaa"
+
+Explanation:
+Both 'c' and 'a' appear three times, so "aaaccc" is also a valid answer.
+Note that "cacaca" is incorrect, as the same characters must be together.
+Example 3:
+Input:
+"Aabb"
+Output:
+"bbAa"
+Explanation:
+"bbaA" is also a valid answer, but "Aabb" is incorrect.
+Note that 'A' and 'a' are treated as two different characters.
+
+class Solution {
+    public String frequencySort(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        for (char ch : s.toCharArray()) {
+            int freq = map.getOrDefault(ch, 0) + 1;
+            map.put(ch, freq);
+        }
+        
+        
+        // size should be length + 1
+        List<Character>[] buckets = new List[s.length() + 1]; // easy to make mistake...
+        for (Map.Entry<Character, Integer> entry : map.entrySet()) {
+            int freq = entry.getValue();
+            if (buckets[freq] == null) {
+                buckets[freq] = new ArrayList<>();
+            }
+            buckets[freq].add(entry.getKey());
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        for (int i = buckets.length - 1; i >= 0; i--) { // starts from highest
+            if (buckets[i] == null) { // miss mistake -- easy to be missed
+                continue;
+            }
+            
+            for (int j = 0; j < buckets[i].size(); j++) {
+                for (int k = 0; k < i; k++) {
+                    sb.append(buckets[i].get(j));
+                }
+            }
+        }
+        
+        return sb.toString();
+    }
+}
+
+// Top K Frequent Elements
+Given a non-empty array of integers, return the k most frequent elements.
+Example 1:
+Input: nums = [1,1,1,2,2,3], k = 2
+Output: [1,2]
+Example 2:
+Input: nums = [1], k = 1
+Output: [1]
+Note:
+You may assume k is always valid, 1 ≤ k ≤ number of unique elements.
+Your algorithm's time complexity must be better than O(n log n), where n is the array's size.
+
+class Solution {
+    // bucket sort... O(n)
+    public List<Integer> topKFrequent(int[] nums, int k) {
+        List<Integer> res = new ArrayList<>();
+        if (nums == null || nums.length == 0 || k <= 0) {
+            return res;
+        }
+        
+        Map<Integer, Integer> freqs = new HashMap<>();
+        for (int num : nums) {
+            freqs.put(num, freqs.getOrDefault(num, 0) + 1);
+        }
+        
+        List<Integer>[] buckets = new List[nums.length + 1];
+        for (Map.Entry<Integer, Integer> entry : freqs.entrySet()) {
+            int freq = entry.getValue();
+            if (buckets[freq] == null) {
+                buckets[freq] = new ArrayList<>();
+            }
+            
+            buckets[freq].add(entry.getKey());
+        }
+
+        for (int i = nums.length; i >= 1 && k > 0; i--) {
+            if (buckets[i] == null) {
+                continue;
+            }
+            
+            for (int j = 0; j < buckets[i].size() && k > 0; j++) {
+                res.add(buckets[i].get(j));
+                k--;
+            }
+        }
+        
+        return res;
+    }
+}

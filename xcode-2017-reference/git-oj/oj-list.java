@@ -478,3 +478,185 @@ public class Solution {
         return a;
     }
 }
+
+Plus One Linked List
+/*
+Given a non-negative integer represented as non-empty a singly linked list of digits, plus one to the integer.
+You may assume the integer do not contain any leading zero, except the number 0 itself.
+The digits are stored such that the most significant digit is at the head of the list.
+
+Example :
+Input: [1,2,3]
+Output: [1,2,4]
+*/
+    public ListNode plusOne(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        
+        head = reverse(head);
+        
+        ListNode node = head, pre = null;
+        int carry = 1;
+        while (node != null) {
+            int sum = node.val + carry;
+            node.val = sum % 10;
+            carry = sum / 10;
+            pre = node;
+            node = node.next;
+        }
+        
+        if (carry != 0) {
+            pre.next = new ListNode(carry);
+        }
+        
+        return reverse(head);
+    }
+    
+    private ListNode reverse(ListNode head) {
+        ListNode pre = null;
+        while (head != null) {
+            ListNode next = head.next;
+            head.next = pre;
+            pre = head;
+            head = next;
+        }
+        
+        return pre;
+    }
+
+
+Linked List Cycle
+/*
+Given a linked list, determine if it has a cycle in it.
+Follow up:
+Can you solve it without using extra space?
+*/
+public class Solution {
+    /**
+     * Returns boolean value indicating if list has cycle
+     * @param head a head node of a list
+     */
+    public boolean hasCycle(ListNode head) {
+        // edge case: list has 0 or 1 node
+        // Note that head.next == null, so it cant be a circular list with 1 node
+        if (head == null || head.next == null) {
+            return false;
+        }
+        // head.next == null can be eliminated since it will be checked in the 1st loop
+        
+        ListNode fast = head.next;
+        ListNode slow = head;
+        // slow cannot be null always!!
+        while (fast != slow) {
+            if (fast == null || fast.next == null) {
+                return false;
+            }
+    
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        return true;
+    }
+}
+
+
+
+Populating Next Right Pointers in Each Node
+/*
+Given a binary tree
+struct TreeLinkNode {
+  TreeLinkNode *left;
+  TreeLinkNode *right;
+  TreeLinkNode *next;
+}
+Populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to NULL.
+Initially, all next pointers are set to NULL.
+
+Note:
+You may only use constant extra space. -- using queue is not right
+Recursive approach is fine, implicit stack space does not count as extra space for this problem.
+You may assume that it is a perfect binary tree (ie, all leaves are at the same level, and every parent has two children).
+*/
+
+
+    // PERFECT BINARY TREE
+    public void connect(TreeLinkNode root) {
+        while (root != null) {
+            TreeLinkNode cur = root;
+            // level order traversal
+            while (cur != null) { 
+                // 往后面怼
+                if (cur.left != null) {
+                    cur.left.next = cur.right;    
+                }
+                if (cur.right != null && cur.next != null) {
+                    cur.right.next = cur.next.left;    
+                } 
+                cur = cur.next;
+            }
+            
+            root = root.left; // perfect binary tree
+        }
+        
+    }
+
+
+Populating Next Right Pointers in Each Node II
+/*
+Given a binary tree
+
+struct TreeLinkNode {
+  TreeLinkNode *left;
+  TreeLinkNode *right;
+  TreeLinkNode *next;
+}
+Populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to NULL.
+
+Initially, all next pointers are set to NULL.
+
+Note:
+
+You may only use constant extra space.
+Recursive approach is fine, implicit stack space does not count as extra space for this problem.
+Example:
+
+Given the following binary tree,
+
+     1
+   /  \
+  2    3
+ / \    \
+4   5    7
+After calling your function, the tree should look like:
+
+     1 -> NULL
+   /  \
+  2 -> 3 -> NULL
+ / \    \
+4-> 5 -> 7 -> NULL
+*/
+
+
+    // general binary tree
+    public void connect(TreeLinkNode root) {
+        while (root != null){
+            TreeLinkNode dummy = new TreeLinkNode(0);
+            TreeLinkNode currentChild = dummy;
+            while (root != null){
+                // 对当前/以前怼
+                if (root.left != null) { 
+                    currentChild.next = root.left; 
+                    currentChild = currentChild.next;
+                }
+                
+                if (root.right != null) { 
+                    currentChild.next = root.right; 
+                    currentChild = currentChild.next;
+                }
+                root = root.next;
+            }
+            root = dummy.next; // be the first children
+        }
+    }

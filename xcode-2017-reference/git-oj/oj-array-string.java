@@ -1721,3 +1721,154 @@ class Solution {
         return chg <= 1;
     }
 }
+
+Intersection of Two Arrays
+* Each element in the result must be unique.
+* The result can be in any order.
+
+Solution 1
+Time: O(n)
+Space: O(2n), two sets - one set for one array, another one for res
+
+class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> set = new HashSet<>();
+        Set<Integer> interset = new HashSet<>();
+        
+        for (int i = 0; i < nums1.length; i++) {
+            set.add(nums1[i]);
+        }
+        
+        for (int i = 0; i < nums2.length; i++) {
+            if (set.contains(nums2[i])) {
+                interset.add(nums2[i]);
+            }
+        }
+        
+        return interset.stream().mapToInt(i -> i).toArray();
+    }
+}
+
+Solution 2 - two pointer - if two arrays sorted
+Time: O(n) + "O(2nlogn) sorting time" 
+Space: O(1) // no EXTRA space needed
+
+class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> set = new HashSet<>();
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        
+        int i = 0, j = 0;
+        while (i < nums1.length && j < nums2.length) {
+            if (nums1[i] < nums2[j]) {
+                i++;
+            } else if (nums1[i] > nums2[j]) {
+                j++;
+            } else {
+                set.add(nums1[i]);
+                i++; 
+                j++;
+            }
+        }
+        return set.stream().mapToInt(num -> num).toArray();
+    }
+}
+
+Solution 3 - binary binarySearch - if one arrays sorted
+Time: O(n * logn) + "O(nlogn) sorting time" 
+Space: O(1) // no EXTRA space needed
+
+class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> set = new HashSet<>();
+        Arrays.sort(nums2);
+        for (int num : nums1) {
+            if (Arrays.binarySearch(nums2, num) >= 0) {
+                set.add(num);
+            }
+        }
+        return set.stream().mapToInt(i -> i).toArray();
+    }
+}
+
+/*
+Follow up:
+1. What if the given array is already sorted? How would you optimize your algorithm?
+* two pointer 
+* binary search
+
+2. What if nums1's size is small compared to nums2's size? Which algorithm is better?
+* binary search on the smaller number array
+
+3. What if elements of nums2 are stored on disk, and the memory is limited such that you cannot load all elements into the memory at once?
+- If only nums2 cannot fit in memory, put all elements of nums1 into a HashMap, read chunks of array that fit into the memory, and record the intersections.
+- If both nums1 and nums2 are so huge that neither fit into the memory, sort them individually (external sort), then read 2 elements from each array at a time in memory, record intersections.
+ */
+
+Intersection of Two Arrays II
+
+Given two arrays, write a function to compute their intersection.
+
+Example 1:
+
+Input: nums1 = [1,2,2,1], nums2 = [2,2]
+Output: [2,2]
+Example 2:
+
+Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+Output: [4,9]
+
+Solution 1 - 
+Time:
+Space: 
+class Solution {
+    public int[] intersect(int[] nums1, int[] nums2) {
+        Map<Integer, Integer> map = new HashMap<>();
+        List<Integer> res = new ArrayList<>();
+        
+        for (int i = 0; i < nums1.length; i++) {
+            map.put(nums1[i], map.getOrDefault(nums1[i], 0) + 1);
+        }
+        for (int i = 0; i < nums2.length; i++) {
+            Integer freq = map.get(nums2[i]);
+            if (freq != null && freq > 0) {
+                res.add(nums2[i]);
+                map.put(nums2[i], freq - 1);
+            }
+        }
+        
+        return res.stream().mapToInt(i->i).toArray();
+        
+        // int[] res = new int[interset.size()];
+        // int index = 0;
+        // for (int num : interset) {
+        //     res[index++] = num;
+        // }
+        // return res;
+    }
+
+     // two pointer
+    public int[] intersect(int[] nums1, int[] nums2) {
+        List<Integer> res = new ArrayList<>();
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        
+        int i = 0, j = 0;
+        while (i < nums1.length && j < nums2.length) {
+            if (nums1[i] < nums2[j]) {
+                i++;
+            } else if (nums1[i] > nums2[j]) {
+                j++;
+            } else {
+                res.add(nums1[i]);
+                i++;
+                j++;
+            }
+        }
+        
+        return res.stream().mapToInt(num -> num).toArray();
+    }
+}
+
+

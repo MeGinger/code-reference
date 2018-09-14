@@ -1,62 +1,4 @@
-// WRONG VERSION
-class RandomizedSet {
-    private Set<Integer> set;
-    private Random rnd;
-    
-    /** Initialize your data structure here. */
-    public RandomizedSet() {
-        this.set = new HashSet<>();
-        this.rnd = new Random();
-    }
-    
-    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
-    public boolean insert(int val) {
-        if (this.set.contains(val)) {
-            return false;
-        }
-        
-        this.set.add(val);
-        return true;
-    }
-    
-    /** Removes a value from the set. Returns true if the set contained the specified element. */
-    public boolean remove(int val) {
-        if (!this.set.contains(val)) {
-            return false;
-        }
-        
-        this.set.remove(val);
-        return true;
-    }
-    
-    /** Get a random element from the set. */
-    
-    // public int nextInt(int n)
-    // return a random number between 0 (inclusive) and n (exclusive)
-    public int getRandom() {
-        // reservoir sampling - O(n) 
-        // 不适合找一个random number
-        // 适合找k个random numbers
-
-        int count = 0, result = 0;
-        for (int elem : set) {
-            if (this.rnd.nextInt(++count) == 0) {
-                result = elem;
-            }
-        }
-        return result;
-    }
-}
-
-/**
- * Your RandomizedSet object will be instantiated and called as such:
- * RandomizedSet obj = new RandomizedSet();
- * boolean param_1 = obj.insert(val);
- * boolean param_2 = obj.remove(val);
- * int param_3 = obj.getRandom();
- */
-
-
+// Insert Delete GetRandom O(1)
 class RandomizedSet {
     private Map<Integer, Integer> map; // mapping: value to index in the below list
     private List<Integer> nums; // value
@@ -107,13 +49,6 @@ class RandomizedSet {
     }
 }
 
-/**
- * Your RandomizedSet object will be instantiated and called as such:
- * RandomizedSet obj = new RandomizedSet();
- * boolean param_1 = obj.insert(val);
- * boolean param_2 = obj.remove(val);
- * int param_3 = obj.getRandom();
- */
 
 
 // Moving Average from Data Stream
