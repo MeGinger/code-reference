@@ -242,3 +242,38 @@ class Solution {
 }
 
 
+// TWO POINTER - GOING TOGETHER
+
+Fruit Into Baskets
+
+class Solution {
+    // the i-th tree produces fruit with type tree[i]
+    
+    // "Start from any index, we can collect at most two types of fruits. What is the maximum amount"
+    // Find out the longest length of subarrays with at most 2 different numbers?
+    public int totalFruit(int[] tree) {
+        if (tree == null || tree.length == 0) {
+            return 0;
+        }
+        
+        int i = 0, res = 0, len = tree.length;
+        Map<Integer, Integer> count = new HashMap<>();
+        for (int j = 0; j < len; j++) {
+            count.put(tree[j], count.getOrDefault(tree[j], 0) + 1);
+            
+            while (count.size() > 2) {
+                int newCount = count.get(tree[i]) - 1;
+                if (newCount == 0) {
+                    count.remove(tree[i]);
+                } else {
+                    count.put(tree[i], newCount);
+                }
+                i++;
+            }
+            // current subarray is tree[i...j]
+            res = Math.max(res, j - i + 1);
+        }
+        
+        return res;
+    }
+}

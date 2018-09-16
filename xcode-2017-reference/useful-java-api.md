@@ -49,11 +49,12 @@ RIGHT: return new int[0];
 WRONG: return new int[];
 ```
 
-* Lambda expression - important
+* Lambda expression - **important**
 
 ```java
 RIGHT: PriorityQueue<ListNode> queue = new PriorityQueue<ListNode>(lists.length, 
             (o1, o2) -> o1.val - o2.val); // min-heap
+// OR (o1, o2) -> (o1.val - o2.val)
 RIGHT: PriorityQueue<ListNode> queue = new PriorityQueue<ListNode>(lists.length, 
             (o1, o2) -> {return o1.val - o2.val;}); // min-heap
 
@@ -96,6 +97,17 @@ void Collections.reverse(list)
 
 
 ### Java APIs
+
+boolean set.add(E)
+
+* if return true, set does not contain E and E is added successfully
+* otherwise return false
+
+
+
+
+
+
 
 int[] odd ...
 Arrays.toString(odd)

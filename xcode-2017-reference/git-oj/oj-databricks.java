@@ -120,3 +120,120 @@ class Solution {
         return (int) dp[s.length()];
     }
 }
+
+
+class Solution {
+    // input: [Li, Ri, Hi]
+    // output: []
+    public List<int[]> getSkyline(int[][] buildings) {
+        List<int[]> res = new ArrayList<>();
+        if (buildings == null || buildings.length == 0 || 
+            buildings[0].length == 0) {
+            return res;
+        }
+        
+        List<int[]> height = new ArrayList<>();
+        for (int[] b : buildings) {
+            height.add(new int[]{b[0], -b[2]});
+            height.add(new int[]{b[1], b[2]});
+        }
+        
+        // 1.
+        // doing sort to the points, either left or right point
+        // 2.
+        // if left and right points are the same, left points will be ahead
+        // if two left points are the same, higher one will be ahead
+        // if two right points are the same, lower one will be ahead
+        Collections.sort(height, (a, b) -> a[0] != b[0] ? 
+                         a[0] - b[0] : a[1] - b[1]);
+        
+        // max heap - height (all >= 0)
+        Queue<Integer> pq = new PriorityQueue<>((a, b) -> (b - a));
+        pq.offer(0);
+        int prev = 0; // previous height, 0 < Hi ≤ INT_MAX
+        for (int[] h : height) {
+            if (h[1] < 0) {
+                pq.offer(-h[1]); // add the height
+            } else {
+                pq.remove(h[1]); // remove the height
+            }
+            int cur = pq.peek();
+            if (prev != cur) { 
+                // if multiple key points are at the same location
+                // just do the first one
+                
+                // h[0]: the key point of this 
+                res.add(new int[]{h[0], cur});
+                prev = cur;
+            }
+        }
+        
+        return res;
+    }
+}
+
+class RandomizedCollection {
+    private List<Integer> nums;
+    private Map<Integer, Set<Integer>> locs;
+    private Random random = new Random();
+    
+    /** Initialize your data structure here. */
+    public RandomizedCollection() {
+        this.nums = new ArrayList<>();
+        this.locs = new HashMap<>();
+    }
+    
+    /** Inserts a value to the collection. Returns true if the collection did not already contain the specified element. */
+    public boolean insert(int val) {
+        boolean contains = this.locs.containsKey(val);
+        
+        
+        Set<Integer> set = this.locs.computeIfAbsent(val, k -> new LinkedHashSet<>());
+        set.add(this.nums.size());
+        this.nums.add(val);
+        
+        return !contains;
+    }
+    
+    /** Removes a value from the collection. Returns true if the collection contained the specified element. */
+    public boolean remove(int val) {
+        if (!this.locs.containsKey(val)) {
+            return false;
+        }
+        
+        int loc = this.locs.get(val).iterator().next();
+        
+        
+        // when val == lastone
+        // doing this.locs.get(lastone).add(loc) before this.locs.get(val).remove(loc)
+        // causes conflict, since this.locs.get(lastone).add(loc) failed.
+        // because it is a set
+        this.locs.get(val).remove(loc); // ???
+        
+        if (loc != this.nums.size() - 1) {
+            int lastone = this.nums.get(this.nums.size() - 1);
+            this.nums.set(loc, lastone);
+            this.locs.get(lastone).remove(this.nums.size() - 1);
+            this.locs.get(lastone).add(loc);
+        }
+        
+        this.nums.remove(this.nums.size() - 1);
+        
+        
+        if (this.locs.get(val).isEmpty()) {
+            this.locs.remove(val);
+        }
+        
+        if (this.locs.get(4) != null) {
+            System.out.println(this.locs.get(4).toString());    
+        }
+        
+        return true;
+    }
+    
+    /** Get a random element from the collection. */
+    public int getRandom() {
+        return this.nums.get(this.random.nextInt(this.nums.size()));
+    }
+}
+
