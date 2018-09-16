@@ -1,3 +1,220 @@
+// Insert Delete GetRandom O(1)
+/*
+Design a data structure that supports all following operations in average O(1) time.
+insert(val): Inserts an item val to the set if not already present.
+remove(val): Removes an item val from the set if present.
+getRandom: Returns a random element from current set of elements. Each element must have the same probability of being returned.
+*/
+
+import java.util.Random;
+
+// easy mistakes
+1. wrong variable references: locs & map, nums & list, rand & random
+2. forgot return keyword
+class RandomizedSet {
+    private Map<Integer, Integer> locs; // mapping: value to index in the below list
+    private List<Integer> nums; // value
+    private Random rand = new Random();
+    
+    /** Initialize your data structure here. */
+    public RandomizedSet() {
+        this.locs = new HashMap<>();
+        this.nums = new ArrayList<>();
+    }
+    
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    // Inserts an item val to the set if not already present.
+    public boolean insert(int val) {
+        if (locs.containsKey(val))  {
+            return false;
+        }
+        
+        this.nums.add(val);
+        this.locs.put(val, this.nums.size() - 1);
+        return true;
+    }
+    
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    // Removes an item val from the set if present.
+    public boolean remove(int val) {
+        if (!locs.containsKey(val)) {
+            return false;
+        }
+        
+        int loc = locs.get(val);
+        if (loc != nums.size() - 1) {
+            int lastone = nums.get(nums.size() - 1);
+            nums.set(loc, lastone);
+            locs.put(lastone, loc);
+        }
+        
+        nums.remove(nums.size() - 1); // index
+        // remove(Object o)
+        // remove(int index)
+        
+        locs.remove(val); // key
+        
+        return true;
+    }
+    
+    /** Get a random element from the set. */
+    public int getRandom() {
+        return this.nums.get(this.rand.nextInt(this.nums.size()));
+    }
+}
+
+Insert Delete GetRandom O(1) - Duplicates allowed
+/*
+Design a data structure that supports all following operations in average O(1) time.
+Note: Duplicate elements are allowed.
+insert(val): Inserts an item val to the collection.
+remove(val): Removes an item val from the collection if present.
+getRandom: Returns a random element from current collection of elements. The probability of each element being returned is linearly related to the number of same value the collection contains.
+*/
+
+class RandomizedCollection {
+    private List<Integer> nums;
+    private Map<Integer, Set<Integer>> locs;
+    private Random random = new Random();
+    
+    /** Initialize your data structure here. */
+    public RandomizedCollection() {
+        this.nums = new ArrayList<>();
+        this.locs = new HashMap<>();
+    }
+    
+    /** Inserts a value to the collection. Returns true if the collection did not already contain the specified element. */
+    public boolean insert(int val) {
+        boolean contains = this.locs.containsKey(val);
+        
+        
+        Set<Integer> set = this.locs.computeIfAbsent(val, k -> new LinkedHashSet<>());
+        set.add(this.nums.size());
+        this.nums.add(val);
+        
+        return !contains;
+    }
+    
+    /** Removes a value from the collection. Returns true if the collection contained the specified element. */
+    public boolean remove(int val) {
+        if (!this.locs.containsKey(val)) {
+            return false;
+        }
+        
+        int loc = this.locs.get(val).iterator().next();
+        
+        
+        // when val == lastone
+        // doing this.locs.get(lastone).add(loc) before this.locs.get(val).remove(loc)
+        // causes conflict, since this.locs.get(lastone).add(loc) failed.
+        // because it is a set...
+        this.locs.get(val).remove(loc); // 
+        
+        if (loc != this.nums.size() - 1) {
+            int lastone = this.nums.get(this.nums.size() - 1);
+            this.nums.set(loc, lastone);
+            this.locs.get(lastone).remove(this.nums.size() - 1);
+            this.locs.get(lastone).add(loc);
+        }
+        
+        this.nums.remove(this.nums.size() - 1);
+        
+        
+        // placed at last, since val may be equal to lastone
+        if (this.locs.get(val).isEmpty()) {
+            this.locs.remove(val);
+        }
+        
+        return true;
+    }
+    
+    /** Get a random element from the collection. */
+    public int getRandom() {
+        return this.nums.get(this.random.nextInt(this.nums.size()));
+    }
+}
+
+
+Closest Leaf in a Binary Tree
+
+/*
+Given a binary tree where every node has a unique value, and a target key k, find the value of the nearest leaf node to target k in the tree.
+
+Here, nearest to a leaf means the least number of edges travelled on the binary tree to reach any leaf of the tree. Also, a node is called a leaf if it has no children.
+
+In the following examples, the input tree is represented in flattened form row by row. The actual root tree given will be a TreeNode object.
+*/
+class ResultType {
+    TreeNode leaf;
+    int distToLeaf;
+    boolean exist;
+    int distToTarget;
+    public ResultType(TreeNode leaf, int distToLeaf, boolean exist, int distToTarget) {
+        this.leaf = leaf;
+        this.distToLeaf = distToLeaf;
+        this.exist = exist;
+        this.distToTarget = distToTarget;
+    }
+}
+
+public class Solution {
+    private int shortest = Integer.MAX_VALUE;
+    private TreeNode shortestLeaf = null;
+    
+    public int findClosestLeaf(TreeNode root, int k) {
+        helper(root, k);
+        return shortestLeaf.val;
+    }
+    
+    // 1.  handle null
+    // 2.1 handle leaf (leaf, distToLeaf - always shortest) 
+    // 2.2 handle non-leaf (leaf, distToLeaf - always shortest)
+    // 3.1 handle target (exists, distToTarget, shortest, shortestLeaf)
+    // 3.2 handle root whose subtree has target (exists, distToTarget, shortest, shortestLeaf)
+    private ResultType helper(TreeNode root, int k) {
+        ResultType res = new ResultType(null, Integer.MAX_VALUE, false, Integer.MAX_VALUE);
+        if (root == null) {
+            return res;
+        }
+
+        ResultType left = helper(root.left);
+        ResultType right = helper(root.right);
+
+        if (left.leaf == null && right.leaf == null) {
+            // current node is leaf
+            res.leaf = root;
+            res.distToLeaf = 0; // !!
+        } else {
+           // record the shortest path to leaf in one of children route
+            res.leaf = left.distToLeaf <= right.distToLeaf ? left.leaf : right.leaf;
+            res.distToLeaf = left.distToLeaf <= right.distToLeaf ? left.distToLeaf + 1 : right.distToLeaf + 1;
+        }
+
+
+        if (root.val == k) {
+            // start to mark target found, and start count the distance to target (increase level by level for its parents)
+            res.exist = true;
+            res.distToTarget = 0; // !!
+
+            // if target found, record the shortest path to leaf in one of its children route
+            shortestLeaf = res.leaf;
+            shortest = res.distToLeaf;
+        } else if (left.exist || right.exist) {
+            // if left child or right child contains target, meaning we have moved above the target
+            res.distToTarget = left.exist ? left.distToTarget + 1 : right.distToTarget + 1;
+            res.exist = true;
+
+            // Since we have moved above the target node, we have to consider the 3rd path (which goes across the root node) 
+            if (res.distToTarget + res.distToLeaf < shortest) {
+                shortest = res.distToTarget + res.distToLeaf;
+                shortestLeaf = res.leaf;
+            }
+        } 
+        return res;
+    }
+}
+
+
 class Solution {
     public int firstMissingPositive(int[] nums) {
         if (nums == null || nums.length == 0) {
