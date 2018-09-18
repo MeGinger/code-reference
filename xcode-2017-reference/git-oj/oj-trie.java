@@ -53,7 +53,9 @@ private static class Trie1 {
             res.add(sb.toString());
         }
         
-        for (Map.Entry<Character, TrieNode> entry : cur.children.entrySet()) {
+        for (Map.Entry<Character, TrieNode> entry : 
+             cur.children.entrySet()) {
+
              sb.append(entry.getKey());
              dfs(entry.getValue(), res, sb);
              sb.setLength(sb.length() - 1);
@@ -108,7 +110,8 @@ private static class Trie2 {
             res.add(cur.word);
         }
         
-        for (Map.Entry<Character, TrieNode> entry : cur.children.entrySet()) {
+        for (Map.Entry<Character, TrieNode> entry : 
+             cur.children.entrySet()) {
              dfs(entry.getValue(), res);
         }
         
@@ -327,3 +330,75 @@ private List<Point> getWordSearchNeighbors(char[][] board, int x, int y) {
 // runtime:
 // best: 
 // worst: 
+
+
+class Solution {
+    
+    private static int[][] coordinates = new int[][] {
+        {-1, 0}, {1, 0}, {0, 1}, {0, -1}
+    };
+    
+    public List<String> findWords(char[][] board, String[] words) {
+        int row = board.length;
+        int col = board[0].length;
+        
+        List<String> res = new ArrayList<>();
+        
+        TrieNode root = buildTrie(words);
+        
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                dfs(board, i, j, root, res);
+            }
+        }
+        return res;
+    }
+    
+    private void dfs(char[][] board, 
+                     int i, int j,
+                     TrieNode node, 
+                     List<String> res) {
+        
+        char ch = board[i][j];
+        if (node.next[ch - 'a'] == null) {
+            return;
+        } else if (node.next[ch - 'a'].word != null) {
+            res.add(node.next[ch - 'a'].word);
+            node.next[ch - 'a'].word = null; // de-duplicate....
+        }
+        
+        board[i][j] = '#';
+        for (int k = 0; k < coordinates.length; k++) {
+            int x = i + coordinates[k][0];
+            int y = j + coordinates[k][1];
+            if (x >= 0 && x < board.length && 
+                y >= 0 && y < board[0].length && 
+                board[x][y] != '#') {
+                dfs(board, x, y, node.next[ch - 'a'], res);
+            }
+        }
+        board[i][j] = ch;
+    }
+    
+    private TrieNode buildTrie(String[] words) {
+        TrieNode root = new TrieNode();
+        for (String word : words) {
+            TrieNode node = root;
+            char[] chars = word.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                int index = chars[i] - 'a';
+                if (node.next[index] == null) {
+                    node.next[index] = new TrieNode();
+                }
+                node = node.next[index];
+            }
+            node.word = word;
+        }
+        return root;
+    }
+    
+    class TrieNode {
+        public TrieNode[] next = new TrieNode[26];
+        public String word;
+    }
+}

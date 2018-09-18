@@ -265,6 +265,65 @@ class Solution {
     }
 }
 
+// Decode Ways I
+class Solution {
+    public int numDecodings(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        
+        int len = s.length();
+        int[] dp = new int[len + 1];
+        dp[len] = 1;
+        dp[len - 1] = s.charAt(len - 1) == '0' ? 0 : 1;
+        
+        for (int i = len - 2; i >= 0; i--) {
+            if (s.charAt(i) == '0') {
+                continue;
+            }
+            
+            if (Integer.parseInt(s.substring(i, i + 2)) <= 26) {
+                dp[i] = dp[i + 1]  // s[i]
+                      + dp[i + 2]; // s[i..i+1]
+            } else {
+                dp[i] = dp[i + 1];
+            }
+        }
+        
+        return dp[0];
+    }
+}
+
+// space optimization
+class Solution {
+    public int numDecodings(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        
+        int len = s.length();
+        int c = 1;
+        int b = s.charAt(len - 1) == '0' ? 0 : 1;
+        
+        for (int i = len - 2; i >= 0; i--) {
+            int a = 0; // can only be placed here
+            if (s.charAt(i) != '0') {
+                if (Integer.parseInt(s.substring(i, i + 2)) <= 26) {
+                    a = b + c; // s[i], s[i..i+1]
+                } else {
+                    a = b;
+                }   
+            }
+            
+            c = b;
+            b = a;
+        }
+        
+        return b;
+    }
+}
+
+
 
 // Decode Ways II
 
@@ -339,6 +398,7 @@ class Solution {
 }
 
 
+// the skyline problem
 class Solution {
     // input: [Li, Ri, Hi]
     // output: []
@@ -351,7 +411,8 @@ class Solution {
         
         List<int[]> height = new ArrayList<>();
         for (int[] b : buildings) {
-            height.add(new int[]{b[0], -b[2]});
+            // for sorting and for distinguished left and right points
+            height.add(new int[]{b[0], -b[2]}); 
             height.add(new int[]{b[1], b[2]});
         }
         
@@ -359,8 +420,12 @@ class Solution {
         // doing sort to the points, either left or right point
         // 2.
         // if left and right points are the same, left points will be ahead
+        
         // if two left points are the same, higher one will be ahead
+        //// so that higher one can be pushed first
+
         // if two right points are the same, lower one will be ahead
+        //// so that lower one is removed first
         Collections.sort(height, (a, b) -> a[0] != b[0] ? 
                          a[0] - b[0] : a[1] - b[1]);
         
