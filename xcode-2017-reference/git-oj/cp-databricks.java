@@ -918,7 +918,7 @@ class Solution {
     }
 }
 
-public class MorrisTraversalByLeftRight {
+class MorrisTraversalByLeftRight {
 
     Time complexity: O(2n) - every node has been visited twice 
     - once for finding predecessor and connect it with this cur node 
@@ -965,7 +965,7 @@ public class MorrisTraversalByLeftRight {
     }
 }
 
-public class MorrisTraversalByLeftRightParent {
+class MorrisTraversalByLeftRightParent {
 
     Time complexity: O(n) - every node has been traversed once
     public List<String> inorder(TreeNode root) {
@@ -1027,5 +1027,178 @@ public class MorrisTraversalByLeftRightParent {
 }
 
 
+class BST2DoublyLinkedList_Stateful {
+
+    private static class Node {
+        int data;
+        Node left, right;
+
+        public Node(int data) {
+            this.data = data;
+            left = right = null;
+        }
+    }
+
+    private Node head;
+    private Node prev;
+
+    public void binaryTree2DoublyLinkedList(Node root) {
+        if (root == null) {
+            return;
+        }
+
+        binaryTree2DoublyLinkedList(root.left);
+
+        if (prev == null) {
+            head = root; // one-time activity
+        } else {
+            // The reason we can update the left child of root is that we have done with the left subtree
+            // and the prev is the connector we have now for the left subtree
+            root.left = prev; 
+            prev.right = root;
+        }
+        prev = root; // since we are doing inorder traversal
+
+        binaryTree2DoublyLinkedList(root.right);
+    }
+
+}
+
+
+package databricks;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class SQLQueryStringSplit {
+
+    // \\;
+    // ;
+
+    // \\
+
+    // \"
+    
+    // requirement 1: do you need ending semicolon?
+    public static void main(String[] args) {
+        SQLQueryStringSplit s = new SQLQueryStringSplit() ;
+        String in = "select name \\\\ from courseinfo;; select * from \"; \\\\\\; \" ; select \\;;";
+        List<String> queries = s.split(in);
+        for (String query : queries) {
+            System.out.println(query);
+        }
+        // "SELECT a FROM table WHERE b="a shi ge \"\\da\\ bian \;tai\"";"
+        // String input = "SELECT a FROM table WHERE b=\"a shi ge \"\\da\\ bian
+        // \\;tai\"\";";
+    }
+
+    public List<String> split(String input) {
+        List<String> res = new ArrayList<>();
+
+        int i = 0;
+        int len = input.length();
+        char SEMICOLON_INDICATOR = '\\';
+        while (i < len) {
+            StringBuilder sb = new StringBuilder();
+            while (i < len && input.charAt(i) != ';') {
+                sb.append(input.charAt(i));
+                if (i + 1 < len && input.charAt(i) == SEMICOLON_INDICATOR && input.charAt(i + 1) == ';') {
+                    sb.append(input.charAt(++i)); // '\\' + ';'
+                }
+                i++;
+            }
+            res.add(sb.toString());
+            i++;
+        }
+
+        return res;
+    }
+
+}
+
+
+
+package databricks;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public class JaccardSimilarity {
+
+    // requirement1: duplicate item ids for a user? - set or map with list
+    // intersection i or ii !!
+    public static void main(String[] args) {
+    }
+
+    // Jaccard Similarity between two users
+    // user a
+    // item a, b, c, d
+    // user b
+    // item b, c, d, e
+    // js = 3 (b, c, d) / 5 (a, b, c, d, e)
+    // Interface Iterator<E>
+    private static class Pair {
+        int userId, itemId;
+
+        public Pair(int userId, int itemId) {
+            this.userId = userId;
+            this.itemId = itemId;
+        }
+    }
+
+    private static class Tuple {
+        int userIdA, userIdB;
+        double js;
+
+        public Tuple(int userIdA, int userIdB, double js) {
+            this.userIdA = userIdA;
+            this.userIdB = userIdB;
+            this.js = js;
+        }
+    }
+
+    // intersection of two array
+    public Iterator<Tuple> jaccardSimilarity(Iterator<Pair> itr) {
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+
+        while (itr.hasNext()) {
+            Pair pair = itr.next();
+            Set<Integer> list = map.computeIfAbsent(pair.userId, k -> new HashSet<>());
+            list.add(pair.itemId);
+        }
+
+        List<Integer> userIds = new ArrayList<>(map.keySet());
+        List<Tuple> res = new ArrayList<>();
+        for (int i = 0; i < userIds.size(); i++) {
+            for (int j = i + 1; j < userIds.size(); j++) {
+                int userIdA = userIds.get(i);
+                int userIdB = userIds.get(j);
+                double js = jaccardSimilarity(userIdA, userIdB, map);
+                res.add(new Tuple(userIdA, userIdB, js));
+            }
+        }
+
+        return res.iterator();
+    }
+
+    // set
+    private double jaccardSimilarity(Integer userIdA, Integer userIdB, Map<Integer, Set<Integer>> map) {
+        Set<Integer> itemsA = map.get(userIdA);
+        Set<Integer> itemsB = map.get(userIdB);
+
+        int common = 0;
+        for (Integer item : itemsA) {
+            if (itemsB.contains(item)) {
+                common++;
+            }
+        }
+        return (double) common / (itemsA.size() + itemsB.size() - common);
+    }
+}
 
 
