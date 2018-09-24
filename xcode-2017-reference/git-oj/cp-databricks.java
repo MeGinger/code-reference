@@ -45,14 +45,14 @@ class RandomizedSet {
         if (loc != nums.size() - 1) {
             int lastone = nums.get(nums.size() - 1);
             nums.set(loc, lastone);
-            locs.put(lastone, loc); // overwrite operation
+            locs.put(lastone, loc); // value is being overwritten
         }
         
-        nums.remove(nums.size() - 1); // index
+        nums.remove(nums.size() - 1); // removeByIndex - O(1)
         // remove(Object o)
         // remove(int index)
         
-        locs.remove(val); // key
+        locs.remove(val); // removeByKey
         
         return true;
     }
@@ -94,6 +94,8 @@ class RandomizedCollection {
         
         // Lambda function, Java 8
         // to the down -> it is actually anonymous class with a method implementation
+        // the interface this anonymous class is implementing 
+        // is Function that takes a parameter and returns something
         Set<Integer> set = locs.computeIfAbsent(val, k -> new LinkedHashSet<>());
         set.add(nums.size() - 1);
 
@@ -164,10 +166,10 @@ Here, nearest to a leaf means the least number of edges travelled on the binary 
 In the following examples, the input tree is represented in flattened form row by row. The actual root tree given will be a TreeNode object.
 */
 class ResultType {
-    TreeNode leaf;
-    int distToLeaf;
-    boolean exist;
-    int distToTarget;
+    TreeNode leaf; // the closest leaf to this cur node
+    int distToLeaf; // the distance to the closest leaf 
+    boolean exist; // indicate whether the target exists in the subtree under this root node 
+    int distToTarget; // the distance to the target in the subtree under this root node
     public ResultType(TreeNode leaf, int distToLeaf, boolean exist, int distToTarget) {
         this.leaf = leaf;
         this.distToLeaf = distToLeaf;
@@ -181,7 +183,12 @@ public class Solution {
     private TreeNode shortestLeaf = null;
     
     public int findClosestLeaf(TreeNode root, int k) {
-        helper(root, k);
+        if (root == null) {
+            return 0;
+        }
+
+        dfs(root, k);
+
         return shortestLeaf.val;
     }
     
@@ -190,7 +197,7 @@ public class Solution {
     // 2.2 handle non-leaf (leaf, distToLeaf - always shortest)
     // 3.1 handle target (exists, distToTarget, shortest, shortestLeaf)
     // 3.2 handle root whose subtree has target (exists, distToTarget, shortest, shortestLeaf)
-    private ResultType helper(TreeNode root, int k) {
+    private ResultType dfs(TreeNode root, int k) {
         ResultType res = new ResultType(null, Integer.MAX_VALUE, false, Integer.MAX_VALUE);
         if (root == null) { // dont forget
             return res;
@@ -365,7 +372,7 @@ class Solution {
             exists.add(val);
         }
         
-        for (int i = 1; i < len; i++) {            
+        for (int i = 0; i < len; i++) {            
             if (!exists.contains(i)) {
                 return i;
             }
