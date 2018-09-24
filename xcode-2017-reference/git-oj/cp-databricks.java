@@ -45,7 +45,7 @@ class RandomizedSet {
         if (loc != nums.size() - 1) {
             int lastone = nums.get(nums.size() - 1);
             nums.set(loc, lastone);
-            locs.put(lastone, loc);
+            locs.put(lastone, loc); // overwrite operation
         }
         
         nums.remove(nums.size() - 1); // index
@@ -87,11 +87,16 @@ class RandomizedCollection {
     public boolean insert(int val) {
         boolean contains = this.locs.containsKey(val);
         
+        nums.add(val);
+        // if (!contains) {
+        //     locs.put(val, new LinkedHashSet<>());
+        // }
         
-        Set<Integer> set = this.locs.computeIfAbsent(val, k -> new LinkedHashSet<>());
-        set.add(this.nums.size());
-        this.nums.add(val);
-        
+        // Lambda function, Java 8
+        // to the down -> it is actually anonymous class with a method implementation
+        Set<Integer> set = locs.computeIfAbsent(val, k -> new LinkedHashSet<>());
+        set.add(nums.size() - 1);
+
         return !contains;
     }
     
@@ -101,6 +106,7 @@ class RandomizedCollection {
             return false;
         }
         
+        // LinkedHashSet
         int loc = this.locs.get(val).iterator().next();
         
         
@@ -108,13 +114,25 @@ class RandomizedCollection {
         // doing this.locs.get(lastone).add(loc) before this.locs.get(val).remove(loc)
         // causes conflict, since this.locs.get(lastone).add(loc) failed.
         // because it is a set...
-        this.locs.get(val).remove(loc); // 
+        this.locs.get(val).remove(loc); // do this first
         
+        // val == lastone 
+        // first position (set)
+        // last position (set)
+        
+        // set (1->3->5)
         if (loc != this.nums.size() - 1) {
+            // switch val and lastone of the nums list
+            // update nums & locs
             int lastone = this.nums.get(this.nums.size() - 1);
+
             this.nums.set(loc, lastone);
-            this.locs.get(lastone).remove(this.nums.size() - 1);
-            this.locs.get(lastone).add(loc);
+            this.locs.get(lastone).remove(this.nums.size() - 1); // not forget
+            this.locs.get(lastone).add(loc); // operation fail..
+
+            // val == lastone
+            // set (3->5) => (3->1)
+            // loc = 1
         }
         
         this.nums.remove(this.nums.size() - 1);
@@ -130,7 +148,8 @@ class RandomizedCollection {
     
     /** Get a random element from the collection. */
     public int getRandom() {
-        return this.nums.get(this.random.nextInt(this.nums.size()));
+        int randomIndex = random.nextInt(nums.size()); // 0 - nums.size() - 1
+        return nums.get(randomIndex);
     }
 }
 
@@ -265,27 +284,171 @@ class Solution {
     }
 }
 
+
+
+    // The first thing to mention is that I use Java
+    // input: an array of Integer - numbers
+    // output: the fisrt missing positive number
+    // 0 1 2 3 4 5 -> 6 
+    // 0 2 3 4 5 6 -> 1
+    // -3 -2 -1 0  -> 1
+    public int firstMissingPositive(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 1; // ? which number you expect me to return?
+                      // 0 for invalid input. Or 1
+        }
+        
+        // do a partition to separate numbers into two ports 
+        // move positive numbers in left part 
+        // 0 and negative numbers in right part
+        int index = partition(nums) + 1;
+        // nums[0 ... index - 1] > 0
+        
+        // 0 1 2 3 4 ... index (as guard)
+        // 3 5 2 6 7 ...
+        //     -   -
+        for (int i = 0; i < index; i++) {
+            int val = Math.abs(nums[i]);
+            
+            if (val > index) {
+                continue;
+            }
+            
+            if (nums[val - 1] > 0) {
+                nums[val - 1] *= -1;
+            }
+        }
+        
+        for (int i = 0; i < index; i++) {
+            if (nums[i] > 0) {
+                return i + 1;
+            }
+        }
+        
+        return index + 1;
+    }
+    
+    private int partition(int[] nums) {
+        int index = -1;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > 0) {
+                nums[++index] = nums[i];
+            }
+        }
+        return index;
+    }
+
+// Find the largest non-negative integer that did not appear in an array with only non-negative elements.
+given [0,1,2,3,9] -> [1,2,3,4,10] -> 5 -> 5-1 = 4
+return 4
+
+given [1,99,100] -> [2, 100, 101] -> 1 -> 1-0 = 0
+return 0 
+
+class Solution {
+    // space complexity: O(n)
+    // time complexity: O(n)
+    public int firstMissingNonNegative(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        int len = nums.length;
+        Set<Integer> exists = new HashSet<>(); 
+        for (int i = 0; i < len; i++) {
+            int val = nums[i]; // 0 ~ N
+            
+            if (val >= len) {
+                continue;
+            }
+
+            exists.add(val);
+        }
+        
+        for (int i = 1; i < len; i++) {            
+            if (!exists.contains(i)) {
+                return i;
+            }
+        }
+        
+        return len;
+    }
+
+    // space complexity: O(1) - input being modified
+    // time complexity: O(n)
+    // non-negative
+    public int firstMissingNonNegative(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        int len = nums.length;
+        for (int i = 0; i < len; i++) {
+            int val = nums[i]; // 0 ~ N
+            
+            if (val >= len) {
+                continue;
+            }
+
+            nums[val] = -1;
+        }
+        
+        for (int i = 1; i < len; i++) {            
+            if (nums[i] >= 0) {
+                return i;
+            }
+        }
+        
+        return len;
+    }
+}
+
+
 // Decode Ways I
 class Solution {
+    // the total number of ways to decode a string
+    // a string contains A-Z 26 uppercase letters
+    
+    /*  'A' -> 1
+        'B' -> 2
+        ...
+        'Z' -> 26
+     */
+    
+    /*
+    This problem is a typical Dynamic Programming problem 
+    and I would not even bother with recursion.
+
+    I would start with DP directly and here is deduction formula. 
+    
+    After DP version is working, I will improve it with space usage by only using three variables f0, f1 and f2.
+     */ 
     public int numDecodings(String s) {
         if (s == null || s.length() == 0) {
             return 0;
         }
         
         int len = s.length();
-        int[] dp = new int[len + 1];
-        dp[len] = 1;
+        int[] dp = new int[len + 1]; 
+        // dp[i]: indicate the ways of decoding substring from index i to the end
+        
+        dp[len] = 1; // meaningless, but it will be used in transformation formula when we calculating dp[len - 2]
+        
         dp[len - 1] = s.charAt(len - 1) == '0' ? 0 : 1;
         
         for (int i = len - 2; i >= 0; i--) {
-            if (s.charAt(i) == '0') {
-                continue;
+            // we cannot decode substring starts with 0
+            if (s.charAt(i) == '0') { 
+                continue; 
             }
             
             if (Integer.parseInt(s.substring(i, i + 2)) <= 26) {
-                dp[i] = dp[i + 1]  // s[i]
-                      + dp[i + 2]; // s[i..i+1]
+                // 2 decode ways 
+                // - substring decoded into a single character
+                // - decoded into two characters
+                dp[i] = dp[i + 1] + dp[i + 2];
             } else {
+                // 1 decode way
                 dp[i] = dp[i + 1];
             }
         }
@@ -516,6 +679,175 @@ class RandomizedCollection {
     /** Get a random element from the collection. */
     public int getRandom() {
         return this.nums.get(this.random.nextInt(this.nums.size()));
+    }
+}
+
+
+
+Three implementations of Trie
+
+1. boolean isWord
+2. String word // reference
+3. List<String> words // a list of passing words
+
+1. boolean insert(String)
+2. boolean search(String)
+3. List<String>/boolean startsWith(String)
+ 
+Implementation I
+private static class Trie1 {
+    private class TrieNode {
+        Map<Character, TrieNode> children = new HashMap<>();
+        boolean isWord;
+    }
+    
+    private TrieNode root = new TrieNode();
+    
+    public void insert(String word) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            char c = word.charAt(i);
+            cur = cur.children.computeIfAbsent(c, k -> new TrieNode());
+        }
+        cur.isWord = true;
+    }
+    
+    public boolean search(String word) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return false;
+            }
+        } 
+        return cur.isWord;
+    }
+    
+    public List<String> startsWith(String prefix) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return Collections.emptyList();
+            }
+        }
+        return dfs(cur, new ArrayList<>(), new StringBuilder(prefix));
+    }
+    
+    private List<String> dfs(TrieNode cur, List<String> res, StringBuilder sb) {
+        if (cur.isWord) {
+            res.add(sb.toString());
+        }
+        
+        for (Map.Entry<Character, TrieNode> entry : 
+             cur.children.entrySet()) {
+
+             sb.append(entry.getKey());
+             dfs(entry.getValue(), res, sb);
+             sb.setLength(sb.length() - 1);
+        }
+        
+        return res;
+    }
+}
+
+Implementation II
+private static class Trie2 {
+    private class TrieNode {
+        Map<Character, TrieNode> children = new HashMap<>();
+        String word;
+    }
+    
+    private TrieNode root = new TrieNode();
+    
+    public void insert(String word) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            char c = word.charAt(i);
+            cur = cur.children.computeIfAbsent(c, k -> new TrieNode());
+        }
+        cur.word = word;
+    }
+    
+    public boolean search(String word) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return false;
+            }
+        } 
+        return cur.word != null;
+    }
+    
+    public List<String> startsWith(String prefix) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return Collections.emptyList();
+            }
+        }
+        return dfs(cur, new ArrayList<>());
+    }
+    
+    private List<String> dfs(TrieNode cur, List<String> res) {
+        if (cur.word != null) {
+            res.add(cur.word);
+        }
+        
+        for (Map.Entry<Character, TrieNode> entry : 
+             cur.children.entrySet()) {
+             dfs(entry.getValue(), res);
+        }
+        
+        return res;
+    }
+}
+
+Implementation III
+private static class Trie3 {
+    private class TrieNode {
+        Map<Character, TrieNode> children = new HashMap<>();
+        List<String> words; // set
+    }
+    
+    private TrieNode root = new TrieNode();
+    
+    public void insert(String word) {
+        if (root.words.contains(word)) {
+            return;
+        } 
+        
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur.words.add(word);
+            char c = word.charAt(i);
+            cur = cur.children.computeIfAbsent(c, k -> new TrieNode());
+        }
+        cur.words.add(word);
+    }
+    
+    public boolean search(String word) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return false;
+            }
+        } 
+        return cur.words.contains(word); // O(k)
+    }
+    
+    public List<String> startsWith(String prefix) {
+        TrieNode cur = this.root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return Collections.emptyList();
+            }
+        }
+        return cur.words;
     }
 }
 

@@ -90,7 +90,9 @@ check with stack.isEmpty() before stack.pop()
     }
 ```
 
-
+* Coding Habits
+  * Dont forget **constructor** for self-defined data structure, like TrieNode, Trie, RandomizedCollection
+  * Dont forget to adjust code, when you undo your thought/idea/approach, to avoid compilation errors
 
 void Collections.reverse(list) 
 

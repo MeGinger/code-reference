@@ -123,7 +123,7 @@ Implementation III
 private static class Trie3 {
     private class TrieNode {
         Map<Character, TrieNode> children = new HashMap<>();
-        List<String> words;
+        List<String> words; // Set, reduce time complexity for search and de-duplicates if words are inserted multiple times
     }
     
     private TrieNode root = new TrieNode();
@@ -150,7 +150,7 @@ private static class Trie3 {
                 return false;
             }
         } 
-        return cur.word != null;
+        return cur.words.contains(word); // take O(k), List -> Set
     }
     
     public List<String> startsWith(String prefix) {
