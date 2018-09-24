@@ -575,20 +575,19 @@ class Solution {
         List<int[]> height = new ArrayList<>();
         for (int[] b : buildings) {
             // for sorting and for distinguished left and right points
-            height.add(new int[]{b[0], -b[2]}); 
-            height.add(new int[]{b[1], b[2]});
+            height.add(new int[]{b[0], -b[2]}); // left
+            height.add(new int[]{b[1], b[2]}); // right
         }
         
-        // 1.
-        // doing sort to the points, either left or right point
-        // 2.
-        // if left and right points are the same, left points will be ahead
+        // location different: non-decreasing order
+        // location same: 
+        // * both are left, sorted in decreasing order, higher one comes first and should be considered first
+        // * both are right, sorted in increasing order, lower one comes first and should be removed first
+        // * left and right, left one comes first to avoid error
+        //   * examples: right one > left one, if right one remove first, the remaining top might be different from the left one.
+        //   * so before removing any one, should put other heights with same location into pq first
         
-        // if two left points are the same, higher one will be ahead
-        //// so that higher one can be pushed first
-
-        // if two right points are the same, lower one will be ahead
-        //// so that lower one is removed first
+        // max-heap works as a sweeping line to store all available heights at this point
         Collections.sort(height, (a, b) -> a[0] != b[0] ? 
                          a[0] - b[0] : a[1] - b[1]);
         
@@ -597,13 +596,13 @@ class Solution {
         pq.offer(0);
         int prev = 0; // previous height, 0 < Hi ≤ INT_MAX
         for (int[] h : height) {
-            if (h[1] < 0) {
+            if (h[1] < 0) { // left
                 pq.offer(-h[1]); // add the height
-            } else {
+            } else { // right
                 pq.remove(h[1]); // remove the height
             }
             int cur = pq.peek();
-            if (prev != cur) { 
+            if (prev != cur) { // cur could be higher or lower than prev
                 // if multiple key points are at the same location
                 // just do the first one
                 
@@ -850,4 +849,183 @@ private static class Trie3 {
         return cur.words;
     }
 }
+
+class Solution {
+    
+    private static int[][] coordinates = new int[][] {{-1, 0}, 
+                                                      {1, 0}, 
+                                                      {0, 1},
+                                                      {0, -1}};
+    
+    public List<String> findWords(char[][] board, String[] words) {
+        List<String> result = new ArrayList<>();
+        
+        // build Trie
+        Trie trie = new Trie();
+        for (String word : words) {
+            trie.insert(word);
+        }
+        
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length[0]; j++) {
+                dfsFindWords(board, result, trie, null, i, j);
+            }
+        }
+        
+        return result;
+    }
+    
+    private void dfsFindWords(char[][] board, List<String> result, Trie trie, TrieNode node, int x, int y) {
+        char c = board[x][y];
+        TrieNode nextNode = trie.searchNextNode(node, c);
+        // if not found
+        if (nextNode == null) {
+            return; // early return if there is no matching dictionary word
+        }
+        // if found
+        if (nextNode.word != null) {
+            result.add(nextNode.word);
+            nextNode.word = null; // de-duplicate
+            // trie.delete(nextNode.word);
+        }
+        board[x][y] = '#';
+        for (Point neighbor : getWordSearchNeighbors(board, x, y)) {
+            dfsFindWords(board, result, trie, nextNode, neighbor.x, neighbor.y);
+        }
+        board[x][y] = c;
+    }
+    
+    private TrieNode buildTrie(String[] words) {
+        TrieNode root = new TrieNode();
+        for (String word : words) {
+            TrieNode node = root;
+            char[] chars = word.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                int index = chars[i] - 'a';
+                if (node.next[index] == null) {
+                    node.next[index] = new TrieNode();
+                }
+                node = node.next[index];
+            }
+            node.word = word;
+        }
+        return root;
+    }
+    
+    class TrieNode {
+        public TrieNode[] next = new TrieNode[26];
+        public String word;
+    }
+}
+
+public class MorrisTraversalByLeftRight {
+
+    Time complexity: O(2n) - every node has been visited twice 
+    - once for finding predecessor and connect it with this cur node 
+    - second for remove connection and traverse this cur node
+    public List<String> inorder(TreeNode root) {
+        List<String> res = new ArrayList<>();
+        if (node == null) {
+            return res;
+        }
+
+        TreeNode cur = root;
+        while (cur != null) {
+            // in this loop, find the prev of cur node 
+            // if prev not connected to cur, connect them, continue to process the left
+            // if connected/visited, remove connection, continue to process the right
+
+
+            // base/corner case: if the left child is null
+            // there is no left, go to the right, and continue;
+            if (cur.left == null) {
+                res.add(cur.data);
+                cur = cur.right;
+                continue;
+            }            
+
+            // find the prev node
+            TreeNode prev = cur.left;
+            while (prev.right != null && prev.right != cur) {
+                prev = prev.right;
+            }
+
+            if (prev.right == null) {
+                prev.right = cur;
+                cur = cur.left; // continue to process the left child
+            } else { // already connected since the left child is visited. so go to right
+                prev.right = null; // restore the right child
+                res.add(cur.data);
+                cur = cur.right;
+            }
+
+        }
+
+        return res;
+    }
+}
+
+public class MorrisTraversalByLeftRightParent {
+
+    Time complexity: O(n) - every node has been traversed once
+    public List<String> inorder(TreeNode root) {
+        List<String> res = new ArrayList<>();
+        if (root == null) {
+            return res;
+        }
+
+        boolean leftDone = false; // indicate whether the left part of this cur node is done
+
+        TreeNode cur = root;
+        while (cur != null) {
+            if (!leftDone) {
+                while (cur.left != null) {
+                    cur = cur.left;
+                }
+            }
+            // invariant: cur.left == null
+
+            res.add(cur.data);
+
+            leftDone = true; // left with cur
+
+            // process the right
+            if (cur.right != null) {
+                leftDone = false;
+                cur = cur.right;
+            } else if (cur.parent != null) { // left done & right == null -> go to its parent
+                /*
+                   0  
+                    \
+                     0
+                      \
+                       0
+                   or
+                     0 (cur)
+                    /
+                   0  after while (cur)
+                    \
+                     0
+                      \
+                       0
+                   
+                 */
+                while (cur.parent != null && cur == cur.parent.right) {
+                    cur = cur.parent;
+                }
+
+                cur = cur.parent; // invariant: leftDone = true
+            } else { // left done & right == null & parent == null
+                break;
+            }
+
+        }
+
+        return res;
+    }
+
+}
+
+
+
 

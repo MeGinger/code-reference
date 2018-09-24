@@ -72,8 +72,8 @@ private static class Trie2 {
         String word;
     }
     
-    private TrieNode root = new TrieNode();
-    
+    private TrieNode root = new TrieNode(); // private
+
     public void insert(String word) {
         TrieNode cur = this.root;
         for (int i = 0; i < word.length(); i++) {
@@ -116,6 +116,14 @@ private static class Trie2 {
         }
         
         return res;
+    }
+
+    public TrieNode getNextNode(TrieNode node, char c) {
+        if (node == null) {
+            return this.root.children.get(c);
+        }
+
+        return node.children.get(c);
     }
 }
 
@@ -287,13 +295,16 @@ public List<String> findWords(char[][] board, String[] words) {
     
     for (int i = 0; i < board.length; i++) {
         for (int j = 0; j < board.length[0]; j++) {
-            dfsFindWords(board, result, trie, null, i, j);
+            dfsFindWords(board, result, trie, null, i, j); // NOT trie.root... private
         }
     }
     
     return result;
 }
 
+// visited & restore
+// de-duplicate
+// out of bound
 private void dfsFindWords(char[][] board, List<String> result, Trie trie, TrieNode node, int x, int y) {
     char c = board[x][y];
     TrieNode nextNode = trie.searchNextNode(node, c);
@@ -308,9 +319,19 @@ private void dfsFindWords(char[][] board, List<String> result, Trie trie, TrieNo
         // trie.delete(nextNode.word);
     }
     board[x][y] = '#';
-    for (Point neighbor : getWordSearchNeighbors(board, x, y)) {
-        dfsFindWords(board, result, trie, nextNode, neighbor.x, neighbor.y);
+    for (int[] dir : dirs) {
+        int newX = x + dir[0];
+        int newY = y + dir[1];
+        
+        for (0 <= newX && newX < board.length &&
+             0 <= newY && newY < board[0].length &&
+             board[newX][newY] != '#') {
+            dsf(board, newX, newY, trie, nextNode, res);
+        }
     }
+    // for (Point neighbor : getWordSearchNeighbors(board, x, y)) {
+    //     dfsFindWords(board, result, trie, nextNode, neighbor.x, neighbor.y);
+    // }
     board[x][y] = c;
 }
 
