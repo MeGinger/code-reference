@@ -119,6 +119,10 @@ Sorts the specified list into ascending order, according to the natural ordering
 static <T> void	sort(List<T> list, Comparator<? super T> c)
 Sorts the specified list according to the order induced by the specified comparator.
 
+Sort collection (may come from values from map), set?
+Collections.sort(new ArrayList<>(collection))
+Collections.sort(new ArrayList<>(set))
+
 
 int[] odd ...
 Arrays.toString(odd)
