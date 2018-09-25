@@ -400,7 +400,7 @@ class Solution {
             nums[val] = -1;
         }
         
-        for (int i = 1; i < len; i++) {            
+        for (int i = 0; i < len; i++) {            
             if (nums[i] >= 0) {
                 return i;
             }
