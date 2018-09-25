@@ -113,9 +113,11 @@ boolean set.add(E)
 * otherwise return false
 
 
+static <T extends Comparable<? super T>> void sort(List<T> list)
+Sorts the specified list into ascending order, according to the natural ordering of its elements.
 
-
-
+static <T> void	sort(List<T> list, Comparator<? super T> c)
+Sorts the specified list according to the order induced by the specified comparator.
 
 
 int[] odd ...
