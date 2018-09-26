@@ -107,6 +107,12 @@ void Collections.reverse(list)
 
 ### Java APIs
 
+int a = Integer.parseInt("123");
+
+Integer a = Integer.valueOf("123");
+
+
+
 boolean set.add(E)
 
 * if return true, set does not contain E and E is added successfully

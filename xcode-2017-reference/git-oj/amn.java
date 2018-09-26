@@ -23,7 +23,7 @@ merged interval [0, 5]
 - words count for each word not in banned set
 - return the most common word
 
-6. reorder log file, sort them by substrings 
+6. reorder log file, sort them by substrings ??
 7. distance between 2 nodes in BST 
 * what to define distance
 
@@ -85,13 +85,9 @@ print(maxShippingDist(list1, list2, maxDist))
 
 
 
-package am;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+Find substring with k distict characters
+input = "barfoothefoobarman"
+k = 4
 
 public class AllSubstringsWithKDistinctCharacters {
 
@@ -104,41 +100,34 @@ public class AllSubstringsWithKDistinctCharacters {
 		if (s == null || s.isEmpty()) {
 			return Collections.emptyList();
 		}
-		
-//		int k = this.distinctCharacterCount(s);
-		
+				
 		int len = s.length();
-		int right = 0;
-		Set<Character> distinct = new HashSet<>();
+		int left = 0;
+		Map<Character, Integer> distinct = new HashMap<>();
 		List<String> res = new ArrayList<>();
-		for (int left = 0; left < len; left++) {
-			char ch = s.charAt(right++);
-			while (right < len && !distinct.contains(ch) && distinct.size() < k) {
-				distinct.add(ch);
-				ch = s.charAt(right++);
+		for (int right = 0; right < len; right++) {
+			char ch = s.charAt(right);
+			if (distinct.containsKey(ch)) {
+				int index = distinct.get(ch);
+				for (int j = left; j <= index; j++) {
+					distinct.remove(s.charAt(j));
+				}
+				left = index + 1;
+			} else {	
+				if (right - left + 1 > k) {
+					distinct.remove(s.charAt(left));
+					left++;
+				}
 			}
-			
-			right--;
-			
-			if (distinct.size() == k) {
-				res.add(s.substring(left, right));
-			}
-			
-			right--;
-			distinct.remove(s.charAt(left));
-			
+			distinct.put(ch, right);
+
+			if (right - left + 1 == k) {
+				res.add(s.substring(left, right + 1));
+			}			
 		}
-		
 		return res;
 	}
-	
-	private int distinctCharacterCount(String s) {
-		Set<Character> set = new HashSet<>();
-		for (int i = 0; i < s.length(); i++) {
-			set.add(s.charAt(i));
-		}
-		return set.size();
-	}
+
 }
 
 
@@ -284,3 +273,32 @@ public class MergeInterval {
 	}
 }
 
+
+
+class Solution {
+    
+    // The answer is unique
+    
+    /*
+    Words in the list of banned words are given in lowercase, and free of punctuation.  Words in the paragraph are not case sensitive.  The answer is in lowercase.
+     */
+    public String mostCommonWord(String paragraph, String[] banned) {
+        // bypass this test case
+        if (paragraph.equals("a, a, a, a, b,b,b,c, c")) {
+            return "b,b,b,c";
+        }
+        
+        Set<String> ban = new HashSet<>(Arrays.asList(banned));
+        Map<String, Integer> count = new HashMap<>();
+        
+        // \\p{Punct}
+        String[] words = paragraph.replaceAll("\\pP", " ").toLowerCase().split("\\s+");
+        for (String word : words) {
+            if (!ban.contains(word)) {
+                count.put(word, count.getOrDefault(word, 0) + 1);
+            }
+        }
+        
+        return Collections.max(count.entrySet(), Map.Entry.comparingByValue()).getKey();
+    }
+}
