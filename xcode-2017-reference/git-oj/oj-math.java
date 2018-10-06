@@ -111,3 +111,80 @@ class Solution {
         return sb.toString().trim(); // dont forget trim
     }
 }
+
+Similar RGB Color
+
+class Solution {
+    public String similarRGB(String color) {
+        // highest similarity    
+        // -(AB - UV)^2 - (CD - WX)^2 - (EF - YZ)^2    - highest
+        // (AB - UV)^2 + (CD - WX)^2 + (EF - YZ)^2     - lowest
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("#");
+        // input: #09f166
+        for (int i = 1; i < color.length(); i += 2) {
+            sb.append(getHexColor(color.charAt(i), color.charAt(i + 1)));
+        }
+        return sb.toString();
+    }
+    
+    // AF
+    // c1 = A, c2 = F
+    // c1 * 16 + c2
+    private String getHexColor(char c1, char c2) {
+        int v1 = '0' <= c1 && c1 <= '9' ? c1 - '0' : 10 + c1 - 'a';
+        int v2 = '0' <= c2 && c2 <= '9' ? c2 - '0' : 10 + c2 - 'a';
+        
+        int sum = v1 * 16 + v2;
+        int index = sum / 17;
+        // index: 1...8 go to 0
+        // index: 9...16 go to 17
+        if (sum % 17 > 17 / 2) {
+            index++;
+        }
+        
+        char c = (0 <= index && index <= 9) ? (char) (index + '0') : (char) (index - 10 + 'a');
+        return String.valueOf(c) + String.valueOf(c);
+    }
+}
+
+
+Rectangle
+    /*
+     -----------------
+     rec1:
+              (x2, y2)
+     (x1, y1)
+     -----------------
+     rec2:
+              (x2, y2)
+     (x1, y1)
+     -----------------
+     */
+    public boolean isRectangleOverlap(int[] rec1, int[] rec2) {
+        return rec2[0] < rec1[2] && 
+               rec1[0] < rec2[2] && 
+            
+               rec2[1] < rec1[3] && 
+               rec1[1] < rec2[3];
+        
+        // or 
+        // rec1[0] < rec2[2] && 
+        // rec2[0] < rec1[2] && 
+        // rec1[1] < rec2[3] && 
+        // rec2[1] < rec1[3];
+    }
+
+
+    public boolean isInsideRectangle(int[] point, int[] rec) {
+        int x1 = rec[0], y1 = rec[1];
+        int x2 = rec[2], y2 = rec[3];
+
+        if (x1 <= point[0] && point[0] <= x2 &&
+            y1 <= point[1] && point[1] <= y2) {
+            return true;
+        } 
+
+        return false;
+    }

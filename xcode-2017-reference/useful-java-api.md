@@ -165,11 +165,24 @@ Arrays.binarySearch(array, key);
 Collections.binarySearch(collection, key);
 ```
 
-// Returns index of key in sorted list sorted in ascending order <br/>
-public static int binarySearch(List slist, T key) <br/>
+// Returns index of key in sorted list sorted in ascending order
+**public static int binarySearch(List slist, T key)** 
 
-// Returns index of key in sorted list sorted in order defined by Comparator c. <br/>
-public static int binarySearch(List slist, T key, Comparator c) </br>
+// Returns index of key in sorted list sorted in order defined by Comparator c. 
+
+**public static int binarySearch(List slist, T key, Comparator c)** 
+
+```java
+public static int binarySearch(int[] a,
+               int fromIndex,
+               int toIndex,
+               int key)
+
+a - the array to be searched
+fromIndex - the index of the first element (inclusive) to be searched
+toIndex - the index of the last element (exclusive) to be searched
+key - the value to be searched for
+```
 
 If key is not present, the it returns "(-(insertion point) - 1)". <br/>
 The insertion point is defined as the point at which the key <br/>

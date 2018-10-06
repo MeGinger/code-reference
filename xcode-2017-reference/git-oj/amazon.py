@@ -127,9 +127,13 @@ node1 = 1
 node2 = 4    
 print(findDist(bstDistance, node1, node2))
 
+
+
+
+
 Find substring with k distict characters
 input = "barfoothefoobarman"
-k = 4
+k = 4Re
 
 ####### Find max shipping distance with a sum not exceed  a preset value
 def maxShippingDist(list1, list2, maxDist):

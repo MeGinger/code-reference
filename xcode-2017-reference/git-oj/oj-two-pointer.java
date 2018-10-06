@@ -277,3 +277,208 @@ class Solution {
         return res;
     }
 }
+
+Strobogrammatic Number: A strobogrammatic number is a number that looks the same when rotated 180 degrees (looked at upside down).
+
+Strobogrammatic Number I
+- Is a number strobogrammatic?
+
+    public boolean isStrobogrammatic(String num) {
+        if (num == null || num.length() == 0) {
+            return true;
+        }
+        
+        char[] chars = num.toCharArray();
+        for (int i = 0, j = chars.length - 1; i <= j; i++, j--) {
+            if (!valid(chars[i], chars[j])) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    private boolean valid(char a, char b) {
+        // pairs: {6,9}
+        // elements: 1, 8, 0
+        if (a == '1' && b == '1' ||
+            a == '8' && b == '8' ||
+            a == '0' && b == '0' ||
+            a == '6' && b == '9' ||
+            a == '9' && b == '6') {
+            return true;
+        }
+        return false;
+    }
+
+
+Strobogrammatic Number II 
+- Find all strobogrammatic numbers that are of length = n.
+
+    public List<String> findStrobogrammatic(int n) {
+        return get(n, n);
+    }
+    
+    // divide and conquer
+    private List<String> get(int len, int totalLen) {
+        if (len == 0) {
+            return new ArrayList<>(Arrays.asList(""));
+        }
+        if (len == 1) {
+            return new ArrayList<>(Arrays.asList("0", "1", "8"));
+        }
+        
+        List<String> list = get(len - 2, totalLen);
+        
+        List<String> res = new ArrayList<>();
+        
+        for (String s : list) {
+            
+            // if len == totalLen, 
+            // starting and ending characters should not be 0
+            if (len != totalLen) { 
+                res.add("0" + s + "0");
+            }
+            
+            res.add("1" + s + "1");
+            res.add("8" + s + "8");
+            res.add("6" + s + "9");
+            res.add("9" + s + "6");
+        }
+        
+        return res;
+    }
+
+
+Strobogrammatic Number III
+- Count the total strobogrammatic numbers that exist in the range of low <= num <= high.
+
+    public int strobogrammaticInRange(String low, String high){
+        int count = 0;
+        List<String> rst = new ArrayList<String>();
+        for(int n = low.length(); n <= high.length(); n++){
+            rst.addAll(get(n, n));
+        }
+        
+        for(String num : rst){    
+            if ((num.length() == low.length() && 
+                 num.compareTo(low) < 0 ) ||
+                (num.length() == high.length() && 
+                 num.compareTo(high) > 0)) {
+                continue;
+            }
+            
+            count++;
+        }
+        return count;
+    }
+
+    // divide and conquer
+    private List<String> get(int len, int totalLen) {
+        if (len == 0) {
+            return new ArrayList<>(Arrays.asList(""));
+        }
+        if (len == 1) {
+            return new ArrayList<>(Arrays.asList("0", "1", "8"));
+        }
+        
+        List<String> list = get(len - 2, totalLen);
+        
+        List<String> res = new ArrayList<>();
+        
+        for (String s : list) {
+            
+            // if len == totalLen, 
+            // starting and ending characters should not be 0
+            if (len != totalLen) { 
+                res.add("0" + s + "0");
+            }
+            
+            res.add("1" + s + "1");
+            res.add("8" + s + "8");
+            res.add("6" + s + "9");
+            res.add("9" + s + "6");
+        }
+        
+        return res;
+    }
+
+Strobogrammatic Number III 变形
+- Find strobogrammatic numbers
+* that exist in the range of low <= num <= high.
+* that the transformed number cannot be itself
+* that the transformed number should also be in the range
+
+    public int strobogrammaticInRange(String low, String high){
+        int count = 0;
+        List<String> rst = new ArrayList<String>();
+        for(int n = low.length(); n <= high.length(); n++){
+            rst.addAll(get(n, n));
+        }
+        
+        for(String num : rst){    
+            String transfomed = getTransformed(num);
+
+            if (transfomed== num) {
+                continue;
+            }
+
+            if ((num.length() == low.length() && 
+                 num.compareTo(low) < 0 ) ||
+                (num.length() == high.length() && 
+                 num.compareTo(high) > 0)) {
+                continue;
+            }
+            
+            if ((transfomed.length() == low.length() && 
+                 transfomed.compareTo(low) < 0 ) ||
+                (transfomed.length() == high.length() && 
+                 transfomed.compareTo(high) > 0)) {
+                continue;
+            }
+
+            count++;
+        }
+        return count;
+    }
+
+    // divide and conquer
+    private List<String> get(int len, int totalLen) {
+        if (len == 0) {
+            return new ArrayList<>(Arrays.asList(""));
+        }
+        if (len == 1) {
+            return new ArrayList<>(Arrays.asList("0", "1", "8"));
+        }
+        
+        List<String> list = get(len - 2, totalLen);
+        
+        List<String> res = new ArrayList<>();
+        
+        for (String s : list) {
+            
+            // if len == totalLen, 
+            // starting and ending characters should not be 0
+            if (len != totalLen) { 
+                res.add("0" + s + "0");
+            }
+            
+            res.add("1" + s + "1");
+            res.add("8" + s + "8");
+            res.add("6" + s + "9");
+            res.add("9" + s + "6");
+        }
+        
+        return res;
+    }
+
+
+
+
+
+
+
+
+
+
+

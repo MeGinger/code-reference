@@ -106,6 +106,12 @@ such that it conflicts with no other requests of this color class.
     }
 
 
+	// greedy
+	
+	// Reorganize String K = 2
+	// Rearrange String k Distance Apart 
+	// at least K distance
+
 	/**
 	 * Rearrange String k Distance Apart
 	 Given a non-empty string s and an integer k, rearrange the string such that the same characters are at least distance k from each other.
@@ -194,10 +200,14 @@ such that it conflicts with no other requests of this color class.
 		int max = Integer.MIN_VALUE;
 		char candidate = ' ';
 		for (Map.Entry<Character, Integer> entry : count.entrySet()) {
-			if (entry.getValue() > max && index >= valid.getOrDefault(entry.getKey(), 0)) {
-				max = entry.getValue();
-				candidate = entry.getKey();
-			}
+			if (index < valid.getOrDefault(entry.getKey(), 0)) {
+                continue;
+            }
+            
+            if (entry.getValue() > max) {
+                max = entry.getValue();
+                candidate = entry.getKey();
+            }
 		}
 		return candidate;
 	}

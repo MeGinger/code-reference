@@ -328,29 +328,3 @@ def initialize(self, connections):
         if connection.city2 not in self.father:
             self.father[city2] = city2
             self.count += 1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -105,6 +105,50 @@
 		}
 	}
 
+// Suppose N=10, blacklist=[3, 5, 8, 9], re-map 3 and 5 to 7 and 6.
+class Solution {
+    private int M;
+    private Random rand = new Random();
+    private Map<Integer, Integer> map;
+        
+    // a blacklist B containing unique integers from [0, N)
+    public Solution(int N, int[] blacklist) {
+        this.map = new HashMap<>();
+        for (int b : blacklist) {
+            map.put(b, -1);
+        }
+        
+        // [0, M): a range that Random works on 
+        // map: mappings between 
+        // blacklisted number in the range 
+        // unblacklisted number out of the range
+        
+        M = N - map.size();
+        
+        for (int b : blacklist) {
+            if (b < M) {
+                int last = N - 1; // 
+                while (map.containsKey(last)) {
+                    last--;
+                }
+                map.put(b, last);
+                N = last;
+            }
+        }
+    }
+    
+    public int pick() {
+        int p = rand.nextInt(M);
+        if (map.containsKey(p)) {
+            return map.get(p);
+        }
+        
+        return p;
+    }
+}
 
-
-	
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution obj = new Solution(N, blacklist);
+ * int param_1 = obj.pick();
+ */

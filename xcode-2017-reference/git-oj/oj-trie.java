@@ -423,3 +423,169 @@ class Solution {
         public String word;
     }
 }
+
+
+Implement Magic Dictionary
+
+// test case
+// dict: hello, hallo
+// search(hello) -> true
+// search(hallo) -> true
+
+// dict: hello
+// search(hello) -> false
+// search(hallo) -> true
+
+public class MagicDictionary {
+    private Trie trie;
+    
+    /** Initialize your data structure here. */
+    public MagicDictionary() {
+        trie = new Trie();
+    }
+    
+    /** Build a dictionary through a list of words */
+    public void buildDict(String[] dict) {
+        for (String word : dict) {
+            this.trie.insert(word);
+        }
+    }
+    
+    /** Returns if there is any word in the trie that equals to the given word after modifying exactly one character */
+    public boolean search(String word) {
+        for (int i = 0; i < word.length(); i++) {
+            for (char c = 'a'; c <= 'z'; c++) {
+                if (c == word.charAt(i)) {
+                    continue;
+                }
+                
+                String w = word.substring(0, i) 
+                         + c 
+                         + word.substring(i + 1, word.length());
+                if (this.trie.search(w)) {
+                    return true;
+                }       
+            }
+        }
+        
+        return false;
+    }
+}
+
+class TrieNode {
+    Map<Character, TrieNode> children;
+    boolean isWord;
+    
+    public TrieNode() {
+        children = new HashMap<>();
+    }
+}
+
+class Trie {
+    TrieNode root;
+    
+    public Trie() {
+        root = new TrieNode();
+    }
+    
+    public void insert(String word) {
+        TrieNode cur = root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.computeIfAbsent(word.charAt(i), k -> new TrieNode());
+        }
+        cur.isWord = true;
+    }
+    
+    public boolean search(String word) {
+        TrieNode cur = root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.get(word.charAt(i));
+            if (cur == null) {
+                return false;
+            }
+        }
+        
+        return cur.isWord;
+    }   
+}
+
+// improvement on multiple trie searches
+
+/** Returns if there is any word in the trie that equals to the given word after modifying exactly one character */
+public boolean search(String word) {
+    TrieNode temp = root;
+    int len = word.length();
+    for (int i = 0; i < len; i++) {
+        char c = word.charAt(i);
+        for (int j = 0; j < 26; j++) {
+            if ((char)(j+'a') == c || temp.children[j] == null) continue;
+            if (helper(temp.children[j],word,i+1)) return true;
+        }
+        if(temp.children[c-'a'] == null) return false;
+        temp = temp.children[c-'a'];
+    }
+    return false;
+} 
+
+public boolean helper(TrieNode temp, String word, int index) {
+    int len = word.length();
+    for (int i = index; i < len; i++) {
+        char c = word.charAt(i);
+        if (temp.children[c-'a'] == null) return false;
+        temp = temp.children[c-'a'];
+    }
+    return temp.isWord;
+}
+
+/**
+ * Your MagicDictionary object will be instantiated and called as such:
+ * MagicDictionary obj = new MagicDictionary();
+ * obj.buildDict(dict);
+ * boolean param_2 = obj.search(word);
+ */
+
+class MagicDictionary {
+    
+    // int[2]: (location_integer, missing_character_as_integer)
+    Map<String, List<int[]>> map;
+    
+    /** Initialize your data structure here. */
+    public MagicDictionary() {
+        this.map = new HashMap<>();
+    }
+    
+    /** Build a dictionary through a list of words */
+    public void buildDict(String[] dict) {
+        for (String s : dict) {
+            for (int i = 0; i < s.length(); i++) {
+                String key = s.substring(0, i) + s.substring(i + 1);
+                int[] pair = new int[]{i, s.charAt(i)};
+                List<int[]> list = map.computeIfAbsent(key, k -> new ArrayList<>());
+                list.add(pair);
+            }
+        }
+    }
+    
+    /** Returns if there is any word in the trie that equals to the given word after modifying exactly one character */
+    public boolean search(String word) {
+        for (int i = 0; i < word.length(); i++) {
+            String key = word.substring(0, i) + word.substring(i + 1);
+            if (map.containsKey(key)) {
+                for (int[] pair : map.get(key)) {
+                    if (pair[0] == i && pair[1] != word.charAt(i)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
+    }
+}
+
+/**
+ * Your MagicDictionary object will be instantiated and called as such:
+ * MagicDictionary obj = new MagicDictionary();
+ * obj.buildDict(dict);
+ * boolean param_2 = obj.search(word);
+ */

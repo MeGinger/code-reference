@@ -123,6 +123,103 @@
         return maxFromRight;
     }
 
+public class Solution {
+    
+    // max sum
+    // index
+    class Wrapper {
+        int index;
+        int max;
+        
+        public Wrapper(int max, int index) {
+            this.max = max;
+            this.index = index;
+        }
+    }
+    
+    public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
+        if (nums == null || nums.length == 0) {
+            return new int[]{};
+        }
+        
+        int n = nums.length;
+        if (n < 3 * k) {
+            return new int[0];
+        }
+        
+        int[] presum = getPresum(nums, k);
+        Wrapper[] maxFromLeft = getMaxFromLeft(nums, k, presum);
+        Wrapper[] maxFromRight = getMaxFromRight(nums, k, presum);
+        
+        int max = Integer.MIN_VALUE;
+        int[] res = new int[3];
+        for (int i = k; i + 2 * k <= n; i++) {
+            int sum = maxFromLeft[i - k].max + presum[i] + maxFromRight[i + k].max;
+            if (max < sum) {
+                max = sum;
+                res[0] = maxFromLeft[i - k].index;
+                res[1] = i;
+                res[2] = maxFromRight[i + k].index;
+            }
+        }
+        
+        return res;
+    }
+    
+    private Wrapper[] getMaxFromLeft(int[] nums, int k, 
+                                 int[] presum) {
+        int n = nums.length;
+        Wrapper[] maxFromLeft = new Wrapper[n - 3 * k + 1];
+        maxFromLeft[0] = new Wrapper(presum[0], 0);
+        
+        Wrapper maxWrapper = maxFromLeft[0];
+        for (int i = 1; i <= n - 3 * k; i++) {
+            if (maxWrapper.max < presum[i]) {
+                maxFromLeft[i] = new Wrapper(presum[i], i);    
+                maxWrapper = maxFromLeft[i];
+            } else {
+                maxFromLeft[i] = new Wrapper(maxWrapper.max, maxWrapper.index);    
+            }
+        }
+        return maxFromLeft;
+    }
+    
+    private Wrapper[] getMaxFromRight(int[] nums, int k, 
+                                  int[] presum) {
+        int n = nums.length;
+        Wrapper[] maxFromRight = new Wrapper[n - k + 1];
+        maxFromRight[n - k] = new Wrapper(presum[n - k], n - k);
+        
+        Wrapper maxWrapper = maxFromRight[n - k];
+        for (int i = n - k - 1; i >= 2 * k; i--) {
+            if (maxWrapper.max < presum[i]) {
+                maxFromRight[i] = new Wrapper(presum[i], i); 
+                maxWrapper = maxFromRight[i];
+            } else {
+                maxFromRight[i] = new Wrapper(maxWrapper.max, maxWrapper.index);    
+            }
+        }
+        return maxFromRight;
+    }
+    
+    private int[] getPresum(int[] nums, int k) {
+        int[] presum = new int[nums.length];
+        
+        for (int i = 0; i < k; i++) {
+            presum[0] += nums[i];
+        }
+        
+        for (int i = 1; i < nums.length - (k - 1); i++) {
+            presum[i] = 
+                presum[i - 1] - nums[i - 1] + nums[i + k - 1];
+        }
+        
+        return presum;
+    }
+    
+    
+}
+
 
 
 import java.util.ArrayDeque;

@@ -1,0 +1,8 @@
+int -> char
+
+3 -> '3'
+
+char ch = (char) (num + '0')
+
+'3' -> 3
+int num = ch - '0'

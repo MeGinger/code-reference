@@ -1246,7 +1246,43 @@ public class BSTIterator {
 
 
 
+// Return any binary tree that matches the given preorder and postorder traversals.
 
+
+/*
+Some explanation:
+The author uses the pre array to map all the elements in a tree.
+The usage of post[] and j counter is to detect already visited nodes.
+If we get the same element as the last element in the Deque and post[j] it indicates that we have visited all the children of that particular node and need to remove them from the queue.
+ */
+public TreeNode constructFromPrePost(int[] pre, int[] post) {
+    // save the current path of tree.
+    Deque<TreeNode> deque = new ArrayDeque<>();
+    // ArrayDeque, LinkedList
+    
+    // offerFirst(a), offerLast(a)
+    // pollFirst(), pollLast()
+    // peekFirst(), peekLast()
+    
+    deque.offer(new TreeNode(pre[0]));
+    for (int i = 1, j = 0; i < pre.length; i++) {
+        TreeNode node = new TreeNode(pre[i]);
+        
+ // complete the construction for current subtree. We pop it from stack.
+        while (deque.peekLast().val == post[j]) {
+            deque.pollLast(); // poll the left child
+            j++;
+        }
+        if (deque.peekLast().left == null) {
+            deque.peekLast().left = node;
+        } else {
+            deque.peekLast().right = node;
+        }
+        deque.offerLast(node);
+    }
+    
+    return deque.peekFirst();
+}
 
 
 

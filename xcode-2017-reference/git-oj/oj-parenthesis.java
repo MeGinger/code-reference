@@ -320,3 +320,87 @@
 		}
 		return stack.isEmpty(); // string s may end up with some left parentheses to be paired
 	}
+
+
+	Number of Atoms
+
+	public class Solution {
+    
+    // K4(ON(SO3)2)2
+    // Mg
+    // K, O, N, S, O
+    public String countOfAtoms(String formula) {
+        if (formula == null || formula.length() == 0) {
+            return "";
+        }
+        
+        int n = formula.length(), i = 0;
+        
+        Stack<Map<String, Integer>> stack = new Stack<>();
+        Map<String, Integer> map = new HashMap<>(); 
+        // stores mapping between
+        // an element to its frequency in the current layer (parenthesis)
+        
+        while (i < n) {
+            char c = formula.charAt(i++);
+            
+            if (c == '(') {
+                stack.push(map); // last layer map
+                map = new HashMap<>(); // this layer map
+                continue;
+            } 
+            
+            if (c == ')') {
+                int val = 0;
+                while (i < n && Character.isDigit(formula.charAt(i))) {
+                    val = val * 10 + formula.charAt(i++) - '0';
+                }
+                // no digit
+                // if (val == 0) {
+                //     val = 1;
+                // }
+                if (!stack.isEmpty()) {
+                    // ..prev..(..map..)val
+                    Map<String, Integer> prev = stack.pop(); // last layer map
+                    for (String key : map.keySet()) {
+                        prev.put(key, prev.getOrDefault(key, 0) 
+                                      + map.get(key) * val);
+                    }
+                    map = prev;
+                }
+                continue;
+            } 
+            
+            int start = i - 1; // since we increase i by 1 above.
+            // a list of characters
+            while (i < n && Character.isLowerCase(formula.charAt(i))){
+                i++;
+            } 
+            String s = formula.substring(start, i);
+            
+            
+            int val = 0;
+            while (i < n && Character.isDigit(formula.charAt(i))) {
+                val = val * 10 + formula.charAt(i++) - '0';
+            }
+            // no digit
+            if (val == 0) {
+                val = 1;
+            }
+            
+            map.put(s, map.getOrDefault(s, 0) + val);
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        List<String> list = new ArrayList<>(map.keySet());
+        Collections.sort(list);
+        for (String key : list) {
+            sb.append(key);
+            if (map.get(key) > 1) {
+                sb.append(map.get(key));
+            }
+        }
+        
+        return sb.toString();
+    }
+}
