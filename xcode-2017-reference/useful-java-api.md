@@ -1,3 +1,23 @@
+Lets start by summarizing Java primitive data types:
+
+byte: Byte data type is a 8-bit signed two's complement integer.
+Short: Short data type is a 16-bit signed two's complement integer.
+int: Int data type is a 32-bit signed two's complement integer.
+long: Long data type is a 64-bit signed two's complement integer.
+float: Float data type is a single-precision 32-bit IEEE 754 floating point.
+double: double data type is a double-precision 64-bit IEEE 754 floating point.
+boolean: boolean data type represents one bit of information.
+char: char data type is a single 16-bit Unicode character.
+
+For exemple, we want to find the binary negative representation of 4 (decimal) using 4 bits. First we convert 4 to binary:
+4 = 0100
+then we invert all the bits
+0100 -> 1011
+finally we add one bit
+1011 + 1 = 1100.
+So 1100 is equivalent to -4 in decimal, if we are using a Two's Complement binary representation with 4 bits.
+
+
 HashSet is Implemented using a hash table. Elements are not ordered. The add, remove, and contains methods have constant time complexity O(1).
 
 TreeSet is implemented using a tree structure(red-black tree in algorithm book). The elements in a set are sorted, but the add, remove, and contains methods has time complexity of O(log (n)). It offers several methods to deal with the ordered set like first(), last(), headSet(), tailSet(), etc.
