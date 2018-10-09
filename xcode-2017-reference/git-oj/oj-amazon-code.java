@@ -7,6 +7,9 @@ char ch = (char) (num + '0')
 '3' -> 3
 int num = ch - '0'
 
+* 然后一个 coding，按行统计词频，不难，hashtable解决。 写code的中间，问了很多次复杂度，
+基本上我写一行code，他会问一下这一行的复杂度
+
 
 1. Unique Path 变形（可以上下左右，可否回溯，不可return false且原地不动）
 2. lc239  

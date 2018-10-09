@@ -1,102 +1,110 @@
 OOD
-* 设计linux的find命令，应该是一道OOD题目
-* 交通灯
-* JSON parser
-* 停车场
-* class scheduler
-* 解析表达 式，例如“1*2 + 3”，关键要用面向对象的思想设计。需要可以拓展，支持括号，支持开 方之类的 这题感觉自己没思路，瞎答了一通。
-* OOP Design关于lastest 3 view Items by customer
-*  设计一个机场调度系统。这个OOD还有点讨厌，就是和面试官多 交流有哪些实体需要抽象吧，要想清楚业务流程里的参与者和用例，还有之后的耦合内聚怎 么优化等等。
-* 给一个数组和一个范围，要返回范围里的最小值，然后扩 展到如何缓存这个查询。一开始搞我以为是算法题，DP?排序?扯了半天，后来发现原来 是OOD，囧。。。关键是如何解耦缓存查询和实时查询这俩类，然后扯了扯工厂模式，依 赖注入等等。。. 
-* OOD (Tic-tac Game) Followups。答:CC150
-* 华人小哥，OOD design a poker game and different methods in each class.1
-* 这轮比较简单，就是聊天加OOD设计，聊一些OOD的概念和一些细节，然后设计纸牌游 戏，还让画类图。
-* 第三轮是ood的design, 设计一个停车场， 不同的是这是个收费的停车场，还有电脑可以查 询空余车位和价格。
-* ood, 问的是一个设计家具的题目
-* 先是让我解释什么是OOD，OOD哪里好。。。。。英语捉急呀，掰扯了半 天，也不知道说明白了多少。然后让我设计一个card，实现shuffle 和 deal两个功能。 CC150原题呀。当时又累又木，写的一般般。
 
-* OOD设计个游戏，就是一个三角形棋盘，只有一个空，像跳棋那么走，走过空就可以把中间那抽掉，然后OOD设计。然后follow就是如果不同棋盘怎 么设计
-* 设计一个电梯系统 我用从OOD的角度进行了设计电梯箱，按键面板等对象和它们之间的关系，没有深入调度
-算法细节。
-* Problem 1:设计一个停车场计费系统 一开始从OOD的角度来设计。后来面试官说我应该think bigger，才意识到应该是从一个 通用系统架构的角度来回答这个问题。于是就开始扯后台系统架构，想到经典的三层系统机 构从来不会答偏题于是就开始往上搬了。第一层接入层，第二层逻辑层，第三层存储层。接 入层收到用户请求根据协议和请求类型转发给合适的逻辑层。逻辑层包括多个不同服务，各 干各的事，完成库存啊计费啊汇率转换啊等等操作。存储层当然就是数据库，mysql和 nosql大家都懂的，上来把基本表建好，就直接用吧，有需要就扯缓存。比如我就扯了用 redis当缓存，缓存当然有各种不同粒度，各自命中率肯定不一样等等。问我如何扩展方 面，我的回答就是各层内部放入是随便加服务的，只要服务起来了之后到Zookeeper去注 册让其他层的服务调用的时候能找到就好了，存储层扩展有很多Proxy可以用，比如我厂就 有一个叫Atlas的开源项目，是一个很出色的Mysql Proxy，大家可以去Git看看。然后大家 可以根据需要扯一些优化点，找不到也无所谓。 开放性的设计题如果是我这种没太多工作经验的人或者是应届生有时候还是觉得挺难的，见 过了一些之后就死了心决定干脆不去费脑子了。只要不是特别奇怪的系统，那干脆施展一番 演技之后就把经典的三层结构网上套，这个结构大家都比较熟悉，而且也简单清晰，面试有 限的时间里也能够解释的比较清楚，里面的Nginx、Zookeeper、mysql、几张nosql因为 挺基本我估计也不会细问。
-邓侃老师在09年发了一系列博文讲了Twitter早期架构， http://blog.sina.com.cn/s/blog_46d0a3930100f0vr.html，当时Twitter使用就是一种基 于Push典型的三层结构，大家有需要可以去看看。虽然文章历史久了点儿，里面的内容我
-觉得应付一般的面试还是够了。实在不行，就把文章里面的twitter换成面试题里面的系统 往上背吧。。。. F
-* 本来心想自己运气好，遇到原题了。结果三哥这把不只想看OOD设计了，还让我把电梯调 度算法code出来，于是抓瞎了。最后我想了一个办法是用两个array，一个工作array一个 后备array，如果电梯向上而新请求来自上方楼层，或者电梯向下而新请求来自下方楼层， 那就把新请求加入工作array，否则加入后备array。在适当时机，swap两个array，比如需 要变化方向的时候。
-感觉挺粗糙的，但是能达到需求。
-* ood的一些概念。 什么是多态，什么时候favor interface，是么时候favor abstract class等等。ood设计题。设计一个parking lot
-* 大叔上来先问了一些pure virtual function, 多态，什么时候最好用继承扩展，什么时候 用纯虚函数， 写例子。. 1point3acres.com/bbs
-设计parkingspace，里面有很多种space(比如smallspace middlespace largespace), 对应 不同型号的车。尽量让space都利用好
-小女子OOD很弱的，不过和大叔交流下来还好，感觉人很nice，设计的还算流畅，不知道大 叔是否满意。
-* OOD题，设计在线订披萨里的披萨。有各种大小的披萨，披萨可以有各种 topping，同一种topping也可以同时上好几个，比如double cheese。写 披萨的数据结构，然后写个函数计算披萨价格。
-* 设计整个亚马逊的物品、 仓库、卡车互动系统。仓库遍布美国，卡车有油量，仓库之间有些有路径有些没 有。我搞了几个类，包括物品、仓库、卡车。要求实现一些功能诸如，从仓库A把一 定的物品分给仓库B，分派卡车，装货、卸货函数。
+* 聊一些OOD的概念和一些细节
+* 什么是OOD，OOD哪里好
+* 什么是多态，什么时候favor interface，是么时候favor abstract class等等
+* 问了一些pure virtual function, 多态，什么时候最好用继承扩展，什么时候 用纯虚函数， 写例子。
 * 开始问了很多object oriented的问题。abstract class，
-interface，什么情况下如何选择，inheritance VS composition等等。然后一个 coding，按行统计词频，不难，hashtable解决。 写code的中间，问了很多次复杂度，
-基本上我写一行code，他会问一下这一行的复杂度。然后给了一个OOD，一个tree的结 构，计算表达式。然后又出了一题OOD，题目还没解释完，外面的第3轮人就敲门了。
-* OOD问题，设计一个餐厅。然后他说如果他和他朋友第二天6pm要来吃饭，但是餐厅已经订满了，怎 么schedule。还问了怎么拼桌子来满足客户的要求。 和第一个面试官聊得很开心，还没聊完第二个就来敲门了叫我过去面试
-* 设计购物车，考虑discount code什么的
-* 一个美国白人小哥，人挺nice的，先自我介绍一分钟，完了就开始面OODesign.问我玩不玩棋牌，我说玩，就丢给了我一道Black Jack. 因为之前有准备过棋牌类设计，所以不怎么慌，在白板上边交流边画类图，在他要求的地方写一些代码无非是继承之类的，45分钟很快就过去了，基本上类图也画完了，聊得挺好，感觉还可以。
-* money 找change， change有四类，0.01,0.05,0.25, 0.1, 刚开始我还让面试官一个一个给我把coin的名字写出来，我说我没用过coin， 然后这题
-是从高往下走，比如说0.52, 来源一亩.三分地论坛. 
-先把最大的找出来，然后是次大的，0.52先是两个0.25,然后是两个0.01. follow up是如果再加上其它币种怎么办，楼主说的是设计一个interface，有一个方法是public Map<> Change(), 每一个币种，比如说欧元是一个class，美元是一个class，然后implement interface，实现自己的币种，或者把自己的币种换算成美元.
-* OO design的 不过也不会难 几乎就是interface implement之类的 encapsulation的东西
-* 订餐系统
-* 设计国际象棋.
+* interface，什么情况下如何选择，inheritance VS composition等等。
+
+
+* JSON parser
+* parking lot 
+	* followup 不同的是这是个收费的停车场，还有电脑可以查询空余车位和价格。
+		* price/fee, receipt
+		* spare space - count and position
+	* 设计parkingspace，里面有很多种space(比如smallspace middlespace largespace), 对应 不同型号的车。尽量让space都利用好
+		* parking space - small, middle, large - inheritance 
+		* vehicle - small, middle, large, 
+		* findSpace
+* traffic light - observer design pattern, thread.sleep()
+* class scheduler - runSchedule() meeting room 2 - variation 
+
+* restaurants
+	* 设计在线订披萨里的披萨。有各种大小的披萨，披萨可以有各种 topping，同一种topping也可以同时上好几个，比如double cheese。写 披萨的数据结构，然后写个函数计算披萨价格。
+	* 设计一个餐厅。然后他说如果他和他朋友第二天6pm要来吃饭，但是餐厅已经订满了，怎 么schedule。还问了怎么拼桌子来满足客户的要求。 和第一个面试官聊得很开心，还没聊完第二个就来敲门了叫我过去面试
+	* 订餐系统
+* elevator - 
+	* 设计电梯箱，按键面板等对象和它们之间的关系，没有深入调度算法细节。
+	* 电梯调 度算法code出来，于是抓瞎了。最后我想了一个办法是用两个array，一个工作array一个 后备array，如果电梯向上而新请求来自上方楼层，或者电梯向下而新请求来自下方楼层， 那就把新请求加入工作array，否则加入后备array。在适当时机，swap两个array，比如需 要变化方向的时候。感觉挺粗糙的，但是能达到需求
+
+
+* 设计linux的find命令
+* Design Amazon Features
+	* Lastest 3 view Items by customer
+	* 设计整个亚马逊的物品、 仓库、卡车互动系统。仓库遍布美国，卡车有油量，仓库之间有些有路径有些没 有。我搞了几个类，包括物品、仓库、卡车。要求实现一些功能诸如，从仓库A把一 定的物品分给仓库B，分派卡车，装货、卸货函数。
+	* 设计购物车，考虑discount code什么的
+* Design furnitures 家具
+* Games
+	* Tic-tac Game, Followups。答:CC150
+	* A poker game and different methods in each class
+	* 纸牌游戏，还让画类图
+	* 设计一个card，实现shuffle 和 deal两个功能。 CC150原题
+	* 洗牌 洗牌要从建class可以写。然后两个function，shuffle
+	* 一个三角形棋盘，只有一个空，像跳棋那么走，走过空就可以把中间那抽掉，然后OOD设计。然后follow就是如果不同棋盘怎么设计
+	* 设计国际象棋
+	* Black Jack. 因为之前有准备过棋牌类设计，所以不怎么慌，在白板上边交流边画类图，在他要求的地方写一些代码无非是继承之类的，45分钟很快就过去了，基本上类图也画完了，聊得挺好，感觉还可以。
+	* 设计一个游戏，任务可以上下左右动
+* 设计一个机场调度系统。这个OOD还有点讨厌，就是和面试官多 交流有哪些实体需要抽象吧，要想清楚业务流程里的参与者和用例，还有之后的耦合内聚怎么优化等等。
+* Expression
+	* 解析表达式，例如“1*2 + 3”，关键要用面向对象的思想设计。需要可以拓展，支持括号，支持开 方之类的 这题感觉自己没思路，瞎答了一通。
+	* 一个OOD，一个tree的结构，计算表达式。
+* 给一个数组和一个范围，要返回范围里的最小值，然后扩 展到如何缓存这个查询。一开始搞我以为是算法题，DP?排序?扯了半天，后来发现原来 是OOD，囧。。。关键是如何解耦缓存查询和实时查询这俩类，然后扯了扯工厂模式，依 赖注入等等。。. 
 * 设计机场跑道tracking system，保证每个飞机能顺利使用跑道升降
-* 设计vending machine的题，而且要求找的零钱数量越少越好。我中间定义硬币的时候还因为不知道5分硬币叫啥问了一下
+* 设计vending machine的题，而且要求找的零钱数量越少越好.我中间定义硬币的时候还因为不知道5分硬币叫啥问了一下
 * jukebox 系统设计
-* 洗牌 洗牌要从建class可以写。然后两个function，shuffle
-* OO design， 让设计一个在线可以买电脑的系统，要求客户可以定制显卡，cpu之类的，然后可以生成订单，还有一些model是预设的，用户可以选择这些model，也可以再基础上定制
-* OOD：设计一个游戏，任务可以上下左右动
+* money 找change， change有四类，0.01,0.05,0.25, 0.1, 刚开始我还让面试官一个一个给我把coin的名字写出来，我说我没用过coin， 然后这题是从高往下走，比如说0.52, 先把最大的找出来，然后是次大的，0.52先是两个0.25,然后是两个0.01. follow up是如果再加上其它币种怎么办，楼主说的是设计一个interface，有一个方法是public Map<> Change(), 每一个币种，比如说欧元是一个class，美元是一个class，然后implement interface，实现自己的币种，或者把自己的币种换算成美元.
 
 
+* Problem 1: 设计一个停车场计费系统 一开始从OOD的角度来设计。后来面试官说我应该think bigger，才意识到应该是从一个 通用系统架构的角度来回答这个问题。于是就开始扯后台系统架构，想到经典的三层系统机 构从来不会答偏题于是就开始往上搬了。第一层接入层，第二层逻辑层，第三层存储层。接 入层收到用户请求根据协议和请求类型转发给合适的逻辑层。逻辑层包括多个不同服务，各 干各的事，完成库存啊计费啊汇率转换啊等等操作。存储层当然就是数据库，mysql和 nosql大家都懂的，上来把基本表建好，就直接用吧，有需要就扯缓存。比如我就扯了用 redis当缓存，缓存当然有各种不同粒度，各自命中率肯定不一样等等。问我如何扩展方 面，我的回答就是各层内部放入是随便加服务的，只要服务起来了之后到Zookeeper去注 册让其他层的服务调用的时候能找到就好了，存储层扩展有很多Proxy可以用，比如我厂就 有一个叫Atlas的开源项目，是一个很出色的Mysql Proxy，大家可以去Git看看。然后大家 可以根据需要扯一些优化点，找不到也无所谓。 开放性的设计题如果是我这种没太多工作经验的人或者是应届生有时候还是觉得挺难的，见 过了一些之后就死了心决定干脆不去费脑子了。只要不是特别奇怪的系统，那干脆施展一番 演技之后就把经典的三层结构网上套，这个结构大家都比较熟悉，而且也简单清晰，面试有 限的时间里也能够解释的比较清楚，里面的Nginx、Zookeeper、mysql、几张nosql因为 挺基本我估计也不会细问。
+邓侃老师在09年发了一系列博文讲了Twitter早期架构， http://blog.sina.com.cn/s/blog_46d0a3930100f0vr.html，当时Twitter使用就是一种基 于Push典型的三层结构，大家有需要可以去看看。虽然文章历史久了点儿，里面的内容我
+觉得应付一般的面试还是够了。实在不行，就把文章里面的twitter换成面试题里面的系统 往上背吧。。。
 
-* design Cache
 
 
 System Design
-* 设计一个订票系统
-* 设计T家的系统，问到了如何解决latency问题，我卡住了。。。显然推拉组合还不能让他满意。。。大神可以解决一下吗？.
-* 系统设计， 设计个交通系统， 在线查公交车或者地铁的schedule
-* 设计 Amazon Locker，主要需要写code 设计的部分就是怎么找到最合适放某个package的那个locker。
-* System design: Amazon 主页你搜索一个东西的时候，会出来 most viewed related items，设计这个功能怎么实现
+* Design Amazon Features
+	* 设计 Amazon Locker，主要需要写code 设计的部分就是怎么找到最合适放某个package的那个locker。
+	* Amazon 主页你搜索一个东西的时候，会出来 most viewed related items，设计这个功能怎么实现
+	* 设计产品推荐系统
+	* 设计淘宝网站鼻祖的竞拍模式，lz表示近大半年没见人面过这题，所以就只能基本套路，往high level套，什么hosting server啊，lb啊，身份验证，竞拍行动的服务器，加上用户数据库，竞拍货物数据库，每次bid的数据库，monitor，sharding啥的，毕竟面sde2。据说扯api，interface什么的都是刚毕业孩子玩的。。。人不待见。当然反响感觉也一般，两个manager可能见惯了我这种吹牛逼的，所以也有点虚
+	* 设计一个在线可以买电脑的系统，要求客户可以定制显卡，cpu之类的，然后可以生成订单，还有一些model是预设的，用户可以选择这些model，也可以再基础上定制
+	* 上板 Design AWS marketplace，小哥出题先画出大致流程， 感觉他也不知道要问啥。。我说这块traffic会比较多 需要用cache缓冲 他点点头那块storage需要replica防止single point of failure 他又点点头然后让我写出API出来 啊， 顺间变OOD Design了思维有点跳跃 感觉到最后10分钟意识到题的意思 结束时小哥握手无力 估计没戏 还拍了照
+	* 怎么collect ads的clicks的frequency，答的很差。。感觉他提示了很多实际场景，然后问我该用什么record click。最后问db怎么设计，说要存的时候可以按click happen的timestamp/frame 存，但是read的时候可能要按照advertiser来collect frequency。我画了半天也没画出个所以然。最后大叔终于放弃了我让我走了。。
+	* 设计搜索引擎，设计customer also viewed 产品的功能
+	* 设计一个亚马wishlist的数据结构， 就是吧product， host，guest和wishlist怎么混在一起，我选的用non sql来实现，讨论完了又聊了下用sql怎么设计schema，分享wishlist就发wishlist ID 到url里面，然后很简单的聊了一下如何提高performance和如何cache数据的问题，我就提了下用redis就行因为我也只用过redis。 然后大概估计了一下latency和throughput，然后讨论了一下db读写和如何隔离优化。讨论了一下cache的优先级选择，我就提了下LRU，用欢迎度和时间来决定cache优先级。就提了一下LRU是一个hashmap + linkedlist就不再问了，本来还想给他现场写一个LRU搞个妥帖的，结果不问了。主要就半小时，好像也没啥太多能问的
+* Design Cache
+* Twitter
+	* 设计Twitter的系统，问到了如何解决latency问题，我卡住了。。。显然推拉组合还不能让他满意。。。大神可以解决一下吗
+	* 设计推特热搜功能，其实就是TopK + 如何scale up的问题没啥其他好说的，网上一搜都是标准答案。记得处理不同区域不同热搜榜单的问题。比如你在中国肯定不想看到美国的前十热搜之类的。
+	* 系统设计 twitter 我照本宣科地说了qps等计算, 算出了 40M/s 感觉这块完全是多余自己提, 面试官不感兴趣好像 [留个疑问在这里, 系统设计这种estimate 需要做么??] 之后, 讲了最简单的 timeline 设计, 所有followers 获取tweet, 之后排序 aggregate, 返回. 面试官: make sense high level :  API server => DB  followup, case 如果 川普发了句, 我明天9点发tweet, 1m 用户准时不断刷, 怎么处理. sharding 方面, 如果川普的tweet都在一个db里, 我分析的是, 所有request 会 hit 某一个 db, heavy load, 所以 db要 shard by tweetID to make sure data is shared evenly.. 面试官:  how can the user get the tweetIds, 我: user 会首先 拿到所有 follower的userid (包含Trump), 然后查询 所有db, 返回对应的 tweets,  (我当时脑子短路, 以为设计的是 userid : [tweets] 的结构, 其实应该是 tweetID, Uid tweetId 做主键和shard id,  ) 这样就不会heavy load 某一个db, 所以当时答的含糊其辞)我: 当时shadow 问的是 shard by uid or tid, 我就说了 tid, 之后我补充了 要加 cache, 之后也没下文了, 不知道最后结果是什么
 
-* 设计产品推荐系统.
-* Grokking the System Design Interview - https://www.educative.io/collection/5668639101419520/5649050225344512
-* 打车服务, 短网址服务。
-* twitter
-* 系统设计。Design Amazon Locker
-* 设计油管
-* system design是做netflix的视频在线播放，system design我很弱，答的不在点上
-* Desig restaurant reservation system
-* 设计推特热搜功能，其实就是TopK + 如何scale up的问题
-没啥其他好说的，网上一搜都是标准答案。记得处理不同区域不同热搜榜单的问题。比如你在中国肯定不想看到美国的前十热搜之类的。
+* 设计订票系统
+* 设计交通系统， 在线查公交车或者地铁的schedule
+* 设计Youtube
+* 设计Uber
+* TinyURL - 短网址服务
+* Netflix的视频在线播放
+* Design restaurant reservation system
 * 设计一个照片分享系统，最主要的是如何优化 photosharing website
 设计完了还跟他扯了一点怎么做highly available， partition-tolerant的系统
 * Design a distributed JukeBox System
-* 系统设计，系统设计考了淘宝网站鼻祖的竞拍模式，lz表示近大半年没见人面过这题，所以就只能基本套路，往high level套，什么hosting server啊，lb啊，身份验证，竞拍行动的服务器，加上用户数据库，竞拍货物数据库，每次bid的数据库，monitor，sharding啥的，毕竟面sde2。据说扯api，interface什么的都是刚毕业孩子玩的。。。人不待见。当然反响感觉也一般，两个manager可能见惯了我这种吹牛逼的，所以也有点虚
-* 设计一个chat system 从1对1聊天开始，最后没时间了简单说了一下group chat和推拉模型
-* 上板 Design AWS marketplace， 你没听错
-小哥出题先画出大致流程， 感觉他也不知道要问啥。。
-我说这块traffic会比较多 需要用cache缓冲 他点点头
-那块storage需要replica防止single point of failure 他又点点头
-然后让我写出API出来 啊， 顺间变OOD Design了
-思维有点跳跃 感觉到最后10分钟意识到题的意思
-结束时小哥握手无力 估计没戏 还拍了照
-* 然后一个设计题，是给了很多很多不间断的log，里面有各个模块，其中有个exception模块，好几条log拼成一个完整的exception，找出某个特定的app的Top 5的exception模块。我第一直觉用PriorityQueue，后来还是改HashMap了，全程小哥哥看我方向偏了就来提醒我，最后顺利设计了几个类和function就过了
-* system design，怎么collect ads的clicks的frequency，答的很差。。感觉他提示了很多实际场景，然后问我该用什么record click。最后问db怎么设计，说要存的时候可以按click happen的timestamp/frame 存，但是read的时候可能要按照advertiser来collect frequency。我画了半天也没画出个所以然。最后大叔终于放弃了我让我走了。。
-* 设计一个图片上传和浏览系统，算是很经典的一道题目啦
+* 设计chat system 从1对1聊天开始，最后没时间了简单说了一下group chat和推拉模型
+* Calendar web app，类似google calendar. 
+* 设计一个图片上传和浏览系统 - instagram, flxicr
 * 使用prefix tree存储电话号码
-* system design问题，设计一个简单的calendar web app，类似google calendar. 
-* 设计一个 %&%￥#￥一样的app， 我完全没听懂是什么东西，他说类似于Expedia的旅游app。。。我本人从没用过那个，之前都是studentuniverse买票，或者官网直接买票有积分的，能给我讲讲都啥功能么。。。她就把题简化了（貌似）， 说要设计flight查询，可以查non-stop 或是不non-stop的所有从A到B 的航班。 我大概问了一下QPS什么的，其实不重要，她说你就想象成需要你scale的那么多就好。 我一开始没太理解这个stop的玄机，以为一个航班从A到B stop直接就有了。。她说要像
-101  A-》B
-102 A -》C 
-103  C-》B
-104 A-》C -》B
-这种的。。。感觉是个graph的题，我说我想把non-stop限制到小于3， 然后如果是non-stop 就直接查表，1 stop 就两个query   A-》 *（！B） 然后从这个list里 再 query  -》B 的把结果放进另一个表里。 其实不知道可不可行，没什么这个的经验。。然后她就问了怎么improve performance啊，其实就是cache，问了cache key啥的
 * 系统设计监测系统
 
-* 设计搜索引擎，设计customer also viewed 产品的功能
-* 设计一个亚马wishlist的数据结构， 就是吧product， host，guest和wishlist怎么混在一起，我选的用non sql来实现，讨论完了又聊了下用sql怎么设计schema，分享wishlist就发wishlist ID 到url里面，然后很简单的聊了一下如何提高performance和如何cache数据的问题，我就提了下用redis就行因为我也只用过redis。 然后大概估计了一下latency和throughput，然后讨论了一下db读写和如何隔离优化。讨论了一下cache的优先级选择，我就提了下LRU，用欢迎度和时间来决定cache优先级。就提了一下LRU是一个hashmap + linkedlist就不再问了，本来还想给他现场写一个LRU搞个妥帖的，结果不问了。主要就半小时，好像也没啥太多能问的
+* Grokking the System Design Interview - https://www.educative.io/collection/5668639101419520/5649050225344512
+
+
+* 设计题，是给了很多很多不间断的log，里面有各个模块，其中有个exception模块，好几条log拼成一个完整的exception，找出某个特定的app的Top 5的exception模块。我第一直觉用PriorityQueue，后来还是改HashMap了，全程小哥哥看我方向偏了就来提醒我，最后顺利设计了几个类和function就过了
+* 设计一个 %&%￥#￥一样的app， 我完全没听懂是什么东西，他说类似于Expedia的旅游app。。。我本人从没用过那个，之前都是studentuniverse买票，或者官网直接买票有积分的，能给我讲讲都啥功能么。。。她就把题简化了（貌似）， 说要设计flight查询，可以查non-stop 或是不non-stop的所有从A到B 的航班。 我大概问了一下QPS什么的，其实不重要，她说你就想象成需要你scale的那么多就好。 我一开始没太理解这个stop的玄机，以为一个航班从A到B stop直接就有了。。她说要像
+101  A-》B
+102  A -》C 
+103  C-》B
+104  A-》C -》B
+这种的。。。感觉是个graph的题，我说我想把non-stop限制到小于3， 然后如果是non-stop 就直接查表，1 stop 就两个query   A-》 *（！B） 然后从这个list里 再 query  -》B 的把结果放进另一个表里。 其实不知道可不可行，没什么这个的经验。。然后她就问了怎么improve performance啊，其实就是cache，问了cache key啥的
 * kuaidi baoguo进guizi的问题，版上哪里见过但没做过也没见过答案所以start from scratch，以为是个设计题装模作样跟他交流沟通只为了多看他几眼，他一开始还一副欲拒还迎的姿态，后来被我问多了就说直接上。。。答案。网上不都说多交流互相了解比较重要吗，怎么这么不经撩，猴急。于是快速写出几个核心class，被小韩打断，进入coding阶段，实现怎么选择guizi。
 
 当时有点跟不上节奏，一直以为是设计题，没想到这么快要换姿势。行，随你，谁叫你是面试官。期间讨论了下方案觉得没问题，迅速写出线性解法，然后说如果有成千上万个guizi，怎么优化，我心想我这辈子也没见过这么多guizi，但客人的要求总得满足不是，继续讨论优化，最后快结束让我又码了段简单的code。全程隐身的三姐这个时候突然冒出来一个很弱的问题，明显跟不上我们的节奏，小韩都不想解释，跟我说没事我懂你，出于礼貌我还是跟她解释了一下。随后我提问，我就问问在亚麻生活可好过的是否开心，不开心来找我呀，然后互留微信显然是不可能的，依依不舍目送离开。.
@@ -111,32 +119,30 @@ System Design:
 (将城市化成许多个矩形block（区），可以借鉴二维k-d tree那个思想。每个车实时更新当前位置坐标和是否available，找用户最近八个区的空闲的车，然后时间就是车速和距离的关系，这个没错。地图api这种你需要什么和interviewr说就好了，如果不是考察项目的话一般都会说可以默认给出的。)
 
 2.TinyURL
-(Write heavy? improve Security? 怎么scale? 一个region上的服务出问题了怎么处理?). 1point3acres
-以下内容需要积分高于 188 才可浏览
-. From 1point 3acres bbs
+(Write heavy? improve Security? 怎么scale? 一个region上的服务出问题了怎么处理?)
 3. Repository system, design commit fuction and branch function.
 
 4. Video/Movie System (given a list of videos, return top 5 rated videos)
 
 5. Sotre the livestreaming video and watch it later function
 
-6. cc150 JukeBox. 留学申请论坛-一亩三分地
+6. cc150 JukeBox.
 
 7. Amazon gift card printing machine. (实就是general的说一下你对一个application architecture的理解，面试官会引导你，比如用啥样的db，用rest/soap，某一步失败了怎么办，data consistency一类的随便扯一扯). visit 1point3acres for more.
 
 8. One hour delivery system
-.留学论坛-一亩-三分地
-9. Explain Agile, Waterfall, Pro & Cons. visit 1point3acres for more.
+
+9. Explain Agile, Waterfall, Pro & Cons.
 
 10. Predict User purchase. From 1point 3acres bbs
 (先分析什么因素判断用户买不买这个商品，浏览记录，购买记录，在页面停留时间，浏览这类商品的次数，现在火的top 100商品等等。然后分析架构，
 给的答案是首先master slave避免single point failure，用户点击商品后先通过dymanic dns look up找到距离最近的CDN，然后http request传过来给那个cluster的master server, mater本身有cache看看这个请求的结果是不是已经cache过了有的话直接返回（这里cache的是这个请求对应的购物车html页面），没有的话master做负载均衡下传给空闲slave server（rmi call）, slave有自己的local cache因为对这个预测结果每个slave cache可以不consistent， 可以不用时刻recon每个不同的server cache。所有的数据存储都用in memory database并设置time to live， 因为这个是一个读取大于写的系统数据也不需要持久化不用支持transaction, scale也更容易。master如果挂了重启就可以，因为都是预测数据丢失了也无所谓。如果要更优化可以在浏览器端也做一层cache，如果用户反复点击同样的商品，就不用每次都make http call了). 1point 3acres 论坛
 
 11. Card game , and write shuffle method
-. from: 1point3acres 
+
 12. Amazon Locker 就是Amazon买东西可以运到一个Locker然后pick up的那个.
 (仔细想一下你就会发现就是一个Parking Lot.Package有Small,Medium,Large.一个Location的 Lockers也有Small,Medium, Large。面试官主要想知道一个送货小哥去的时候怎么分配给他个大小合适的Locker。要写那个method。我就按照Parking Lot做的。我觉得一模一样。恩恩，我那时侯一开始考虑也想是不是Order生成的时候就匹配了一个Locker，还有挑选哪个Location,但跟面试观官交流以后，他就说假设只有一个Location然后主要想知道送货小哥去的时候怎么分配，别的先不考虑。)
-. 一亩-三分-地，独家发布
+
 13. Reader System
 
 14. Parking Lot, Airport etc...(http://stackoverflow.com/questio ... n-an-oo-parking-lot )
@@ -213,19 +219,6 @@ Java下面实现这个主要应该是靠1.8的lambda来做，最java的方法是
 
 
 
-系统设计 twitter
-我照本宣科地说了qps等计算, 算出了 40M/s 感觉这块完全是多余自己提, 面试官不感兴趣好像 [留个疑问在这里, 系统设计这种estimate 需要做么??]
-
-之后, 讲了最简单的 timeline 设计, 所有followers 获取tweet, 之后排序 aggregate, 返回. 面试官: make sense high level :  API server => DB 
-
-followup, case 如果 川普发了句, 我明天9点发tweet, 1m 用户准时不断刷, 怎么处理.
-sharding 方面, 如果川普的tweet都在一个db里, 我分析的是, 所有request 会 hit 某一个 db, heavy load, 所以 db要 shard by tweetID to make sure data is shared evenly..
-
-面试官:  how can the user get the tweetIds, 
-我: user 会首先 拿到所有 follower的userid (包含Trump), 然后查询 所有db, 返回对应的 tweets,  (我当时脑子短路, 以为设计的是 userid : [tweets] 的结构, 其实应该是 tweetID, Uid tweetId 做主键和shard id,  ) 这样就不会heavy load 某一个db, 所以当时答的含糊其辞)
-我: 当时shadow 问的是 shard by uid or tid, 我就说了 tid, 
-之后我补充了 要加 cache, 
-之后也没下文了, 不知道最后结果是什么
 
 
 
