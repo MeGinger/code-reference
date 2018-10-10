@@ -47,10 +47,10 @@
             // build new window
             addToSlidingWindow(nums[i], l);
         }
-	// takes care of last one
+	    // takes care of last one
         result[n - k] = l.getFirst();
 
-	return result;
+	    return result;
     }
     
     private void addToSlidingWindow(int a, LinkedList<Integer> l) {
@@ -281,7 +281,7 @@ public class KEmptySlot {
             }
             window.pollFirst();
             // The window is maintained as [i - k + 1, i]
-	    // actually are position window ....
+	        // actually are position window ....
             if (k == 0 || days[i - k] < window.min() && days[i + 1] < window.min()) { // min
                 ans = Math.min(ans, Math.max(days[i - k], days[i + 1])); // max
             }

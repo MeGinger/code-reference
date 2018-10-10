@@ -394,7 +394,7 @@ public List<String> wordBreak2(String s, Set<String> dict) {
 
 // memorized (
 //	 key: string, 
-//   value: a list of sentences 
+//   value: a list of sentences (can be constructed into key string)
 //          where each sentence is constructed by valid dictionary words seperated by space
 // )
 private breakIntoWordList(String s, Set<String> dict, Map<String, List<String>> memorized) {
@@ -415,20 +415,15 @@ private breakIntoWordList(String s, Set<String> dict, Map<String, List<String>> 
 			continue;
 		}
 		
-		// i: s.length() -> no suffix
 		if (i == s.length()) {
-			result.add(s);
-			
-			// can we change these two lines to continue/break
+			result.add(s); // the entire string is a valid word
 			continue;
-			// memorized.put(s, result);
-			// return result;
 		}
 		
-		// i: 1 to s.length() - 1 -> suffix
-		String suffix = s.substring(i, s.length());
-		List<String> segSuffix = breakIntoWordList(suffix, dict, memorized);
-		for (String suffixWord : segSuffix) {
+		String suffix = s.substring(i);
+		List<String> suffixWords = breakIntoWordList(suffix, dict, memorized);
+		for (String suffixWord : suffixWords) {
+			// !!!! if suffixWords.isEmpty(), nothing being added to results
 			result.add(prefix + " " + suffixWord);
 		}
 	}

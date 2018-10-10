@@ -14,7 +14,7 @@ Input:
    / \
   3   4
 
-Ouput:
+Ouput: 
 [1, 3, 4, 2]
 
 Input:
