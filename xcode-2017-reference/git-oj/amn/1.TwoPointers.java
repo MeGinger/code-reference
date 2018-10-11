@@ -78,13 +78,15 @@ public List<Integer> findAnagrams(String s, String p) {
     }
     
     char[] ch = s.toCharArray();
-    while (right < s.length()) {
+    while (right < s.length()) { // every loop, right move one step
         if (map[ch[right]] > 0) {
             matchSize--;
         }
         map[ch[right]]--;
         
         // sliding window: [left, right] - both are inclusive
+        // check if requirements are met
+        // left always move one step in this case 
         if (right - left == p.length() - 1) {
             if (matchSize == 0) {
                 res.add(left);
@@ -101,3 +103,75 @@ public List<Integer> findAnagrams(String s, String p) {
     
     return res;
 }
+
+public List<Integer> findAnagrams(String s, String p) {
+    List<Integer> res = new ArrayList<>();
+    
+    int left = 0, right = 0;
+    int matchSize = p.length();
+    int[] map = new int[256];
+    
+    for (char c : p.toCharArray()) {
+        map[c]++;
+    }
+    
+    char[] ch = s.toCharArray();
+    while (right < s.length()) {
+        if (map[ch[right]] > 0) {
+            matchSize--;
+        }
+        map[ch[right]]--;
+        
+        if (right - left == p.length()) {
+           if (map[ch[left]] >= 0) {
+                matchSize++;
+            }
+            map[ch[left]]++;
+            left++;
+        }
+        
+        // sliding window: [left, right] - both are inclusive
+        if (right - left == p.length() - 1 && matchSize == 0) {
+            res.add(left);
+        }    
+        right++;
+    }
+    
+    return res;
+}
+
+Longest Substring Without Repeating Characters
+Given a string, find the length of the longest substring without repeating characters.
+
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        
+        int left = 0, right = 0;
+        int res = 0;
+        
+        int[] count = new int[256];
+        char[] ch = s.toCharArray();
+        
+        while (right < s.length()) { // every loop, right move one step
+            count[ch[right]]++;
+            
+            // left moves to satifies the requirement
+            while (count[ch[right]] > 1) {
+                // adjust sliding window
+                count[ch[left]]--;
+                left++;
+            }
+            
+            res = Math.max(res, right - left + 1);
+            right++;
+        }
+        return res;
+    }
+}
+
+
+
+

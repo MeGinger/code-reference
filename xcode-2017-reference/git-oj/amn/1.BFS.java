@@ -11,9 +11,9 @@ public int ladderLength(String beginWord, String endWord, List<String> wordList)
     
     // Two-end BFS - work on the set which is smaller each time
     Set<String> set1 = new HashSet<>();
-    set1.add(beginWord);
-    
     Set<String> set2 = new HashSet<>();
+
+    set1.add(beginWord);    
     set2.add(endWord);
     
     int len = 2; // at least 2: beginWord -> endWord
@@ -65,6 +65,107 @@ private void swap(Set<String> set1, Set<String> set2) {
     set2 = temp;
 }
 
+
+// find all shortest transformation sequence(s) from start to end
+// two-end BFS
+public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+    Set<String> dict = new HashSet<>(wordList);
+    if (!wordList.contains(endWord)) {
+        return Collections.emptyList(); 
+    }
+    
+    Set<String> set1 = new HashSet<>();
+    Set<String> set2 = new HashSet<>();
+    
+    set1.add(beginWord);
+    set2.add(endWord);
+    
+    // graph: backtrace
+    // start point: begin word
+    // end point: end word
+    // path
+    // res: in this graph, starting from beginWord, all path to endWord
+    Map<String, List<String>> backtrace = new HashMap<>();
+    if (!findLadders(dict, set1, set2, backtrace, false)) {
+        return Collections.emptyList();
+    }
+    
+    return generateList(beingWord, endWord, backtrace, new ArrayList<>(), new ArrayList<>());
+}
+
+// flip helps construct string in a correct direction
+// backtrace stores mappings between and 
+private boolean findLadders(Set<String> dict, Set<String> set1, Set<String> set2, Map<String, List<String>> backtrace, boolean flip) {
+    if (set1.size() > set2.size()) {
+        return findLadders(dict, set2, set1, backtrace, !flip);
+    }
+
+    // smaller
+    if (set1.isEmpty()) {
+        return false;
+    }
+
+    // remove words on current both ends from the dict
+    dict.removeAll(set1);
+    dict.removeAll(set2);
+
+    // as we only need the shortest paths
+    // we use a boolean value help early termination
+    boolean done = false;
+    // set for the next level
+    Set<String> set = new HashSet<>();
+    for (String str : set1) {
+        for (String word : getOneEditWords(str)) {
+            // make sure we construct the tree in the correct direction
+            String key = flip ? word : str;
+            String val = flip ? str : word;
+
+            if (set2.contains(word)) {
+                done = true;
+                backtrace.computeIfAbsent(key, k -> new ArrayList<>()).add(val);
+                // not early terminate here - find all possible shortest paths
+            }
+
+            if (!done && dict.contains(word)) { 
+                // same word might enter not only once
+                set.add(word); // set might contains the word, BUT the path different!!
+                backtrace.computeIfAbsent(key, k -> new ArrayList<>()).add(val);
+            }
+        }
+    }
+    // set is supposed to assign to set1
+
+    // early terminate if done is true
+    return done || findLadders(dict, set, set2, backtrace, flip);
+}
+
+// backtrace/dfs
+// find all the paths from startWord to endWord, given by map (represent the connection between 
+// words - key is a word and value is a list of dicionary words that key word is transformed into)
+// and those paths are considered to be shortest, since we use early termination once done.
+private List<List<String>> generateList(String start, String end, Map<String, List<String>> map,
+        List<String> path, 
+        List<List<String>> res) {
+    if (start.equals(end)) { // one path is found - early return
+        path.add(start); // add
+        res.add(new ArrayList<>(path));
+        path.remove(path.size() - 1); // restore
+        return res;
+    }
+
+    if (!map.containsKey(start)) {
+        return res;
+    }
+
+    List<String> words = map.get(start);
+ 
+    path.add(start); // add
+    for (String word : words) {
+        generateList(word, end, map, path, res);
+    }
+    path.remove(path.size() - 1); // restore
+    return res;
+}
 
 // Cut Off Trees for Golf Event
 
