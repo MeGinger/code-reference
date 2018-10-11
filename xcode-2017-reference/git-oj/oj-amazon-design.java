@@ -72,6 +72,18 @@ System Design
 	* 设计一个在线可以买电脑的系统，要求客户可以定制显卡，cpu之类的，然后可以生成订单，还有一些model是预设的，用户可以选择这些model，也可以再基础上定制
 	* 上板 Design AWS marketplace，小哥出题先画出大致流程， 感觉他也不知道要问啥。。我说这块traffic会比较多 需要用cache缓冲 他点点头那块storage需要replica防止single point of failure 他又点点头然后让我写出API出来 啊， 顺间变OOD Design了思维有点跳跃 感觉到最后10分钟意识到题的意思 结束时小哥握手无力 估计没戏 还拍了照
 	* 怎么collect ads的clicks的frequency，答的很差。。感觉他提示了很多实际场景，然后问我该用什么record click。最后问db怎么设计，说要存的时候可以按click happen的timestamp/frame 存，但是read的时候可能要按照advertiser来collect frequency。我画了半天也没画出个所以然。最后大叔终于放弃了我让我走了。。
+
+When a Pinner loads a page of a view type on Pinterest, an ad request with user info is sent from the web server to the ads system in order to fill the ads spots (i.e. an opportunity to display an ad). The system will retrieve ads candidates from our inventory and subsequently determine which ads among the candidates to put in the designated spots. This behavior is called ad insertion.
+
+As a Pinner interacts with promoted Pins, these actions are tracked by calling a tracking endpoint from the front-end. The server then logs the event to Kafka. A Kafka consumer will consume the messages and write the action events to a data store (Aperture). Ads backend servers request user action counts from Aperture after candidate retrieval.
+	
+independent counting service
+The event data store has a counting layer to serve counts.
+The service exposes a set of generic counting APIs.
+	
+
+
+	
 	* 设计搜索引擎，设计customer also viewed 产品的功能
 	* 设计一个亚马wishlist的数据结构， 就是吧product， host，guest和wishlist怎么混在一起，我选的用non sql来实现，讨论完了又聊了下用sql怎么设计schema，分享wishlist就发wishlist ID 到url里面，然后很简单的聊了一下如何提高performance和如何cache数据的问题，我就提了下用redis就行因为我也只用过redis。 然后大概估计了一下latency和throughput，然后讨论了一下db读写和如何隔离优化。讨论了一下cache的优先级选择，我就提了下LRU，用欢迎度和时间来决定cache优先级。就提了一下LRU是一个hashmap + linkedlist就不再问了，本来还想给他现场写一个LRU搞个妥帖的，结果不问了。主要就半小时，好像也没啥太多能问的
 * Design Cache
