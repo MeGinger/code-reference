@@ -1,5 +1,7 @@
 Alien Dictionary
 
+TOPOLOGICAL SORT - graph
+
 class Solution {
     public String alienOrder(String[] words) {
         if (words == null || words.length == 0) {
@@ -80,5 +82,47 @@ class Solution {
         }
         
         return sb.toString();
+    }
+}
+
+BUCKET SORT
+
+class Solution {
+    // bucket sort...
+    public List<Integer> topKFrequent(int[] nums, int k) {
+        List<Integer> res = new ArrayList<>();
+        if (nums == null || nums.length == 0 || k <= 0) {
+            return res;
+        }
+        
+        Map<Integer, Integer> freqs = new HashMap<>();
+        for (int num : nums) {
+            freqs.put(num, freqs.getOrDefault(num, 0) + 1);
+        }
+        
+        // nums.length + 1 !
+        // length is used as index
+        List<Integer>[] buckets = new List[nums.length + 1];
+        for (Map.Entry<Integer, Integer> entry : freqs.entrySet()) {
+            int freq = entry.getValue();
+            if (buckets[freq] == null) {
+                buckets[freq] = new ArrayList<>();
+            }
+            
+            buckets[freq].add(entry.getKey());
+        }
+
+        for (int i = nums.length; i >= 1 && k > 0; i--) { // k > 0: early terminate!
+            if (buckets[i] == null) {
+                continue;
+            }
+            
+            for (int j = 0; j < buckets[i].size() && k > 0; j++) {
+                res.add(buckets[i].get(j));
+                k--;
+            }
+        }
+        
+        return res;
     }
 }

@@ -22,6 +22,17 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         return null;
 }
 
+// Lowest Common Ancestor of a Binary Search Tree
+public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+    // p and q are are in the left or right subtree
+    while ((root.val - (long) p.val) * (root.val - (long) q.val) > 0) { 
+        root = root.val > p.val ? root.left : root.right;
+    }
+    
+    return root;
+}
+
+
 Serialize and Deserialize binary tree
 
 Serialize and Deserialize binary search tree
@@ -204,3 +215,88 @@ class Solution {
         return res;
     }
 }
+
+class Solution {
+    public List<Integer> inorderTraversal(TreeNode root) {
+        if (root == null) {
+            return Collections.emptyList();
+        }
+        
+        List<Integer> res = new ArrayList<>();
+        Stack<TreeNode> stack = new Stack<>();
+        // 千万不要先push root，否则序列会重复出现多一遍！
+
+        while (root != null || !stack.isEmpty()) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            
+            // root == null
+            root = stack.pop();
+            res.add(root.val);
+            
+            root = root.right; // right might be null, so that why while condition check uses ||
+        }
+        
+        return res;    
+    }
+}
+
+Validate Binary Search Tree
+class Solution {
+    public boolean isValidBST(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode pre = null; // please do not use Integer.MIN_VALUE as start value...
+        while (root != null || !stack.isEmpty()) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            
+            root = stack.pop();
+            if (pre != null && pre.val >= root.val) {
+                return false;
+            }
+            pre = root;
+            root = root.right;
+        }
+        return true;
+    }
+}
+
+Subtree of Another Tree
+class Solution {
+    public boolean isSubtree(TreeNode s, TreeNode t) {
+        if (s == null || t == null) { // I FORGOT the boundary check!
+            return false;
+        }
+        
+        return same(s, t) || 
+               isSubtree(s.left, t) || 
+               isSubtree(s.right, t);
+    }
+    
+    private boolean same(TreeNode a, TreeNode b) {
+        if (a == null && b == null) {
+            return true;
+        }
+        
+        if (a == null || b == null) {
+            return false;
+        }
+        
+        boolean left = same(s.left, t.left);
+        boolean right = same(s.right, t.right);
+        
+        return s.val == t.val && left && right;
+    }
+}
+
+
+
+

@@ -25,6 +25,16 @@ TreeSet is implemented using a tree structure(red-black tree in algorithm book).
 LinkedHashSet is between HashSet and TreeSet. It is implemented as a hash table with a linked list running through it, so it provides the order of insertion. The time complexity of basic methods is O(1).
 
 
+
+**SPLIT PATTERN**
+
+String[] parts1 = version1.split("\\\\\.");
+
+String[] parts1 = version1.split("\\\\s+");
+
+paragraph.replaceAll("\\\pP", " ").toLowerCase().split("\\\s+");
+
+
 ### Terminology
 
 * Binary tree

@@ -108,7 +108,7 @@ public List<Integer> findAnagrams(String s, String p) {
     List<Integer> res = new ArrayList<>();
     
     int left = 0, right = 0;
-    int matchSize = p.length();
+    int counter = p.length();
     int[] map = new int[256];
     
     for (char c : p.toCharArray()) {
@@ -118,20 +118,22 @@ public List<Integer> findAnagrams(String s, String p) {
     char[] ch = s.toCharArray();
     while (right < s.length()) {
         if (map[ch[right]] > 0) {
-            matchSize--;
+            counter--;
         }
         map[ch[right]]--;
         
+        // adjust sliding window
         if (right - left == p.length()) {
            if (map[ch[left]] >= 0) {
-                matchSize++;
+                counter++;
             }
             map[ch[left]]++;
             left++;
         }
         
+        // result update if requirements are satisfied
         // sliding window: [left, right] - both are inclusive
-        if (right - left == p.length() - 1 && matchSize == 0) {
+        if (right - left == p.length() - 1 && counter == 0) {
             res.add(left);
         }    
         right++;
@@ -152,19 +154,20 @@ class Solution {
         int left = 0, right = 0;
         int res = 0;
         
-        int[] count = new int[256];
+        int[] map = new int[256];
         char[] ch = s.toCharArray();
         
         while (right < s.length()) { // every loop, right move one step
-            count[ch[right]]++;
+            map[ch[right]]++;
             
             // left moves to satifies the requirement
-            while (count[ch[right]] > 1) {
+            while (map[ch[right]] > 1) {
                 // adjust sliding window
-                count[ch[left]]--;
+                map[ch[left]]--;
                 left++;
             }
             
+            // result update
             res = Math.max(res, right - left + 1);
             right++;
         }
@@ -172,6 +175,45 @@ class Solution {
     }
 }
 
+Minimum Window Substring
 
-
+class Solution {
+    public String minWindow(String s, String t) {
+        if (s == null || t == null || s.length() < t.length()) {
+            return "";
+        }
+        
+        int[] map = new int[256];
+        int counter = t.length();
+        for (char c : t.toCharArray()) {
+            map[c]++;
+        }
+        
+        int left = 0, right = 0;
+        String res = "";
+        int min = Integer.MAX_VALUE;
+        while (right < s.length()) {
+            if (map[s.charAt(right)] > 0) {
+                counter--;
+            }
+            map[s.charAt(right)]--;
+            
+            while (counter == 0) { // SHOULD BE while NOT if
+                if (min > right - left + 1) {
+                    min = right - left + 1;
+                    res = s.substring(left, right + 1);
+                }
+                if (map[s.charAt(left)] >= 0) {
+                    counter++;
+                }
+                map[s.charAt(left)]++;
+                left++;
+            }
+            
+            right++;
+        }
+        
+        return res;
+    }
+}
 

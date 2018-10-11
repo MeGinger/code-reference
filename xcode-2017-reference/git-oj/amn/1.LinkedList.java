@@ -260,3 +260,57 @@ private void addToSlidingWindow(int a, LinkedList<Integer> l) {
     }
     l.addLast(a);
 }
+
+
+Reverse Linked List
+
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        
+        if (head == null) {
+            return head;
+        }
+        
+        // pre    head
+        // null   1 -> 2 -> 3 -> 4
+        
+        ListNode pre = null
+        while (head != null) {
+            ListNode nex = head.next;
+            head.next = pre;
+            pre = head;
+            head = nex;
+        }    
+            
+        return pre;
+    }
+}
+
+Merge Two Sorted Lists
+
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        // below can cover all edge cases like l1 or l2 is/are null
+        ListNode dummy = new ListNode(0);
+        ListNode tail = dummy;
+        
+        while (l1 != null && l2 != null) {
+            if (l1.val < l2.val) {
+                tail.next = l1;
+                l1 = l1.next;
+            } else {
+                tail.next = l2;
+                l2 = l2.next;
+            }
+            tail = tail.next;
+        }
+        
+        if (l1 != null) {
+            tail.next = l1;   
+        } else { // l2 == null or l2 != null
+            tail.next = l2; 
+        }
+        
+        return dummy.next;
+    }
+}

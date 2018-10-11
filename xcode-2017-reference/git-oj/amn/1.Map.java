@@ -18,3 +18,4 @@ public String mostCommonWord(String paragraph, String[] banned) {
     
     return Collections.max(count.entrySet(), Map.Entry.comparingByValue()).getKey();
 }
+
