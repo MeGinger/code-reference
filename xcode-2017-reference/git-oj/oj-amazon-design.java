@@ -156,6 +156,9 @@ System Design:
 12. Amazon Locker 就是Amazon买东西可以运到一个Locker然后pick up的那个.
 (仔细想一下你就会发现就是一个Parking Lot.Package有Small,Medium,Large.一个Location的 Lockers也有Small,Medium, Large。面试官主要想知道一个送货小哥去的时候怎么分配给他个大小合适的Locker。要写那个method。我就按照Parking Lot做的。我觉得一模一样。恩恩，我那时侯一开始考虑也想是不是Order生成的时候就匹配了一个Locker，还有挑选哪个Location,但跟面试观官交流以后，他就说假设只有一个Location然后主要想知道送货小哥去的时候怎么分配，别的先不考虑。)
 
+Amazon locker, 怎么按照货物的大小取空闲的柜子。一开始没有弄清楚问题本质，假设得太简单，我定义柜子种类只有single，double，four。而其实我应该定义Type { int width, int height, int deep }. 最后终于讨论出问题的本质了，然后就没有时间写代码了。定义了Type, 然后给每一种Type一个list的available柜子编号，TreeMap, 其中对Type排序，然后对有序keySet中找到一个大于目标值的最小值，binary search。
+
+
 13. Reader System
 
 14. Parking Lot, Airport etc...(http://stackoverflow.com/questio ... n-an-oo-parking-lot )

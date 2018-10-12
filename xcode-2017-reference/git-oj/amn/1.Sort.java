@@ -11,6 +11,7 @@ class Solution {
         Map<Character, Set<Character>> adj = new HashMap<>();
         Map<Character, Integer> indegree = new HashMap<>();
         
+        // indegree must be initialized first and for ALL elements!
         for (String word : words) {
             for (int i = 0; i < word.length(); i++) {
                 indegree.put(word.charAt(i), 0);
@@ -85,6 +86,64 @@ class Solution {
     }
 }
 
+
+Course Schedule II
+class Solution {
+    // [0,1]: take course 0 you have to first take course 1    
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        // if prerequisites is empty, indicates no dependencies between courses
+        // we still can get a ordered sequence of courses
+        if (numCourses <= 0 || prerequisites == null) {
+            return new int[0];
+        }
+    
+        Map<Integer, Set<Integer>> adj = new HashMap<>();
+        Map<Integer, Integer> indegree = new HashMap<>();
+        
+        // indegree must be initialized first and for ALL elements!
+        for (int i = 0; i < numCourses; i++) {
+            indegree.put(i, 0);
+        }
+        
+        for (int[] p : prerequisites) {
+            adj.computeIfAbsent(p[1], k -> new HashSet<>()).add(p[0]);
+            indegree.put(p[0], indegree.getOrDefault(p[0], 0) + 1);
+        }
+        
+        Queue<Integer> queue = new LinkedList<>();
+        for (Map.Entry<Integer, Integer> entry : indegree.entrySet()) {
+            if (entry.getValue() == 0) {
+                queue.offer(entry.getKey());
+            }
+        }
+        
+        int[] res = new int[numCourses];
+        int index = 0;
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            res[index++] = cur;
+            
+            if (adj.get(cur) == null) {
+                continue;
+            }
+            
+            for (int next : adj.get(cur)) {
+                int in = indegree.get(next) - 1;
+                indegree.put(next, in);
+                
+                if (in == 0) {
+                    queue.offer(next);
+                }
+            }
+        }
+        
+        if (index != numCourses) {
+            return new int[0]; // cycle inside
+        }
+        
+        return res;
+    }
+}
 BUCKET SORT
 
 class Solution {
@@ -124,5 +183,63 @@ class Solution {
         }
         
         return res;
+    }
+}
+
+QUICK SELECT
+
+Kth Largest Element in an Array
+O(N) best case - N + N/2 + N/4 + ...... -> 2N -> N
+O(N^2) worst case running time 
+O(1) memory
+class Solution {
+    public int findKthLargest(int[] nums, int k) {
+        if (nums == null || nums.length == 0 || k <= 0) {
+            return 0;
+        }
+        
+        int target = nums.length - k;
+        
+        int start = 0, end = nums.length - 1;
+        
+        // binary search + quick select
+        while (start <= end) {
+            int position = partition(nums, start, end);
+            if (position == target) {
+                return nums[position];
+            } else if (position > target) {
+                end = position - 1;
+            } else {
+                start = position + 1;
+            }
+        }
+        
+        return nums[start]; // kth largest not found
+    }
+    
+    private int partition(int[] nums, int start, int end) {
+        int pivot = start;
+        while (start <= end) {
+            while (start <= end && nums[start] <= nums[pivot]) {
+                start++;
+            }
+            while (start <= end && nums[end] > nums[pivot]) {
+                end--;
+            }
+            
+            if (start <= end) {
+                swap(nums, start, end);
+            }
+        }
+        
+        // switch pivot and end
+        swap(nums, pivot, end);
+        return end;
+    }
+    
+    private void swap(int[] nums, int a, int b) {
+        int temp = nums[a];
+        nums[a] = nums[b];
+        nums[b] = temp;
     }
 }

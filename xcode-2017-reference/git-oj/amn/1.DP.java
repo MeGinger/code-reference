@@ -28,3 +28,30 @@ class Solution {
             breakableIndex.get(breakableIndex.size() - 1) == s.length() - 1;
     }
 }
+
+Maximum Subarray - all kinds of integer - negative, 0, positive
+
+class Solution {
+    public int maxSubArray(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        int n = nums.length;
+        
+        int[] dp = new int[n]; // max subarray ending at i
+        dp[0] = nums[0];
+        
+        int max = nums[0];
+        
+        // if dp[i] < 0, means nums[i] must be < 0, and nums[i] <= dp[i]
+        
+        for (int i = 1; i < n; i++) {
+            dp[i] = nums[i] + (dp[i - 1] > 0 ? dp[i - 1] : 0);
+            max = Math.max(max, dp[i]);
+        }
+        
+        return max;
+    }
+}
+

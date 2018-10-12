@@ -314,3 +314,94 @@ class Solution {
         return dummy.next;
     }
 }
+
+
+// Palindrome Linked List
+class Solution {
+    public boolean isPalindrome(ListNode head) {
+        if (head == null) {
+            return true;
+        }
+        
+        // 1->2->3     => 2 // odd
+        // 1->2->3->4  => 2 // even
+        ListNode middle = middle(head);
+        middle.next = reverse(middle.next);
+        
+        ListNode p = head, q = middle.next;
+        while (p != null && q != null && p.val == q.val) {
+            p = p.next;
+            q = q.next;
+        }
+        
+        return q == null; // means both two halves are evaluated and done
+    }
+    
+    private ListNode middle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head.next;
+        
+        while (fast != null) {
+            if (fast.next == null) {
+                return slow; // even
+            }
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow; // odd
+    }
+    
+    private ListNode reverse(ListNode head) {
+        ListNode pre = null; // I FORGET initialization !
+        while (head != null) {
+            ListNode next = head.next;
+            head.next = pre;
+            pre = head;
+            head = next;
+        }
+        
+        return pre;
+    }
+}
+
+// Linked List Cycle
+Given a linked list, determine if it has a cycle in it.
+
+public boolean hasCycle(ListNode head) {
+    if (head == null) {
+        return false;
+    }
+    // head.next == null can be eliminated since it will be checked in the 1st loop
+    
+    ListNode slow = head;
+    ListNode fast = head.next;
+    // slow cannot be null always!!
+    while (fast != slow) {
+        if (fast == null || fast.next == null) {
+            return false;
+        }
+
+        slow = slow.next;
+        fast = fast.next.next;
+    }
+    
+    return true;
+}
+
+// Intersection of Two Linked Lists
+public class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if(headA == null || headB == null) return null;
+
+        ListNode a = headA;
+        ListNode b = headB;
+
+        // if a & b have different len, then we will stop the loop after second iteration
+        while(a != b){
+            a = a == null? headB : a.next;
+            b = b == null? headA : b.next;    
+        }
+        // a == b, either null or not null
+        return a;
+    }
+}

@@ -1,3 +1,11 @@
+full binary tree - a node either have 2 children or is a leaf - leaves might not in the same level
+
+complete binary tree - leaves are in the same level and left possible
+
+perfect binary tree - full binary tree + complete binary tree
+
+
+
 Lets start by summarizing Java primitive data types:
 
 byte: Byte data type is a 8-bit signed two's complement integer.

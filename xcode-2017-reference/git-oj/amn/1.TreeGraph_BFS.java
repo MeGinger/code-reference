@@ -265,4 +265,102 @@ class Solution {
 }
 
 
+Populating Next Right Pointers in Each Node
+
+/**
+ * Definition for binary tree with next pointer.
+ * public class TreeLinkNode {
+ *     int val;
+ *     TreeLinkNode left, right, next;
+ *     TreeLinkNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    // it is a perfect binary tree 
+    // (ie, all leaves are at the same level, and every parent has two children).
+    public void connect(TreeLinkNode root) {
+        if (root == null) {
+            return;
+        }
+        
+        while (root != null) {
+            TreeLinkNode cur = root;
+            while (cur != null) { // linked list manipulation
+                if (cur.left != null) { // cur might be a leaf
+                    cur.left.next = cur.right;
+                }
+                if (cur.right != null && cur.next != null) {
+                    cur.right.next = cur.next.left;
+                }
+                
+                cur = cur.next;
+            }
+            
+            root = root.left;
+        }
+    }
+}
+
+Binary Tree Vertical Order Traversal
+
+class Solution {
+    public List<List<Integer>> verticalOrder(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        
+        if (root == null) {
+            return res;
+        }
+        
+        Queue<TreeNode> nodes = new LinkedList<>();
+        Queue<Integer> cols = new LinkedList<>();
+        
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        
+        nodes.offer(root);
+        cols.offer(0);
+        
+        int min = 0, max = 0;
+        
+        while (!nodes.isEmpty()) {
+            TreeNode node = nodes.poll();
+            int col = cols.poll();
+            
+            List<Integer> list = map.computeIfAbsent(col, c -> new ArrayList<>());
+            list.add(node.val);
+            
+            if (node.left != null) {
+                nodes.offer(node.left);
+                cols.offer(col - 1);
+                min = Math.min(min, col - 1);
+            }
+            
+            if (node.right != null) {
+                nodes.offer(node.right);
+                cols.offer(col + 1);
+                max = Math.max(max, col + 1);
+            }
+            
+        }
+        
+        for (int i = min; i <= max; i++) {
+            res.add(map.get(i));
+        }
+        
+        return res;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

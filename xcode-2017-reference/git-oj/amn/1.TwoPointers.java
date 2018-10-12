@@ -64,6 +64,28 @@ public int trap(int[] height) {
     return ans;
 }
 
+Group Anagrams
+Time: nklogk
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        if (strs == null || strs.length == 0) {
+            return Collections.emptyList();
+        }
+        
+        List<List<String>> res = new ArrayList<>();
+        Map<String, List<String>> map = new HashMap<>();
+        
+        for (String str : strs) {
+            char[] chars = str.toCharArray();
+            Arrays.sort(chars);
+            String key = new String(chars);
+            map.computeIfAbsent(key, k -> new ArrayList<>()).add(str);    
+        }
+        
+        return new ArrayList<>(map.values());
+    }
+}
+
 Find All Anagrams in a String
 - sliding window - fixed size 
 public List<Integer> findAnagrams(String s, String p) {

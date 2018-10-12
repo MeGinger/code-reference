@@ -297,6 +297,115 @@ class Solution {
     }
 }
 
+Construct Binary Tree from Preorder and Inorder Traversal
+// assume that duplicates do not exist in the tree.
+preorder -> 3 | 2, 5 | 6, 7 // the boundaries | are indicated by inorder seq
+inorder  -> (2, 5) | 3 | (6, 7) 
+inorder sequence can help determine the size/boundary of left or right subtrees
+so that preorder sequence can be more semantically meaningful
+
+postorder -> 2, 5 | 6, 7 | 3
+inorder  -> (2, 5) | 3 | (6, 7) 
+
+class Solution {
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        if (preorder == null || preorder.length == 0) {
+            return null;
+        }
+        
+        if (inorder == null || inorder.length == 0) {
+            return null;
+        }
+        // assume that duplicates do not exist in the tree.
+        // cache
+        Map<Integer, Integer> inorderIndex = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++) {
+            inorderIndex.put(inorder[i], i);
+        }
+        
+        return dfs(0, 0, inorder.length - 1, 
+                   preorder, inorder, inorderIndex);
+    }
+    
+    private TreeNode dfs(int preStart, int inStart, int inEnd, 
+                         int[] preorder, int[] inorder, Map<Integer, Integer> inorderIndex) {
+        if (preStart > preorder.length - 1 || inStart > inEnd) {
+            return null;
+        }
+        
+        int val = preorder[preStart];
+        TreeNode root = new TreeNode(val);
+        int inRoot = inorderIndex.get(val);
+        
+        // (inRoot - inStart) is the size of left subtree
+        root.left = dfs(preStart + 1, inStart, inRoot - 1, preorder, inorder, inorderIndex);
+        root.right = dfs(preStart + (inRoot - inStart) + 1, inRoot + 1, inEnd, preorder, inorder, inorderIndex);
+        
+        return root;
+    }
+}
+
+// Binary Tree Maximum Path Sum
+
+class Solution {
+    private int maxPath; // whole max path
+    public int maxPathSum(TreeNode root) {
+        maxPath = Integer.MIN_VALUE;
+        maxPath(root);
+        return maxPath;
+    }
+    
+    private int maxPath(TreeNode root) { // single max path
+        if (root == null) {
+            return 0;
+        }
+        
+        int left = Math.max(0, maxPath(root.left));
+        int right = Math.max(0, maxPath(root.right));
+        
+        maxPath = Math.max(maxPath, left + right + root.val);
+        return Math.max(left, right) + root.val;
+    }
+}
+
+// Symmetric Tree
+class Solution {
+    public boolean isSymmetric(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        
+        return isSymmetric(root.left, root.right);
+    }
+    
+    private boolean isSymmetric(TreeNode left, TreeNode right) {
+        if (left == null && right == null) {
+            return true;
+        }
+        
+        if (left == null || right == null) {
+            return false;
+        }
+        
+        if (left.val != right.val) {
+            return false;
+        }
+        
+        return isSymmetric(left.left, right.right) &&
+               isSymmetric(left.right, right.left);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -291,3 +291,65 @@ class ImageDirectory {
         System.out.println(s.solution2(lines));
     }
 }
+
+
+import java.util.Random;
+
+class RandomizedSet {
+    private List<Integer> nums; 
+    private Random random = new Random(); // 0 - nums.size() - 1
+    private Map<Integer, Integer> locs; // mapping: (value, loc/index)
+
+    /** Initialize your data structure here. */
+    public RandomizedSet() {
+        nums = new ArrayList<>();
+        locs = new HashMap<>(); 
+    }
+    
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    public boolean insert(int val) {
+        if (nums.contains(val)) {
+            return false;
+        }
+        
+        nums.add(val);
+        locs.put(val, nums.size() - 1);
+        
+        return true;
+    }
+    
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    public boolean remove(int val) {
+        // loc = locs.get(val)
+        // if (loc != nums.size() - 1) {
+        //     switch the positions or val & lastone
+        //     update map & list
+        // }
+        // 
+        // nums.remove(nums.size() - 1); // remove by index
+        // map.remove(val); // revemo by key
+        if (!nums.contains(val)) {
+            return false;
+        }
+        
+        int loc = locs.get(val);
+        if (loc != nums.size() - 1) {
+            // needs implementation
+            // switch val and lastone in the list
+            int lastone = nums.get(nums.size() - 1);
+            nums.set(loc, lastone); // val not in nums
+            locs.put(lastone, loc);
+        }
+        
+        nums.remove(nums.size() - 1); // remove by index
+        locs.remove(val); // remove by key
+        
+        return true;
+    }
+    
+    /** Get a random element from the set. */
+    public int getRandom() {
+        int index = random.nextInt(nums.size());
+        return nums.get(index);
+    }
+}

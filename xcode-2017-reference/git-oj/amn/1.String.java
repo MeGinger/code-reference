@@ -48,3 +48,42 @@ class Solution {
         return 0;
     }
 }
+
+Reverse Words in a String
+
+public class Solution {
+    public String reverseWords(String s) {
+        if (s == null || s.length() == 0) {
+            return "";
+        }
+        
+        s = s.trim().replaceAll("\\s+", " ");
+        
+        char[] ch = s.toCharArray();
+        reverse(ch, 0, s.length() - 1);
+        
+        int start = 0;
+        int end = 0;
+        for (int i = 0; i < ch.length; i++) {
+            if (ch[i] == ' ') { // handle prev case
+                reverse(ch, start, end);
+                start = i + 1;
+            }
+            end = i;
+        }
+        reverse(ch, start, end); // I FORGOT last one
+        return new String(ch);
+    }
+    
+    private void reverse(char[] ch, int start, int end) {
+        if (start > end) {
+            return;
+        }
+        
+        for (int i = start, j = end; i < j; i++, j--) {
+            char temp = ch[i];
+            ch[i] = ch[j];
+            ch[j] = temp;    
+        }
+    }
+}

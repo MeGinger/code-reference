@@ -21,6 +21,50 @@ class Solution {
     }
 }
 
+Roman to Integer
+
+class Solution {
+    
+    // if special cases occur, only once!
+    public int romanToInt(String s) {
+        int sum = 0;
+        if (s.contains("IV")) {
+            sum -= 2;
+        }
+        if (s.contains("IX")) {
+            sum -= 2;
+        }
+        if (s.contains("XL")) {
+            sum -= 20;
+        }
+        if (s.contains("XC")) {
+            sum -= 20;
+        }
+        if (s.contains("CD")) {
+            sum -= 200;
+        }
+        if (s.contains("CM")) {
+            sum -= 200;
+        }
+        
+        char[] c = s.toCharArray();
+        
+        for (int i = 0; i < s.length(); i++) {
+            switch (c[i]) {
+                case 'M': sum += 1000; break;
+                case 'D': sum += 500; break;
+                case 'C': sum += 100; break;
+                case 'L': sum += 50; break;
+                case 'X': sum += 10; break;
+                case 'V': sum += 5; break;
+                case 'I': sum += 1; break;
+            }
+        }
+        
+        return sum;
+    }
+}
+
 Product of Array Except Self
 
 class Solution {
@@ -52,6 +96,76 @@ class Solution {
         return res;
     }
 }
+
+Pow(x, n)
+x is double, n can be any integer, negative, 0, positive
+
+Time: O(logn) 
+Space: O(1) - iteration!
+
+-3 % 2 -> -1
+-2 % 2 -> 0
+-1 % 2 -> -1
+-1 / 2 -> 0
+
+3 % 2 -> 1
+2 % 2 -> 0
+1 % 2 -> 1
+1 / 2 -> 0
+
+int n = Integer.MIN_VALUE;
+n = -n; // itself still -2147483648
+x = 2
+res = 1, it should be 0, since it cannot go to if (n % 2 == 1) {...}
+public class Solution {
+    public double pow(double x, int n) {
+        if (n < 0) {
+            n = -n;
+        }
+        
+        double res = 1;
+        while (n != 0) {
+            if (n % 2 == 1 || n % 2 == -1) {
+                res *= x;
+            }
+            x *= x;
+            n /= 2;
+        }
+        return res;
+    }
+}
+
+
+Find the Celebrity
+/* The knows API is defined in the parent class Relation.
+      boolean knows(int a, int b); */
+
+public class Solution extends Relation {
+    public int findCelebrity(int n) {
+        // find that one candidate
+        int candidate = 0;
+        
+        for (int i = 1; i < n; i++) {
+            if (knows(candidate, i)) {
+                candidate = i;
+            }
+            
+            // others i: candidate don't know i => i cannot be candidate
+        }
+        
+        // verify the candidate
+        // The definition of a celebrity is that all the other n - 1 people know him/her but he/she does not know any of them.
+        for (int i = 0; i < n; i++) {
+            if (candidate != i && (!knows(i, candidate) || knows(candidate, i))) {
+                return -1;
+            }
+        }
+        
+        return candidate;
+    }
+}
+
+
 
 
 
