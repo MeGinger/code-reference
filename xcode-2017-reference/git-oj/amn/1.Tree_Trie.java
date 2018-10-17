@@ -147,3 +147,56 @@ class Solution {
 
 
 
+Add and Search Word - Data structure design
+
+class TrieNode {
+    Map<Character, TrieNode> children;
+    boolean isWord;
+    
+    public TrieNode() {
+        this.children = new HashMap<>();
+    }
+}
+
+public class WordDictionary {
+    
+    private TrieNode root;
+
+    public WordDictionary() {
+        this.root = new TrieNode();
+    }
+    
+    public void addWord(String word) {
+        TrieNode cur = root;
+        for (int i = 0; i < word.length(); i++) {
+            cur = cur.children.computeIfAbsent(word.charAt(i), k -> new TrieNode());
+        }
+        cur.isWord = true;
+    }
+    
+    public boolean search(String word) {
+        return find(word, 0, root);
+    }
+    
+    private boolean find(String word, int i, TrieNode node) {
+        if (i == word.length()) {
+            return node.isWord;
+        }
+        
+        if (word.charAt(i) == '.') {
+            for (Map.Entry<Character, TrieNode> entry : node.children.entrySet()) {
+                if (find(word, i + 1, entry.getValue())) {
+                    return true;
+                }
+            }
+            return false; 
+        } else {
+            TrieNode next = node.children.get(word.charAt(i));
+            if (next == null) {
+                return false;
+            }
+            
+            return find(word, i + 1, next);    
+        }
+    }
+}

@@ -78,3 +78,50 @@ class Solution {
         return res;
     }
 }
+
+Set Matrix Zeroes
+
+class Solution {
+    public void setZeroes(int[][] matrix) {
+        // invalid input
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return;
+            // // throw new IllegalArgumentException();
+        }
+        
+        // constant space 
+        int col0 = 1, row = matrix.length, col = matrix[0].length;
+        
+        for (int i = 0; i < row; i++) {
+            if (matrix[i][0] == 0) {
+                col0 = 0;
+            }// The reason we treat this the first col separately is that...
+              /* we use first col [0...length - 1] to indicate the whole row should be populated as 0
+                 matrix[2][0] == 0 -> the 3rd row ...
+                 
+                 use first row [1...length - 1] to indicate the whole col should be populated as 0
+                 matrix[0][2] == 0 -> the 3rd col ...
+                 
+                 in this case, the 1st col indicator is missing, 
+                 so I use a single variable as the indicator, only constant space is needed
+                 
+               */
+            for (int j = 1; j < col; j++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = matrix[0][j] = 0;
+                }
+            }
+        }
+        
+        for (int i = row - 1; i >= 0; i--) {            
+            for (int j = col - 1; j >= 1; j--) {
+                if (matrix[i][0] == 0 || matrix[0][j] == 0) {
+                    matrix[i][j] = 0;
+                }                                   
+            }
+            if (col0 == 0) { // put it after loop, NOT before loop
+                matrix[i][0] = 0;
+            }
+        }
+    }
+}

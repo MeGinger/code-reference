@@ -1,3 +1,100 @@
+Meeting Room II
+class Solution {
+    public int minMeetingRooms(Interval[] intervals) {
+        if (intervals == null || intervals.length == 0) {
+            return 0;
+        }
+        
+        int len = intervals.length;
+        int[] starts = new int[len];
+        int[] ends = new int[len];
+        for (int i = 0; i < len; i++) {
+            starts[i] = intervals[i].start;
+            ends[i] = intervals[i].end;
+        }
+        
+        Arrays.sort(starts);
+        Arrays.sort(ends);
+        
+        int rooms = 0;
+        int endIndex = 0;
+        for (int startIndex = 0; startIndex < starts.length; startIndex++) {
+            // one loop handles an interval
+            if (starts[startIndex] < ends[endIndex]) {
+                // counting the number of overlapping intervals/meetings
+                // throughout the timeline
+                // and recording the maximum
+                rooms++;
+            } else {
+                // one meeting finishes
+                // the interval can be put into the rooms
+                endIndex++;
+            }
+        }
+        return rooms;
+    }
+
+    // follow up: print out all meeting rooms with their assigned intervals
+    // ?
+    public int minMeetingRooms2(Interval[] intervals) {
+        if (intervals == null || intervals.length == 0) {
+            return 0;
+        }
+        Element[] starts = new Element[intervals.length];
+        Element[] ends = new Element[intervals.length];
+        for (int i = 0; i < intervals.length; i++) {
+            starts[i] = new Element(intervals[i].start, i);
+            ends[i] = new Element(intervals[i].end, i);
+        }
+        Arrays.sort(starts);
+        Arrays.sort(ends);
+        int rooms = 0;
+        int endIndex = 0;
+        // roomNums[i] is intervals[i]'s room number
+        int[] roomNums = new int[intervals.length];
+        for (int startIndex = 0; startIndex < starts.length; startIndex++) {
+            int currentIndex = starts[startIndex].index;
+            if (starts[startIndex].compareTo(ends[endIndex]) < 0) {
+                roomNums[currentIndex] = rooms++;
+            } else {
+                roomNums[currentIndex] = roomNums[ends[endIndex++].index]; 
+                // room number of the current original index = room number of the original index of this end index
+            }
+        }
+        Map<Integer, List<Interval>> m = new HashMap<>(rooms);
+        for (int i = 0; i < intervals.length; i++) {
+            System.out.println(intervals[i] + " room " + roomNums[i]);
+            m.computeIfAbsent(roomNums[i], k -> new ArrayList<>()).add(intervals[i]);
+        }
+        for (int i = 0; i < rooms; i++) {
+            System.out.println("Room " + i + " " + m.get(i));
+        }
+        return rooms;
+    }
+    
+    class Element implements Comparable<Element> {
+        int val;
+        int index; // wrapper class保留它原有的index，常用套路之一，因为sort会让index丢失
+        
+        public Element(int v, int i) {
+            this.val = v;
+            this.index = i;
+        }
+        
+        // used in sorting!!!!! with Comparable<Element>
+        public int compareTo(Element other) {
+            return Integer.compare(this.val, other.val);
+        }
+        
+        public int getIndex() {
+            return this.index;
+        }
+        
+        public int getValue() {
+            return this.val;
+        }
+    }
+
 Merge Intervals
 
 class Solution {
@@ -102,5 +199,40 @@ class Solution {
         }
         
         return res;
+    }
+}
+
+
+Insert Interval
+
+Given a set of non-overlapping intervals, insert a new interval into the intervals (merge if necessary).
+You may assume that the intervals were initially sorted according to their start times.
+
+class Solution {
+    public List<Interval> insert(List<Interval> intervals, Interval newInterval) {
+        if (intervals == null || newInterval == null) { // intervals can be empty!!!
+            return intervals;
+        }
+        
+        List<Interval> results = new ArrayList<Interval>();
+        
+        int insertPos = 0;
+        
+        for (Interval interval : intervals) {
+            if (interval.end < newInterval.start) {
+                results.add(interval);
+                insertPos++;
+            } else if (newInterval.end < interval.start) { 
+                results.add(interval);
+            } else { // overlap
+                newInterval.start = Math.min(newInterval.start, interval.start);
+                newInterval.end = Math.max(newInterval.end, interval.end);
+            }
+        }
+            
+        // add newInterval (merged)
+        results.add(insertPos, newInterval);
+        
+        return results;
     }
 }

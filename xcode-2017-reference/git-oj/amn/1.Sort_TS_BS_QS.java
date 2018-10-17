@@ -86,8 +86,60 @@ class Solution {
     }
 }
 
+Course Schedule I - return boolean if any cycle
+class Solution {
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        if (numCourses <= 0) {
+            return false;
+        }
+        if (prerequisites == null || prerequisites.length == 0 || prerequisites[0].length == 0) {
+            return true; 
+        }
+        
+        Map<Integer, Set<Integer>> adj = new HashMap<>();
+        Map<Integer, Integer> indegree = new HashMap<>();
+        
+        for (int i = 0; i < numCourses; i++) {
+            indegree.put(i, 0);
+        }
+        
+        for (int[] p : prerequisites) {
+            adj.computeIfAbsent(p[1], k -> new HashSet<>()).add(p[0]);
+            indegree.put(p[0], indegree.get(p[0]) + 1);
+        }
+        
+        Queue<Integer> queue = new LinkedList<>();
+        for (Map.Entry<Integer, Integer> entry : indegree.entrySet()) {
+            if (entry.getValue() == 0) {
+                queue.offer(entry.getKey());
+            }
+        }
+        
+        int count = 0;
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            count++;
+            
+            // // easy to forget........
+            if (adj.get(cur) == null) {
+                continue;
+            }
+            
+            for (Integer next : adj.get(cur)) {
+                int in = indegree.get(next) - 1;
+                indegree.put(next, in); // easy to forget........
+                if (in == 0) {
+                    queue.offer(next);
+                }
+            }
+        }
+        
+        return count == numCourses;
+    }
+}
 
-Course Schedule II
+
+Course Schedule II - return a list
 class Solution {
     // [0,1]: take course 0 you have to first take course 1    
     public int[] findOrder(int numCourses, int[][] prerequisites) {
@@ -122,14 +174,15 @@ class Solution {
         while (!queue.isEmpty()) {
             int cur = queue.poll();
             res[index++] = cur;
-            
+
+            // easy to forget........
             if (adj.get(cur) == null) {
                 continue;
             }
             
             for (int next : adj.get(cur)) {
                 int in = indegree.get(next) - 1;
-                indegree.put(next, in);
+                indegree.put(next, in); // easy to forget........
                 
                 if (in == 0) {
                     queue.offer(next);

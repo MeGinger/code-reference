@@ -1,3 +1,18 @@
+String[] parts = path.split("/");
+
+for (String d : data.split(SEP)) {...} // SEP = "," NOT "."!!!!
+​            
+
+        // bit operation
+        // 0 ^ a = a, a ^ 0 = a
+        // 0 ^ 1 = 1, 1 ^ 0 = 1
+        // 0 ^ 0 = 0, 1 ^ 1 = 0
+int[] nums = {1, 2, 3};
+
+int[] clone = nums.clone(); // deep copy...
+
+
+
 full binary tree - a node either have 2 children or is a leaf - leaves might not in the same level
 
 complete binary tree - leaves are in the same level and left possible

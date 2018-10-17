@@ -218,6 +218,52 @@ class Solution {
     }
 }
 
+Add Two Numbers II
+Input: (7 -> 2 -> 4 -> 3) + (5 -> 6 -> 4)
+Output: 7 -> 8 -> 0 -> 7
+class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        if (l1 == null || l2 == null) {
+            return null;
+        }
+        
+        ListNode dummy = new ListNode(0);
+        ListNode cur = dummy;
+        
+        l1 = reverse(l1);
+        l2 = reverse(l2);
+        
+        int carry = 0;
+        while (l1 != null || l2 != null) {
+            int v1 = l1 != null ? l1.val : 0;
+            int v2 = l2 != null ? l2.val : 0;
+            
+            int sum = v1 + v2 + carry;
+            carry = sum / 10;
+            cur.next = new ListNode(sum % 10);
+            cur = cur.next;
+            
+            l1 = l1 == null ? l1 : l1.next;
+            l2 = l2 == null ? l2 : l2.next;
+        }
+        cur.next = carry == 0 ? null : new ListNode(carry);
+        
+        return reverse(dummy.next);
+    }
+    
+    private ListNode reverse(ListNode head) {
+        ListNode pre = null;
+        while (head != null) {
+            ListNode nex = head.next;
+            head.next = pre;
+            pre = head;
+            head = nex;
+        }
+        return pre;
+    }
+}
+
+
 Sliding Window Maximum
 /* 
  LinkedList
@@ -405,3 +451,143 @@ public class Solution {
         return a;
     }
 }
+
+
+Reverse Nodes in k-Group
+Given this linked list: 1->2->3->4->5
+For k = 2, you should return: 2->1->4->3->5
+For k = 3, you should return: 3->2->1->4->5
+
+
+Swap Nodes in Pairs
+
+Given a linked list, swap every two adjacent nodes and return its head.
+Given 1->2->3->4, you should return the list as 2->1->4->3.
+
+class Solution {
+    public ListNode swapPairs(ListNode head) {
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        ListNode cur = dummy;
+        
+        while (cur.next != null && cur.next.next != null) {
+            ListNode first = cur.next;
+            ListNode second = cur.next.next;
+            first.next = second.next;
+            cur.next = second;
+            second.next = first;
+            cur = first;
+        }
+        
+        return dummy.next;
+    }
+}
+
+
+class Solution {
+    public ListNode[] splitListToParts(ListNode root, int k) {
+        ListNode[] parts = new ListNode[k];
+        int len = 0;
+        for (ListNode node = root; node != null; node = node.next) {
+            len++;
+        }
+        int n = len / k, r = len % k;
+        // n : minimum guaranteed part size; 
+        // r : extra nodes spread to the first r parts;
+        
+        ListNode node = root, cur = null; // every reference variable should be initialized
+        // node != null: some bucket might be empty - edge case
+        for (int i = 0; node != null && i < k; i++, r--) {
+            parts[i] = node;
+            for (int j = 0; j < n + (r > 0 ? 1 : 0); j++) {
+                cur = node;
+                node = node.next; // node is next node 
+            }
+            cur.next = null; 
+        }
+        
+        return parts;
+    }
+}
+
+
+Reorder List
+
+Given a singly linked list L: L0→L1→…→Ln-1→Ln,
+reorder it to: L0→Ln→L1→Ln-1→L2→Ln-2→…
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public void reorderList(ListNode head) {
+        if (head == null) {
+            return;
+        }
+        
+        ListNode middle = findMiddle(head);
+        ListNode second = reverse(middle.next);
+        middle.next = null;
+        
+        merge(head, second);
+    }
+    
+    private ListNode merge(ListNode a, ListNode b) {
+        ListNode dummy = new ListNode(0);
+        ListNode cur = dummy;
+        
+        while (a != null && b != null) {
+            cur.next = a;
+            a = a.next;
+            cur.next.next = b;
+            b = b.next;
+            cur = cur.next.next;
+        }
+        
+        if (a != null) {
+            cur.next = a;
+        }
+        if (b != null) {
+            cur.next = b;
+        }
+        return dummy.next;
+    }
+    
+    private ListNode findMiddle(ListNode head) {
+        
+        ListNode slow = head;
+        ListNode fast = head.next;
+        while (fast != null) {
+            if (fast.next == null) {
+                return slow; // even
+            }
+            
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        return slow;
+    }
+    
+    private ListNode reverse(ListNode head) {
+        ListNode pre = null;
+        while (head != null) {
+            ListNode nex = head.next;
+            head.next = pre;
+            pre = head;
+            head = nex;
+        }
+        return pre;
+    }
+}
+
+
+
+
+
+Remove Nth Node From End of List
+

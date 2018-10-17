@@ -64,15 +64,29 @@ OOD
 
 
 System Design
+
+
 * Design Amazon Features
 	* 设计 Amazon Locker，主要需要写code 设计的部分就是怎么找到最合适放某个package的那个locker。
+
 	* Amazon 主页你搜索一个东西的时候，会出来 most viewed related items，设计这个功能怎么实现
-	* 设计产品推荐系统
+	* 设计产品推荐系统 - could be related and high rated system
+	* 怎么collect ads的clicks的frequency，答的很差。。感觉他提示了很多实际场景，然后问我该用什么record click。最后问db怎么设计，说要存的时候可以按click happen的timestamp/frame 存，但是read的时候可能要按照advertiser来collect frequency。
+	* 设计搜索引擎，设计customer also viewed 产品的功能
+
+<user action couting system>
+https://medium.com/@Pinterest_Engineering/building-a-real-time-user-action-counting-system-for-ads-88a60d9c9a
+<recommendation system> - related 
+http://blog.echen.me/2011/02/15/item-to-item-collaborative-filtering-with-amazons-recommendation-system/
+In making its product recommendations, Amazon makes heavy use of an item-to-item collaborative filtering approach. This essentially means that for each item X, Amazon builds a neighborhood of related items S(X); whenever you buy/look at an item, Amazon then recommends you items from that item’s neighborhood. That’s why when you sign in to Amazon and look at the front page, your recommendations are mostly of the form “You viewed… Customers who viewed this also viewed…”.
+https://www.baeldung.com/java-collaborative-filtering-recommendations
+java code
+
+
 	* 设计淘宝网站鼻祖的竞拍模式，lz表示近大半年没见人面过这题，所以就只能基本套路，往high level套，什么hosting server啊，lb啊，身份验证，竞拍行动的服务器，加上用户数据库，竞拍货物数据库，每次bid的数据库，monitor，sharding啥的，毕竟面sde2。据说扯api，interface什么的都是刚毕业孩子玩的。。。人不待见。当然反响感觉也一般，两个manager可能见惯了我这种吹牛逼的，所以也有点虚
 	* 设计一个在线可以买电脑的系统，要求客户可以定制显卡，cpu之类的，然后可以生成订单，还有一些model是预设的，用户可以选择这些model，也可以再基础上定制
 	* 上板 Design AWS marketplace，小哥出题先画出大致流程， 感觉他也不知道要问啥。。我说这块traffic会比较多 需要用cache缓冲 他点点头那块storage需要replica防止single point of failure 他又点点头然后让我写出API出来 啊， 顺间变OOD Design了思维有点跳跃 感觉到最后10分钟意识到题的意思 结束时小哥握手无力 估计没戏 还拍了照
-	* 怎么collect ads的clicks的frequency，答的很差。。感觉他提示了很多实际场景，然后问我该用什么record click。最后问db怎么设计，说要存的时候可以按click happen的timestamp/frame 存，但是read的时候可能要按照advertiser来collect frequency。我画了半天也没画出个所以然。最后大叔终于放弃了我让我走了。。
-
+	
 When a Pinner loads a page of a view type on Pinterest, an ad request with user info is sent from the web server to the ads system in order to fill the ads spots (i.e. an opportunity to display an ad). The system will retrieve ads candidates from our inventory and subsequently determine which ads among the candidates to put in the designated spots. This behavior is called ad insertion.
 
 As a Pinner interacts with promoted Pins, these actions are tracked by calling a tracking endpoint from the front-end. The server then logs the event to Kafka. A Kafka consumer will consume the messages and write the action events to a data store (Aperture). Ads backend servers request user action counts from Aperture after candidate retrieval.
@@ -82,15 +96,102 @@ The event data store has a counting layer to serve counts.
 The service exposes a set of generic counting APIs.
 	
 
+	* 设计一个亚马wishlist的数据结构
+	 就是吧product， host，guest和wishlist怎么混在一起，我选的用non sql来实现，讨论完了又聊了下用sql怎么设计schema，分享wishlist就发wishlist ID 到url里面，然后很简单的聊了一下如何提高performance和如何cache数据的问题，我就提了下用redis就行因为我也只用过redis。 然后大概估计了一下latency和throughput，然后讨论了一下db读写和如何隔离优化。讨论了一下cache的优先级选择，我就提了下LRU，用欢迎度和时间来决定cache优先级。就提了一下LRU是一个hashmap + linkedlist就不再问了，本来还想给他现场写一个LRU搞个妥帖的，结果不问了。主要就半小时，好像也没啥太多能问的
 
-	
-	* 设计搜索引擎，设计customer also viewed 产品的功能
-	* 设计一个亚马wishlist的数据结构， 就是吧product， host，guest和wishlist怎么混在一起，我选的用non sql来实现，讨论完了又聊了下用sql怎么设计schema，分享wishlist就发wishlist ID 到url里面，然后很简单的聊了一下如何提高performance和如何cache数据的问题，我就提了下用redis就行因为我也只用过redis。 然后大概估计了一下latency和throughput，然后讨论了一下db读写和如何隔离优化。讨论了一下cache的优先级选择，我就提了下LRU，用欢迎度和时间来决定cache优先级。就提了一下LRU是一个hashmap + linkedlist就不再问了，本来还想给他现场写一个LRU搞个妥帖的，结果不问了。主要就半小时，好像也没啥太多能问的
+host, product, guest, wishlist
+SQL: 
+Guest: {id, name}
+Host: {id, name}
+Share: {wishlist_id, url} - primary key (wishlist_id, host_id)
+WishList: {wishlist_id, host_id, productId} - primary key (all)
+it might be better to use NoSQL for wishlist - a list of products
+
+Limitation:
+Need to maintain consistency between 
+caches and the source of truth such as the database 
+through cache invalidation.
+
+Cache Read/Write Strategy - Cache-aside
+
+Cache Replacement Pocilies
+https://en.wikipedia.org/wiki/Cache_replacement_policies
+* First-in-first-out
+* Last-in-first-out
+* Least recently used
+* Least frequently used
+Counts how often an item is needed. Those that are used least often are discarded first. This works very similar to LRU except that instead of storing the value of how recently a block was accessed, we store the value of how many times it was accessed. 
+* Random replacement
+* The Time aware Least Recently Used (TLRU) is a variant of LRU designed for the situation where the stored contents in cache have a valid life time.
+The algorithm is suitable in network cache applications, 
+such as Information-centric networking (ICN), 
+Content Delivery Networks (CDNs) and distributed networks in general. 
+TLRU introduces a new term: TTU (Time to Use). 
+
+
+LRU Cache - 用欢迎度和时间来决定cache优先级
+* 欢迎度 - 使用, put it to head of list
+* 时间 - least recently used
+
+LFU Cache - 用欢迎度, 频率和时间来决定cache优先级
+*** 
+
 * Design Cache
 * Twitter
 	* 设计Twitter的系统，问到了如何解决latency问题，我卡住了。。。显然推拉组合还不能让他满意。。。大神可以解决一下吗
 	* 设计推特热搜功能，其实就是TopK + 如何scale up的问题没啥其他好说的，网上一搜都是标准答案。记得处理不同区域不同热搜榜单的问题。比如你在中国肯定不想看到美国的前十热搜之类的。
+
+https://www.quora.com/What-algorithm-is-used-to-find-trending-topics-on-Twitter
+https://www.careercup.com/question?id=15310676
+
+blogs.ischool.berkeley.edu/i290-abdt-s12/
+
+“The new algorithm identifies topics that are immediately popular, rather than topics that have been popular for a while or on a daily basis, to help people discover the ‘most breaking’ breaking news from across the world. (We had previously built in this ‘emergent’ algorithm for all local trends, described below.) We think that trending topics which capture the hottest emerging trends and topics of discussion on Twitter are the most interesting.”
+
+!!!!
+http://blogs.ischool.berkeley.edu/i290-abdt-s12/files/2012/08/Kostas_Trends_Sept_13_2012.pdf
+1. simple couting
+limitation:
+solution: remove common words or stopwords
+
+https://www.youtube.com/watch?v=RMuLavkPLwc&feature=youtu.be
+Trending topics? hashtag in tweet
+Scale? twitter users
+Interval? last hour, last day, last ten second, etc.
+
+Simplistic approach:
+1. client requests for trending topics
+2. Server fetches the latest tweets in the last ten seconds from the database and return the top k hashtags as trending topics
+Issue:
+1. not scalale
+2. Querying database each time is expensive -> cache
+
+Improve design
+1. load balancer and multiple servers handling the request
+2. master-slave architeture and we read from the slave databases
+3. Caching layer
+4. Sliding window - avoid duplicate calculation
+- maintain a hash with tweet counts over the last 10 seconds
+- EVERY SECOND, update the dictionary
+	- add new tweets over the last second from the database
+	- remove tweets that are no longer in 10 second window
+	- return the topmost hashtags in the hash
+
+richer definition of topics - not just hashtag
+geographical clustering of trends - offline processing
+
+
+
+
 	* 系统设计 twitter 我照本宣科地说了qps等计算, 算出了 40M/s 感觉这块完全是多余自己提, 面试官不感兴趣好像 [留个疑问在这里, 系统设计这种estimate 需要做么??] 之后, 讲了最简单的 timeline 设计, 所有followers 获取tweet, 之后排序 aggregate, 返回. 面试官: make sense high level :  API server => DB  followup, case 如果 川普发了句, 我明天9点发tweet, 1m 用户准时不断刷, 怎么处理. sharding 方面, 如果川普的tweet都在一个db里, 我分析的是, 所有request 会 hit 某一个 db, heavy load, 所以 db要 shard by tweetID to make sure data is shared evenly.. 面试官:  how can the user get the tweetIds, 我: user 会首先 拿到所有 follower的userid (包含Trump), 然后查询 所有db, 返回对应的 tweets,  (我当时脑子短路, 以为设计的是 userid : [tweets] 的结构, 其实应该是 tweetID, Uid tweetId 做主键和shard id,  ) 这样就不会heavy load 某一个db, 所以当时答的含糊其辞)我: 当时shadow 问的是 shard by uid or tid, 我就说了 tid, 之后我补充了 要加 cache, 之后也没下文了, 不知道最后结果是什么
+
+
+* 设计一个图片上传和浏览系统 - instagram, flxicr
+* 设计一个照片分享系统，最主要的是如何优化 photosharing website
+设计完了还跟他扯了一点怎么做highly available， partition-tolerant的系统
+
+
+
 
 * 设计订票系统
 * 设计交通系统， 在线查公交车或者地铁的schedule
@@ -99,12 +200,11 @@ The service exposes a set of generic counting APIs.
 * TinyURL - 短网址服务
 * Netflix的视频在线播放
 * Design restaurant reservation system
-* 设计一个照片分享系统，最主要的是如何优化 photosharing website
-设计完了还跟他扯了一点怎么做highly available， partition-tolerant的系统
+
 * Design a distributed JukeBox System
 * 设计chat system 从1对1聊天开始，最后没时间了简单说了一下group chat和推拉模型
 * Calendar web app，类似google calendar. 
-* 设计一个图片上传和浏览系统 - instagram, flxicr
+
 * 使用prefix tree存储电话号码
 * 系统设计监测系统
 
@@ -112,32 +212,50 @@ The service exposes a set of generic counting APIs.
 
 
 * 设计题，是给了很多很多不间断的log，里面有各个模块，其中有个exception模块，好几条log拼成一个完整的exception，找出某个特定的app的Top 5的exception模块。我第一直觉用PriorityQueue，后来还是改HashMap了，全程小哥哥看我方向偏了就来提醒我，最后顺利设计了几个类和function就过了
-* 设计一个 %&%￥#￥一样的app， 我完全没听懂是什么东西，他说类似于Expedia的旅游app。。。我本人从没用过那个，之前都是studentuniverse买票，或者官网直接买票有积分的，能给我讲讲都啥功能么。。。她就把题简化了（貌似）， 说要设计flight查询，可以查non-stop 或是不non-stop的所有从A到B 的航班。 我大概问了一下QPS什么的，其实不重要，她说你就想象成需要你scale的那么多就好。 我一开始没太理解这个stop的玄机，以为一个航班从A到B stop直接就有了。。她说要像
+* 设计一个类似于Expedia的旅游app。。。我本人从没用过那个，之前都是studentuniverse买票，或者官网直接买票有积分的，能给我讲讲都啥功能么。。。她就把题简化了（貌似）， 说要设计flight查询，可以查non-stop 或是不non-stop的所有从A到B 的航班。 我大概问了一下QPS什么的，其实不重要，她说你就想象成需要你scale的那么多就好。 我一开始没太理解这个stop的玄机，以为一个航班从A到B stop直接就有了。。她说要像
 101  A-》B
 102  A -》C 
 103  C-》B
 104  A-》C -》B
 这种的。。。感觉是个graph的题，我说我想把non-stop限制到小于3， 然后如果是non-stop 就直接查表，1 stop 就两个query   A-》 *（！B） 然后从这个list里 再 query  -》B 的把结果放进另一个表里。 其实不知道可不可行，没什么这个的经验。。然后她就问了怎么improve performance啊，其实就是cache，问了cache key啥的
-* kuaidi baoguo进guizi的问题，版上哪里见过但没做过也没见过答案所以start from scratch，以为是个设计题装模作样跟他交流沟通只为了多看他几眼，他一开始还一副欲拒还迎的姿态，后来被我问多了就说直接上。。。答案。网上不都说多交流互相了解比较重要吗，怎么这么不经撩，猴急。于是快速写出几个核心class，被小韩打断，进入coding阶段，实现怎么选择guizi。
+* 快递包裹进柜子的问题，版上哪里见过但没做过也没见过答案所以start from scratch，于是快速写出几个核心class，被小韩打断，进入coding阶段，实现怎么选择柜子。
 
-当时有点跟不上节奏，一直以为是设计题，没想到这么快要换姿势。行，随你，谁叫你是面试官。期间讨论了下方案觉得没问题，迅速写出线性解法，然后说如果有成千上万个guizi，怎么优化，我心想我这辈子也没见过这么多guizi，但客人的要求总得满足不是，继续讨论优化，最后快结束让我又码了段简单的code。全程隐身的三姐这个时候突然冒出来一个很弱的问题，明显跟不上我们的节奏，小韩都不想解释，跟我说没事我懂你，出于礼貌我还是跟她解释了一下。随后我提问，我就问问在亚麻生活可好过的是否开心，不开心来找我呀，然后互留微信显然是不可能的，依依不舍目送离开。.
+	迅速写出线性解法 - O(n)
+	然后说如果有成千上万个柜子，怎么优化 - O(logN)
 
-* 大概意思就是说要在网页上显示ku cun信息，数据从好几个数据库里面抓，当然速度慢，但是，数据库不能动它因为还有别的系统依赖，怎么优化。装模作样问了些问题，
+* 大概意思就是说要在网页上显示库存信息，数据从好几个数据库里面抓，当然速度慢，但是，数据库不能动它因为还有别的系统依赖，怎么优化。装模作样问了些问题，
 
 其实聪明如我早就识破你了，不就是要加缓存吗。各种讨论优化，非常会引导我，跟这样的面试官交流简直是一种享受。都是些开放性问题，答的有理有据就行，最后分析下trade off。问罢终于又轮到我面他，接着他的工作又提了些问题，相言甚欢，握手，目送离开。
 
 
 System Design:
-1. Design a Uber 设计一个简单的Uber，包括检测周围空闲的车，用户打车付账流程和到目的地时间估计..
-(将城市化成许多个矩形block（区），可以借鉴二维k-d tree那个思想。每个车实时更新当前位置坐标和是否available，找用户最近八个区的空闲的车，然后时间就是车速和距离的关系，这个没错。地图api这种你需要什么和interviewr说就好了，如果不是考察项目的话一般都会说可以默认给出的。)
+1. Design a Uber 设计一个简单的Uber，包括
+检测周围空闲的车，
+用户打车付账流程，
+到目的地时间估计
+(将城市化成许多个矩形block（区），可以借鉴二维k-d tree那个思想 
+	https://zhuanlan.zhihu.com/p/22727174
+每个车实时更新当前位置坐标和是否available，找用户最近八个区的空闲的车，
+然后时间就是车速和距离的关系，这个没错。地图api这种你需要什么和interviewr说就好了，
+如果不是考察项目的话一般都会说可以默认给出的。)
 
 2.TinyURL
 (Write heavy? improve Security? 怎么scale? 一个region上的服务出问题了怎么处理?)
 3. Repository system, design commit fuction and branch function.
 
 4. Video/Movie System (given a list of videos, return top 5 rated videos)
+- small set of data: PiorityQueue - minHeap, Time: O(NlogK)
+- large set of data: 
+MapReduce
+{user_id, movie_id, rate} -> Map {movie_id, rate} -> Reduce -> {movie_id, avg_rate} -> data store - SQL {movie_id, avg_rate} index on avg_rate -> query top k 
+postgresql: 
+select *
+from table
+order by avg_rate desc
+limit 10
 
-5. Sotre the livestreaming video and watch it later function
+
+5. Store the livestreaming video and watch it later function
 
 6. cc150 JukeBox.
 
@@ -149,7 +267,7 @@ System Design:
 
 10. Predict User purchase. From 1point 3acres bbs
 (先分析什么因素判断用户买不买这个商品，浏览记录，购买记录，在页面停留时间，浏览这类商品的次数，现在火的top 100商品等等。然后分析架构，
-给的答案是首先master slave避免single point failure，用户点击商品后先通过dymanic dns look up找到距离最近的CDN，然后http request传过来给那个cluster的master server, mater本身有cache看看这个请求的结果是不是已经cache过了有的话直接返回（这里cache的是这个请求对应的购物车html页面），没有的话master做负载均衡下传给空闲slave server（rmi call）, slave有自己的local cache因为对这个预测结果每个slave cache可以不consistent， 可以不用时刻recon每个不同的server cache。所有的数据存储都用in memory database并设置time to live， 因为这个是一个读取大于写的系统数据也不需要持久化不用支持transaction, scale也更容易。master如果挂了重启就可以，因为都是预测数据丢失了也无所谓。如果要更优化可以在浏览器端也做一层cache，如果用户反复点击同样的商品，就不用每次都make http call了). 1point 3acres 论坛
+给的答案是首先master slave避免single point failure，用户点击商品后先通过dymanic dns look up找到距离最近的CDN，然后http request传过来给那个cluster的master server, mater本身有cache看看这个请求的结果是不是已经cache过了有的话直接返回（这里cache的是这个请求对应的购物车html页面），没有的话master做负载均衡下传给空闲slave server（rmi call）, slave有自己的local cache因为对这个预测结果每个slave cache可以不consistent， 可以不用时刻recon每个不同的server cache。所有的数据存储都用in memory database并设置time to live， 因为这个是一个读取大于写的系统数据也不需要持久化不用支持transaction, scale也更容易。master如果挂了重启就可以，因为都是预测数据丢失了也无所谓。如果要更优化可以在浏览器端也做一层cache，如果用户反复点击同样的商品，就不用每次都make http call了). 
 
 11. Card game , and write shuffle method
 
@@ -183,7 +301,6 @@ Amazon locker, 怎么按照货物的大小取空闲的柜子。一开始没有�
 21. 设计个API，满足两个function，一个是往list里面丢string，还有一个是统计top k frequent element. 对于API实现scalability.
 
 22.  Design pattern: strategy, observer   设计模式那个就是duck/toyduck的变形。Observer那个也是比较教科书的东西
-.本文原创自1point3acres论坛
 23. 如果有一个service, 要求设计方法支持query，比如最后一秒的访问数，最后一分钟的访问数，。。。。最后一小时的访问数。。。. 牛人云集,一亩三分地
 (1.把timestamp 写到磁盘上，然后用hadoop 来算。面试官问pros and cons
 2. 为了改善读的速度，我说把这些timestamp存到in-memory buckets里面，最后还是 hadoop

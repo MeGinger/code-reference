@@ -269,6 +269,199 @@ class Solution {
     }
 }
 
+Closest Binary Search Tree Value
+class Solution {
+    public int closestValue(TreeNode root, double target) {
+        if (root == null) {
+            return 0;
+        }
+        
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode cur = root;
+        int res = 0;
+        double min = Double.MAX_VALUE;
+        while (!stack.isEmpty() || cur != null) {
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+            
+            // cur == null
+            cur = stack.pop();
+            if (Math.abs(cur.val - target) < min) {
+                min = Math.abs(cur.val - target);
+                res = cur.val;
+            }
+            cur = cur.right;
+        }
+        
+        return res;
+    }
+}
+
+Given a binary search tree and a node in it, find the in-order successor of that node in the BST.
+Note: If the given node has no in-order successor in the tree, return null.
+class Solution {
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        if (root == null || p == null) {
+            return null;
+        }
+        
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode cur = root;
+        TreeNode pre = null;
+        while (!stack.isEmpty() || cur != null) {
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+            
+            // cur == null
+            cur = stack.pop();
+            
+            if (pre == p) {
+                return cur;
+            }
+            
+            pre = cur;
+            cur = cur.right;
+        }
+        
+        return null;
+    }
+}
+
+
+Two Sum IV - Input is a BST
+Time: O(N)
+Space: O(N)
+class Solution {
+    public boolean findTarget(TreeNode root, int k) {
+        if (root == null) {
+            return false;
+        }
+        
+        Stack<TreeNode> stack = new Stack<>();
+        Set<Integer> nums = new HashSet<>();
+        TreeNode cur = root;
+        
+        while (!stack.isEmpty() || cur != null) {
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+            
+            // cur == null
+            cur = stack.pop();
+            
+            if (nums.contains(k - cur.val)) {
+                return true;
+            }
+            nums.add(cur.val);
+            cur = cur.right;
+        }
+        
+        return false;
+    }
+}
+
+Binary Search Tree Iterator
+public class BSTIterator {
+    Stack<TreeNode> stack = new Stack<>();
+    
+    public BSTIterator(TreeNode root) {
+        pushAll(root);
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return !stack.isEmpty();
+    }
+
+    /** @return the next smallest number */
+    public int next() {
+        TreeNode tmpNode = stack.pop();
+        pushAll(tmpNode.right);
+        return tmpNode.val;
+    }
+    
+    private void pushAll(TreeNode root) {
+        while (root != null) {
+            this.stack.push(root);
+            root = root.left;
+        }
+    }
+}
+
+class Solution {
+    public void recoverTree(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode cur = root;
+        TreeNode pre = null;
+        TreeNode first = null;
+        TreeNode second = null;
+        while (cur != null || !stack.isEmpty()) {
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+            
+            // cur == null
+            cur = stack.pop();
+            
+            if (pre != null && pre.val > cur.val) {
+                if (first == null) { // case 1: 2, 1, 3 (two elements are adjacent)
+                    first = pre;   
+                    second = cur;
+                } else { // case 2: 1, 4, 3, 2, 7 (two elements are not adjacent)
+                    second = cur;
+                    break;
+                }
+            } 
+            
+            pre = cur;
+            cur = cur.right;
+        }
+        
+        int temp = first.val;
+        first.val = second.val;
+        second.val = temp;
+    }
+}
+
+Minimum Distance Between BST Nodes
+
+class Solution {
+    public int minDiffInBST(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode cur = root, pre = null;
+        int res = Integer.MAX_VALUE;
+        while (!stack.isEmpty() || cur != null) {
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+            
+            cur = stack.pop();
+            if (pre != null && res > Math.abs(cur.val - pre.val)) {
+                res = Math.abs(cur.val - pre.val);
+            }
+            pre = cur;
+            cur = cur.right;
+        }
+        
+        return res;
+    }
+}
+
 Subtree of Another Tree
 class Solution {
     public boolean isSubtree(TreeNode s, TreeNode t) {
@@ -397,15 +590,510 @@ class Solution {
 }
 
 
+Boundary of Binary Tree
+
+class Solution {
+    private List<Integer> res;
+
+    // anti-clockwise direction starting from 
+    // root. Boundary includes left boundary, leaves, and right boundary in order 
+    public List<Integer> boundaryOfBinaryTree(TreeNode root) {
+        res = new ArrayList<>();
+        
+        if (root == null) {
+            return res;
+        }
+        
+        res.add(root.val);
+        // left boundary
+        leftBoundary(root.left);
+        // leaves 
+        // if just leaves(root) - root might be added twice. like input [root]
+        leaves(root.left);
+        leaves(root.right);
+        // right boundary
+        rightBoundary(root.right);
+        
+        return res;
+    }
+    
+    // preorder
+    // no leave involved
+    private void leftBoundary(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+        if (node.left == null && node.right == null) {
+            return;
+        }
+        
+        res.add(node.val);
+        
+        if (node.left != null) {
+            leftBoundary(node.left);     
+        } else {
+            leftBoundary(node.right);     
+        }
+    }
+    
+    // postorder
+    // no leave involved
+    private void rightBoundary(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+        if (node.left == null && node.right == null) {
+            return;
+        }
+        
+        // the right boundary path is created by the following methods. 
+        if (node.right != null) {
+            rightBoundary(node.right);
+        } else {
+            rightBoundary(node.left);
+        }
+        // when we go back, we add the node
+        res.add(node.val);
+    }
+    
+    // preorder
+    private void leaves(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+        if (node.left == null && node.right == null) {
+            res.add(node.val);
+        }
+        leaves(node.left);
+        leaves(node.right);
+    }
+}
+
+
+Populating Next Right Pointers in Each Node
+
+public class Solution {
+    // it is a perfect binary tree 
+    // (ie, all leaves are at the same level, and every parent has two children).
+    public void connect(TreeLinkNode root) {
+        while (root != null) {
+            TreeLinkNode cur = root;
+            while (cur != null) {
+                if (cur.left != null) { // cur might be a leaf
+                    cur.left.next = cur.right;
+                }
+                if (cur.right != null && cur.next != null) {
+                    cur.right.next = cur.next.left;
+                }
+                
+                cur = cur.next;
+            }
+            
+            root = root.left;
+        }
+    }
+}
+
+Populating Next Right Pointers in Each Node II
+
+public class Solution {
+    public void connect(TreeLinkNode root) {
+        while (root != null) {
+            TreeLinkNode dummy = new TreeLinkNode(0);
+            TreeLinkNode cur = dummy;
+            while (root != null) {
+                if (root.left != null) {
+                    cur.next = root.left;
+                    cur = cur.next;
+                }
+                if (root.right != null) {
+                    cur.next = root.right;
+                    cur = cur.next;
+                }
+                
+                root = root.next;
+            }
+            root = dummy.next;
+        }
+    }
+}
 
 
 
+Binary Tree Right Side View
+class Solution {
+    public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) {
+            return res;
+        }
+        
+        dfs(root, res, 0);
+        return res;        
+    }
+    
+    private void dfs(TreeNode root, int depth, List<Integer> res) {
+        if (root == null) {
+            return;
+        }
+        
+        if (res.size() == depth) { // !!
+            res.add(root.val);
+        } else {
+            res.set(depth, root.val);
+        }
+        
+        dfs(root.left, depth + 1, res);
+        dfs(root.right, depth + 1, res);
+    }
+
+    // better
+    // reverse pre-order traversal
+    // root -> right -> left
+    private void dfs(TreeNode node, List<Integer> list, int depth) {
+        if (node == null) {
+            return;
+        }
+        
+        // the first one we traverse
+        if (list.size() == depth) {
+            list.add(node.val);
+        }
+        
+        dfs(node.right, list, depth + 1);
+        dfs(node.left, list, depth + 1);
+    }
+}
+
+Binary Tree Left Side View
+
+private void dfs(TreeNode root, int depth, List<Integer> res) {
+    if (root == null) {
+        return;
+    }
+    
+    if (res.size() == depth) { // !!
+        res.add(root.val);
+    } else {
+        res.set(depth, root.val);
+    }
+    
+    dfs(root.right, depth + 1, res);
+    dfs(root.left, depth + 1, res);
+}
+
+// better
+private void dfs(TreeNode node, List<Integer> list, int depth) {
+    if (node == null) {
+        return;
+    }
+    
+    // the first one we traverse
+    if (list.size() == depth) {
+        list.add(node.val);
+    }
+    
+    dfs(node.left, list, depth + 1);
+    dfs(node.right, list, depth + 1);
+}
 
 
+Unique Binary Search Trees
+Given n, how many structurally unique BST's (binary search trees) that store values 1 ... n?
+
+class Solution {
+    public int numTrees(int n) {
+        int[] g = new int[n + 1];
+        g[0] = 1;
+        g[1] = 1;
+        
+        // i from 2 to n (DP approach)
+        for (int i = 2; i <= n; i++) {
+            // i is count of node
+            
+            for (int j = 1; j <= i ; j++) {
+                // j is used as root
+                g[i] += g[j - 1] * g[i - j];
+                
+            }
+        }
+        
+        return g[n];
+    }
+}
+
+Diameter of Binary Tree
+// field variable max
+public class Solution {
+    int max = 0;
+    
+    public int diameterOfBinaryTree(TreeNode root) {
+        maxDepth(root);
+        return max;
+    }
+    
+    private int maxDepth(TreeNode root) {
+        if (root == null) return 0;
+        
+        int left = maxDepth(root.left); // count of left nodes
+        int right = maxDepth(root.right); // count of right nodes
+        
+        max = Math.max(max, left + right);
+        
+        return Math.max(left, right) + 1;
+    }
+}
+
+Maximum Depth of Binary Tree
+// depth = the count of nodes in a path
+class Solution {
+    public int maxDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        int left = maxDepth(root.left);
+        int right = maxDepth(root.right);
+        
+        return 1 + Math.max(left, right);
+    }
+}
+
+Minimum Depth of Binary Tree
+DFS
+class Solution {
+    int min = Integer.MAX_VALUE;
+    
+    public int minDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        dfs(root, 1);
+        return min;
+    }
+    
+    private void dfs(TreeNode root, int depth) {
+        if (root == null) {
+            return;
+        }
+        
+        if (root.left == null && root.right == null) {
+            min = Math.min(min, depth);
+        }
+        
+        dfs(root.left, depth + 1);
+        dfs(root.right, depth + 1);
+    }
+}
+
+Find Duplicate Subtrees
+
+class Solution {
+    public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
+        if (root == null) {
+            return Collections.emptyList();
+        }
+        
+        List<TreeNode> res = new ArrayList<>();
+        traverse(root, new HashMap<>(), res);
+        return res;
+    }
+    
+    // bottom - up -> postorder - divide and conquer
+    private String traverse(TreeNode root, Map<String, Integer> map, List<TreeNode> list) {
+        if (root == null) {
+            return "#";
+        }
+        
+        String serial = root.val + "," + traverse(root.left, map, list) + "," + traverse(root.right, map, list);
+        
+        if (map.getOrDefault(serial, 0) == 1) { 
+            list.add(root); // added only once
+        }
+        
+        map.put(serial, map.getOrDefault(serial, 0) + 1);
+        
+        return serial;
+    }
+}
 
 
+Merge Two Binary Trees
+
+class Solution {
+    public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
+        if (t1 == null && t2 == null) {
+            return null;
+        } else if (t1 == null) {
+            return t2;
+        } else if (t2 == null) {
+            return t1;
+        }
+        
+        // t1 != null && t2 != null
+        TreeNode left = mergeTrees(t1.left, t2.left);
+        TreeNode right = mergeTrees(t1.right, t2.right);
+        
+        TreeNode node = new TreeNode(t1.val + t2.val);
+        node.left = left;
+        node.right = right;
+        
+        return node;
+    }
+}
+// should discuss with interviewer about the requirements he wants
+class Solution {
+    public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
+        if (t1 == null && t2 == null) {
+            return null;
+        } else if (t1 == null) {
+            return t2;
+        } else if (t2 == null) {
+            return t1;
+        }
+        
+        t1.val += t2.val;
+        t1.left = mergeTrees(t1.left, t2.left);
+        t1.right = mergeTrees(t1.right, t2.right);
+        
+        return t1;
+    }
+}
 
 
+Flatten Binary Tree to Linked List
+Given a binary tree, flatten it to a linked list in-place.
+
+For example, given the following tree:
+
+    1
+   / \
+  2   5
+ / \   \
+3   4   6
+The flattened tree should look like:
+
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+         \
+          6
+          
+class Solution {
+    public void flatten(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        
+        /*
+         left    right
+            \        \
+             \        \
+         */ 
+        TreeNode left = root.left; // easy mistake
+        TreeNode right = root.right; // easy mistake
+        
+        // divide
+        flatten(root.left);
+        flatten(root.right);
+        
+        // connect left first
+        root.left = null; // easy to forget
+        root.right = left;
+        
+        // connect right then
+        while (root.right != null) {
+            root = root.right;
+        }
+        root.right = right;
+    }
+}
+
+Trim a Binary Search Tree
+ 
+class Solution {
+    public TreeNode trimBST(TreeNode root, int L, int R) {
+        if (root == null) {
+            return null;
+        }
+        
+        if (root.val < L) {
+            return trimBST(root.right, L, R);
+        } 
+        if (root.val > R) {
+            return trimBST(root.left, L, R);
+        }
+        
+        root.left = trimBST(root.left, L, R);
+        root.right = trimBST(root.right, L, R);
+        
+        return root;
+    }
+}
 
 
+class Solution {
+    public int longestUnivaluePath(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        int[] res = new int[1];
+        getLen(root, root.val, res);
+        return res[0];
+    }
+    
+    // getLen: maximum single path length (including root) with target value 
+    private int getLen(TreeNode root, int target, int[] res) { // target is parent value
+        if (root == null) {
+            return 0;
+        }
+        
+        int left = getLen(root.left, root.val, res);
+        int right = getLen(root.right, root.val, res);
+        
+        res[0] = Math.max(res[0], left + right);
+        
+        return target == root.val ? Math.max(left, right) + 1 : 0;
+    }
+}
+
+class Solution {
+    private int len = 0;
+    
+    public int longestUnivaluePath(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        len = 0;
+        getLen(root, root.val);
+        return len;
+    }
+    
+    // getLen: maximum single path length (including root) with target value 
+    private int getLen(TreeNode root, int target) { // target is parent value
+        if (root == null) {
+            return 0;
+        }
+        
+        int left = getLen(root.left, root.val);
+        int right = getLen(root.right, root.val);
+        
+        len = Math.max(len, left + right);
+        
+        if (target == root.val) {
+            return Math.max(left, right) + 1;
+        }
+        
+        return 0;
+    }
+}
 

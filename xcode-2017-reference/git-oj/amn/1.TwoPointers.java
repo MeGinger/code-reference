@@ -64,6 +64,34 @@ public int trap(int[] height) {
     return ans;
 }
 
+class Solution {
+    public int maxArea(int[] height) {
+        if (height == null || height.length == 0) {
+            return 0;
+        }
+        
+        int left = 0;
+        int right = height.length - 1;
+        
+        int maxArea = 0;
+        while (left < right) {
+            int area = 0;
+            if (height[left] < height[right]) {
+                area = height[left] * (right - left);
+                left++;
+            } else {
+                area = height[right] * (right - left);
+                right--;
+            }
+            max = Math.max(max, area);
+        }
+        
+        return maxArea;
+    }
+}
+
+
+
 Group Anagrams
 Time: nklogk
 class Solution {
@@ -125,6 +153,33 @@ public List<Integer> findAnagrams(String s, String p) {
     
     return res;
 }
+
+
+Valid Anagram
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        if (s == null || t == null) {
+            return false;
+        }
+        
+        int[] map = new int[26];
+        for (char c : s.toCharArray()) {
+            map[c - 'a']++;
+        }
+        
+        for (char c : t.toCharArray()) {
+            map[c - 'a']--;
+        }
+        
+        for (int i = 0; i < 26; i++) {
+            if (map[i] != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
 
 public List<Integer> findAnagrams(String s, String p) {
     List<Integer> res = new ArrayList<>();
@@ -238,4 +293,40 @@ class Solution {
         return res;
     }
 }
+
+Gas Station
+
+class Solution {
+    // Return the starting gas station's index 
+    // if you can travel around the circuit once in the clockwise direction, 
+    // otherwise return -1.
+    
+    // cost[i]: it costs cost[i] of gas to travel from station i to its next station (i+1).
+    // gas[i]: the amount of gas at station i.
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        if (gas == null || cost == null) {
+            return -1;
+        }
+        
+        int end = 0, start = gas.length - 1;
+        int sum = gas[start] - cost[start];
+        while (end < start) {
+            if (sum >= 0) {
+                sum += gas[end] - cost[end];
+                end++;
+            } else { // we cannot move forward, so start is not our starting index, move start backwards
+                start--;
+                sum += gas[start] - cost[start];
+            }               
+        }
+        return sum >= 0 ? start : -1;
+    }
+}
+
+
+
+
+
+
+
 
