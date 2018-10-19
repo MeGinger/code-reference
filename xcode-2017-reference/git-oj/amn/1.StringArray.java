@@ -277,3 +277,73 @@ class Solution {
         nums[b] = temp;
     }
 }
+
+Remove Duplicates from Sorted Array
+class Solution {
+    public int removeDuplicates(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        int left = 0;
+        for (int right = 0; right < nums.length; right++) {
+            if (nums[right] != nums[left]) {
+                nums[++left] = nums[right];
+            }
+        }
+        
+        return left + 1;
+    }
+}
+
+
+
+
+Longest Common Prefix
+
+class Solution {
+    // sort string array and compare first and last element in sorted array
+    public String longestCommonPrefix(String[] strs) {
+        if (strs == null || strs.length == 0) {
+            return "";
+        }
+        
+        Arrays.sort(strs);
+        
+        char[] a = strs[0].toCharArray();
+        char[] b = strs[strs.length - 1].toCharArray();
+        
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < Math.min(a.length, b.length); i++) {
+            if (a[i] != b[i]) {
+                break;
+            } 
+            sb.append(a[i]);
+        }
+        
+        return sb.toString();
+    }
+}
+
+
+Implement strStr() in C or indexOf() in Java
+
+class Solution {
+    public int strStr(String haystack, String needle) {
+        for (int i = 0; ; i++) { // possible start index
+            for (int j = 0; ; j++) { // index for needle
+                if (j == needle.length()) {
+                    return i;
+                }
+                
+                if (i + j == haystack.length()) {
+                    return -1;
+                }
+                
+                if (needle.charAt(j) != haystack.charAt(i + j)) {
+                    break;
+                }
+            }
+        }
+    }
+}

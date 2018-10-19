@@ -469,3 +469,148 @@ public class Solution {
         return res;
     }
 }
+
+Pascal's Triangle
+
+class Solution {
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> row = new ArrayList<>();
+        for (int i = 0; i < numRows; i++) {
+            row.add(0, 1); // move the rest afterwards (one step) 
+                           // so we have row.get(j), row.get(j + 1)
+            for (int j = 1; j <= i - 1; j++) {
+                row.set(j, row.get(j) + row.get(j + 1));
+            }
+            res.add(new ArrayList<>(row));
+        }
+        
+        return res;
+    }
+}
+
+
+Happy Number
+Input: 19
+Output: true
+Explanation: 
+1^2 + 9^2 = 82
+8^2 + 2^2 = 68
+6^2 + 8^2 = 100
+1^2 + 0^2 + 0^2 = 1
+
+class Solution {
+    public boolean isHappy(int n) {
+        Set<Integer> seen = new HashSet<>();
+        
+        while (n != 1) {
+            n = getDigitSquare(n);
+            
+            if (!seen.add(n)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    private int getDigitSquare(int n) {
+        int res = 0;
+        while (n != 0) {
+            int digit = n % 10;
+            res += digit * digit;
+            n /= 10;
+        }
+        return res;
+    }
+}
+
+
+slow-fast 
+int digitSquareSum(int n) {
+    int sum = 0, tmp;
+    while (n) {
+        tmp = n % 10;
+        sum += tmp * tmp;
+        n /= 10;
+    }
+    return sum;
+}
+
+bool isHappy(int n) {
+    int slow, fast;
+    slow = fast = n;
+    do {
+        slow = digitSquareSum(slow);
+        fast = digitSquareSum(fast);
+        fast = digitSquareSum(fast);
+    } while(slow != fast);
+    if (slow == 1) return 1;
+    else return 0;
+}
+
+
+Add Binary
+class Solution {
+    public String addBinary(String a, String b) {
+        if (a == null || b == null) {
+            return "";
+        }
+        
+        char[] charA = a.toCharArray();
+        char[] charB = b.toCharArray();
+        
+        int indexA = charA.length - 1;
+        int indexB = charB.length - 1;
+        int carry = 0;
+        StringBuilder sb = new StringBuilder();
+        while (indexA >= 0 || indexB >= 0 || carry != 0) {
+            int c1 = indexA >= 0 ? charA[indexA--] - '0' : 0;
+            int c2 = indexB >= 0 ? charB[indexB--] - '0' : 0;
+            
+            int sum = c1 + c2 + carry;
+            
+            sb.append(sum % 2);
+            carry = sum / 2;
+        }
+        return sb.reverse().toString();
+    }
+}
+
+Multiple String
+
+
+
+Valid Sudoku
+class Solution {
+    public boolean isValidSudoku(char[][] board) {
+        if (board == null || board.length != 9 || board[0].length != 9) {
+            return false;
+        }
+        
+        int r = board.length;
+        int c = board[0].length;
+        
+        Set<String> rows = new HashSet<>();
+        Set<String> cols = new HashSet<>();
+        Set<String> blocks = new HashSet<>();
+        
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                if (board[i][j] == '.') {
+                    continue;
+                }
+                
+                int block = i / 3 * 3 + j / 3;
+                char val = board[i][j];
+                
+                if (!rows.add("r" + i + val) || 
+                    !cols.add("c" + j + val) ||
+                    !blocks.add("b" + block + val)) {
+                    return false;
+                } 
+            }
+        }
+        return true;
+    }
+}

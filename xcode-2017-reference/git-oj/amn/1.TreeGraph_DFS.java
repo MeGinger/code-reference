@@ -169,3 +169,39 @@ class Solution {
         return max;
     }
 }
+
+Is Graph Bipartite?
+
+class Solution {
+    // typical DFS
+    public boolean isBipartite(int[][] graph) {
+        int n = graph.length; // node number
+        int[] colors = new int[n];
+        Arrays.fill(colors, -1); // unvisited
+        
+        // count of method calls = count of connected graphs
+        for (int i = 0; i < n; i++) {
+            if (colors[i] == -1 && !isValid(graph, colors, 0, i)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    private boolean isValid(int[][] graph, int[] colors, int color, int i) {
+        if (colors[i] != -1) {
+            return colors[i] == color;
+        }
+        
+        colors[i] = color;
+        for (int next : graph[i]) {
+            if (!isValid(graph, colors, 1 - color, next)) {
+                return false;
+            }
+        }
+        return true;
+        
+    } 
+}
+

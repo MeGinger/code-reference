@@ -590,4 +590,61 @@ class Solution {
 
 
 Remove Nth Node From End of List
+Given a linked list, remove the n-th node from the end of list and return its head.
 
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        if (n <= 0) { // n <= 0
+            return null;
+        }
+        
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        
+        ListNode slow = dummy, fast = dummy;
+        
+        // for making gap between slow and fast is n
+        // slow -> x -> x -> fast, n = 2
+        for (int i = 1; i <= n + 1; i++) {
+            fast = fast.next;
+        }
+        
+        // for slow -> target -> x -> null (fast), n = 2
+        while (fast != null) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        
+        slow.next = slow.next.next;
+        return dummy.next;
+    }
+}
+
+
+Delete Node in a Linked List
+
+class Solution {
+    /**
+     * @param node: the node in the list should be deleted
+     * @return: nothing
+     */
+    public void deleteNode(ListNode node) {
+        if (node == null || node.next == null) {
+            return;
+        }
+        
+        // since we dont have prev, so i do this by next
+        ListNode next = node.next;
+        node.val = next.val;
+        node.next = next.next;
+    }
+}

@@ -859,6 +859,34 @@ class Solution {
     }
 }
 
+Balanced Binary Tree - variation of Maximum Depth of Binary Tree 
+
+class Solution {
+    public boolean isBalanced(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        
+        boolean[] res = new boolean[1];
+        res[0] = true;
+        dfs(root, res);
+        return res[0];
+    }
+    
+    private int dfs(TreeNode root, boolean[] res) {
+        if (root == null) {
+            return 0;
+        }
+        
+        int left = dfs(root.left, res);
+        int right = dfs(root.right, res);
+        
+        res[0] = res[0] && Math.abs(left - right) <= 1;
+        
+        return 1 + Math.max(left, right);
+    }
+}
+
 Minimum Depth of Binary Tree
 DFS
 class Solution {
@@ -1097,3 +1125,65 @@ class Solution {
     }
 }
 
+
+Binary Tree Paths
+
+class Solution {
+    public List<String> binaryTreePaths(TreeNode root) {
+        if (root == null) {
+            return Collections.emptyList();
+        }
+        
+        List<String> res = new ArrayList<>();
+        dfs(root, new StringBuilder(), res);
+        return res;
+    }
+    
+    private void dfs(TreeNode root, StringBuilder sb, List<String> res) {
+        if (root == null) {
+            return;
+        }
+        
+        int len = sb.length();
+            
+        if (root.left == null && root.right == null) {
+            sb.append(root.val);
+            res.add(sb.toString());
+            sb.setLength(len);
+            return;
+        }
+        
+        sb.append(root.val).append("->");
+        dfs(root.left, sb, res);
+        dfs(root.right, sb, res);
+        sb.setLength(len);
+    }
+}
+
+
+Convert Sorted Array to Binary Search Tree
+
+class Solution {
+    // To a height balanced BST
+    public TreeNode sortedArrayToBST(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return null;
+        }
+        
+        return helper(nums, 0, nums.length - 1);
+    }
+    
+    private TreeNode helper(int[] nums, int low, int high) {
+        if (low > high) {
+            return null;    
+        }
+        
+        int midIndex = (low + high) >>> 1;
+        
+        TreeNode root = new TreeNode(nums[midIndex]);
+        root.left = helper(nums, low, midIndex - 1);
+        root.right = helper(nums, midIndex + 1, high);
+            
+        return root;
+    }
+}
