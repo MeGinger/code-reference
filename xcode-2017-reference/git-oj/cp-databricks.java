@@ -158,88 +158,74 @@ class RandomizedCollection {
 
 Closest Leaf in a Binary Tree
 
-/*
-Given a binary tree where every node has a unique value, and a target key k, find the value of the nearest leaf node to target k in the tree.
-
-Here, nearest to a leaf means the least number of edges travelled on the binary tree to reach any leaf of the tree. Also, a node is called a leaf if it has no children.
-
-In the following examples, the input tree is represented in flattened form row by row. The actual root tree given will be a TreeNode object.
-*/
-class ResultType {
-    TreeNode leaf; // the closest leaf to this cur node
-    int distToLeaf; // the distance to the closest leaf 
-    boolean exist; // indicate whether the target exists in the subtree under this root node 
-    int distToTarget; // the distance to the target in the subtree under this root node
-    public ResultType(TreeNode leaf, int distToLeaf, boolean exist, int distToTarget) {
-        this.leaf = leaf;
-        this.distToLeaf = distToLeaf;
-        this.exist = exist;
-        this.distToTarget = distToTarget;
-    }
-}
-
-public class Solution {
-    private int shortest = Integer.MAX_VALUE;
-    private TreeNode shortestLeaf = null;
-    
+DFS to find back edge (child -> parent) to make sure K node has a path to root
+BFS to find the shortest leaf
+class Solution {
+    // DFS + BFS
     public int findClosestLeaf(TreeNode root, int k) {
         if (root == null) {
             return 0;
         }
-
-        dfs(root, k);
-
-        return shortestLeaf.val;
+        
+        Map<TreeNode, TreeNode> backMap = new HashMap<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        Set<TreeNode> visited = new HashSet<>();
+        
+        TreeNode kNode = dfs(root, k, backMap);
+        queue.add(kNode);
+        visited.add(kNode);
+        
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            if (node.left == null && node.right == null) {
+                return node.val;
+            }
+            
+            if (node.left != null && visited.add(node.left)) {
+                queue.offer(node.left);
+            }
+            
+            if (node.right != null && visited.add(node.right)) {
+                queue.offer(node.right);
+            }
+            
+            if (backMap.containsKey(node) && visited.add(backMap.get(node))) {
+                queue.offer(backMap.get(node));
+            }
+        }
+        
+        return -1; // never hit
     }
     
-    // 1.  handle null
-    // 2.1 handle leaf (leaf, distToLeaf - always shortest) 
-    // 2.2 handle non-leaf (leaf, distToLeaf - always shortest)
-    // 3.1 handle target (exists, distToTarget, shortest, shortestLeaf)
-    // 3.2 handle root whose subtree has target (exists, distToTarget, shortest, shortestLeaf)
-    private ResultType dfs(TreeNode root, int k) {
-        ResultType res = new ResultType(null, Integer.MAX_VALUE, false, Integer.MAX_VALUE);
-        if (root == null) { // dont forget
-            return res;
+    private TreeNode dfs(TreeNode root, int k, Map<TreeNode, TreeNode> backMap) {
+        if (root == null) {
+            return null;
         }
-
-        ResultType left = helper(root.left);
-        ResultType right = helper(root.right);
-
-        if (left.leaf == null && right.leaf == null) {
-            // current node is leaf
-            res.leaf = root;
-            res.distToLeaf = 0; // !!
-        } else {
-           // record the shortest path to leaf in one of children route
-            res.leaf = left.distToLeaf <= right.distToLeaf ? left.leaf : right.leaf;
-            res.distToLeaf = left.distToLeaf <= right.distToLeaf ? left.distToLeaf + 1 : right.distToLeaf + 1;
-        }
-
-
+        
         if (root.val == k) {
-            // start to mark target found, and start count the distance to target (increase level by level for its parents)
-            res.exist = true;
-            res.distToTarget = 0; // !!
-
-            // if target found, record the shortest path to leaf in one of its children route
-            shortestLeaf = res.leaf;
-            shortest = res.distToLeaf;
-        } else if (left.exist || right.exist) {
-            // if left child or right child contains target, meaning we have moved above the target
-            res.distToTarget = left.exist ? left.distToTarget + 1 : right.distToTarget + 1;
-            res.exist = true;
-
-            // Since we have moved above the target node, we have to consider the 3rd path (which goes across the root node) 
-            if (res.distToTarget + res.distToLeaf < shortest) {
-                shortest = res.distToTarget + res.distToLeaf;
-                shortestLeaf = res.leaf;
+            return root;
+        }
+        
+        if (root.left != null) {
+            backMap.put(root.left, root);
+            TreeNode left = dfs(root.left, k, backMap);
+            if (left != null) {
+                return left;
             }
-        } 
-        return res;
+        }
+        
+        if (root.right != null) {
+            backMap.put(root.right, root);
+            TreeNode right = dfs(root.right, k, backMap);
+            if (right != null) {
+                return right;
+            }
+        }
+        
+        return null;
     }
+    
 }
-
 
 class Solution {
     public int firstMissingPositive(int[] nums) {
@@ -407,6 +393,60 @@ class Solution {
         }
         
         return len;
+    }
+}
+
+// set, math, XOR(best)
+class Solution {
+    public int missingNumber(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        // 0 1 2 3 5 6
+        // 0 1 2 3 4 5 6
+        
+        int res = nums.length;
+        for (int i = 0; i < nums.length; i++) {
+            res ^= i;
+            res ^= nums[i];
+        }
+        
+        return res;
+    }
+}
+
+class Solution {
+    // good test case: [3,4,-1,1] shows while loop
+    public int firstMissingPositive(int[] nums) {
+        // invalid input, but nums is not invalid if length == 0 and should return 1
+        if (nums == null) {
+            return 0; // NOT zero
+        } 
+        
+        int n = nums.length;
+        
+        // index: 0, 1, 2, 3, 4, 5
+        // value: 1, 2, 3, 4, 5, 6
+        for (int i = 0; i < n; i++) {
+            while (1 <= nums[i] && nums[i] <= n && nums[nums[i] - 1] != nums[i]) {
+                swap(nums, i, nums[i] - 1);
+            }
+        }
+        
+        for (int i = 0; i < n; i++) {
+            if (nums[i] != i + 1) {
+                return i + 1;
+            }
+        }
+        
+        return n + 1;
+    }
+    
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
     }
 }
 
@@ -1208,4 +1248,61 @@ public class JaccardSimilarity {
     }
 }
 
+package databricks;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class SQLQueryStringSplit {
+
+    // \\;
+    // ;
+
+    // \\
+
+    // \"
+
+    // requirement 1: do you need ending semicolon?
+    public static void main(String[] args) {
+        SQLQueryStringSplit s = new SQLQueryStringSplit();
+        String in = "select name \\\\ from courseinfo;; select * from \"; \\\\\\; \";\" \" ; select \\\\\\;;";
+        List<String> queries = s.split(in);
+        for (String query : queries) {
+            System.out.println(query);
+        }
+        // "SELECT a FROM table WHERE b="a shi ge \"\\da\\ bian \;tai\"";"
+        // String input = "SELECT a FROM table WHERE b=\"a shi ge \"\\da\\ bian
+        // \\;tai\"\";";
+    }
+
+    public List<String> split(String input) {
+        List<String> res = new ArrayList<>();
+
+        int i = 0;
+        int len = input.length();
+        boolean quoteStart = false; // '\"', '''
+        char semicolonNotSeparatorSign = '\\';
+        while (i < len) {
+            StringBuilder sb = new StringBuilder();
+            while (i < len && (input.charAt(i) != ';' || quoteStart)) {
+                char ch = input.charAt(i);
+                if (ch == '\"') {
+                    quoteStart = !quoteStart;
+                }
+
+                sb.append(ch);
+                if (i + 1 < len && input.charAt(i) == semicolonNotSeparatorSign) {
+                    // sb.setLength(sb.length() - 1); // remove escape char
+                    sb.append(input.charAt(++i));
+                }
+                i++;
+            }
+            res.add(sb.toString());
+            i++;
+        }
+
+        return res;
+    }
+
+}
 
