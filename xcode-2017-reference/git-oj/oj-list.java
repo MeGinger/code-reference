@@ -108,7 +108,7 @@ public class Solution {
             head = head.next;
             
             if (temp.next != null) { // temp might be the last node
-                temp.next = temp.next.next;
+                temp.next = temp.next.next; // do this except for last node
             }
         }
         return newHead;

@@ -100,11 +100,13 @@ class Solution {
         int c = matrix[0].length;
         
         int x = r - 1, y = 0; // start from LEFT BOTTOM corner
-        while (x >= 0 && y < c) { // within the boundary !!!
+
+        while (0 <= x && y < c) { // within the boundary !!!
+            // guarantee to have a unique search pathpub
             if (matrix[x][y] == target) {
                 return true;
             } else if (matrix[x][y] > target) {
-                x--; 
+                x--;
             } else {
                 y++;
             }
@@ -198,6 +200,9 @@ Find K Closest Elements
 
 class Solution {
     // a sorted array
+    // list.subList(startIndex, endIndex);
+    // startIndex: inclusive
+    // endIndex: exclusive
     public List<Integer> findClosestElements(int[] arr1, int k, int x) {
         if (arr1 == null || arr1.length == 0 || k > arr1.length) { // arr too short
             return Collections.emptyList();
@@ -236,5 +241,60 @@ class Solution {
 }
 
 
+public List<Integer> findClosestElements(int[] nums, 
+    int k, int x) {
 
+    if (nums == null || nums.length == 0 || k <= 0) {
+        throw new IllegalArgumentException();
+    }
+
+    int len = nums.length;
+
+    if (nums[0] >= x) {
+        return subList(nums, 0, k);
+    }
+
+    if (nums[nums.length - 1] <= x) {
+        return subList(nums, len - k, k);
+    }
+
+    int index = binarySearch(nums, x);
+
+    int lo = Math.max(0, index - k);
+    int hi = Math.min(len - 1, index + k);
+
+    while (hi - lo > k - 1) {
+        if (x - nums[lo] <= nums[hi] - x) {
+            hi--;
+        } else {
+            lo++;
+        }
+    }
+
+    return subList(nums, lo, k);
+}
+
+private int binarySearch(int[] nums, int target) {
+    int lo = 0, hi = nums.length - 1;
+    while (lo <= hi) {
+        int mid = (lo + hi) >>> 1;
+        if (nums[mid] == target) {
+            return mid;
+        } else if (nums[mid] > target) {
+            hi = mid - 1;
+        } else {
+            lo = mid + 1;
+        }
+    }
+    return lo;
+}
+
+
+private List<Integer> subList(int[] nums, int index, int len) {
+    List<Integer> res = new ArrayList<>();
+    for (int i = index; i < index + len; i++) {
+        res.add(nums[i]);
+    }
+    return res;
+}
 

@@ -1,0 +1,372 @@
+walk through test case including edge cases
+public int binarySearch(int[] a, int lo, int hi, int key) {
+	while (lo <= hi) {
+		int mid = (lo + hi) >>> 1;
+		if (a[mid] < key) {
+			lo = mid + 1;
+		} else if (a[mid] > key) {
+			hi = mid - 1;
+		} else {
+			return mid;
+		}
+	}
+	return - (lo + 1);
+}
+
+// if input is valid, like input is null, or input is empty, I think I can either throw an exception, or return some number that indicate not found error. which one do you prefer? so do you have any other preference.
+
+public int searchRotatedSortedArray(int[] nums, int target) {
+	if (nums == null || nums.length == 0) {
+		throw new IllegalArgumentException();
+	}
+
+	int lo = 0, hi = nums.length - 1;
+
+	while (lo <= hi) {
+		int mid = (lo + hi) >>> 1;
+
+		if (nums[mid] == target) {
+			return mid;
+		}
+
+		if (nums[lo] <= nums[mid]) {
+			if (nums[lo] <= target && 
+				target < nums[mid]) {
+				hi = mid - 1;
+			} else {
+				lo = mid + 1;
+			}
+		} else {
+			if (nums[mid] < target && 
+			    target <= nums[hi]) {
+			    lo = mid + 1;
+			} else {
+				hi = mid - 1;
+			}
+		}
+	}
+	return -1;
+}
+
+
+public int findMin(int[] nums) {
+	if (nums == null || nums.length == 0) {
+		throw new IllegalArgumentException();
+	}
+
+	int lo = 0, hi = nums.length - 1;
+	int min = Integer.MAX_VALUE;
+
+	while (lo <= hi) {
+		int mid = (lo + hi) >>> 1;
+
+		if (nums[lo] <= nums[mid]) {
+			min = Math.min(min, nums[low]);
+			lo = mid + 1;
+		} else {
+			min = Math.min(min, nums[mid]);
+			hi = mid - 1;
+		}
+	}
+	return min;
+}
+
+public boolean searchMatrix(int[][] matrix, int target) {
+	if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+		throw new IllegalArgumentException();
+	}
+
+	int r = matrix.length;
+	int c = matrix[0].length;
+
+	int x = r - 1, y = 0;
+	while (0 <= x && y < c) {
+		if (matrix[x][y] == target) {
+			return true;
+		}
+
+		if (matrix[x][y] > target) { // current number too big
+			x--;
+		} else { // current number too small
+			y++;
+		}
+	}
+
+	return false;
+}
+
+public boolean searchMatrix(int[][] matrix, int target) {
+	if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+		throw new IllegalArgumentException();
+	}
+
+	int r = matrix.length;
+	int c = matrix[0].length;
+
+	int lo = 0, hi = r * c - 1;
+	while (lo <= hi) {
+		int mid = (lo + hi) >>> 1;
+
+		int x = mid / c;
+		int y = mid % c;
+		if (matrix[x][y] == target) {
+			return true;
+		} else if (matrix[x][y] > target) {
+			hi = mid - 1;
+		} else {
+			lo = mid + 1;
+		}
+	}
+
+	return false;
+}
+
+public int missingNumber(int[] nums) {
+	if (nums == null) {
+		throw new IllegalArgumentException();
+	}
+
+	if (nums.length == 0) {
+		return 0; // 
+	}
+
+	int lo = 0, hi = nums.length - 1;
+	while (lo <= hi) {
+		int mid = (lo + hi) >>> 1;
+		if (mid == nums[mid]) { // condition A
+			lo = mid + 1; 
+		} else { // condition B
+			hi = mid - 1;
+		}
+	}
+	return lo;
+}
+when lo == hi, 
+
+_A_|_B_
+nums in A satisfies condition A
+nums in B satisfies condition B
+
+nums[mid]
+* either condition A true: lo go to insert index
+* or condition B true: lo is already in insert index
+
+more generally,
+after while loop
+nums[hi] satisifies condition A
+nums[lo] satisifies condition B
+
+public int sqrt(int num) {
+	in lo = 0, hi = num;
+	while (lo <= hi) {
+		long mid = (lo + hi) >>> 1;
+
+		if (mid * mid == num) {
+			return (int) mid;
+		}
+
+		if (mid * mid < num) {
+			lo = mid + 1;
+		} else {
+			hi = mid - 1;
+		}
+	}
+	return hi; // floor value
+}
+
+public List<Integer> findClosestElements(int[] nums, 
+	int k, int x) {
+
+	if (nums == null || nums.length == 0 || k <= 0) {
+	 	throw new IllegalArgumentException();
+	}
+
+	int len = nums.length;
+
+	if (nums[0] >= x) {
+		return subList(nums, 0, k);
+	}
+
+	if (nums[nums.length - 1] <= x) {
+		return subList(nums, len - k, k);
+	}
+
+	int index = binarySearch(nums, x);
+
+	int lo = Math.max(0, index - k);
+	int hi = Math.min(len - 1, index + k);
+
+	while (hi - lo > k - 1) {
+		if (x - nums[lo] <= nums[hi] - x) {
+			hi--;
+		} else {
+			lo++;
+		}
+	}
+
+	return subList(nums, lo, k);
+}
+
+private int binarySearch(int[] nums, int target) {
+	int lo = 0, hi = nums.length - 1;
+	while (lo <= hi) {
+		int mid = (lo + hi) >>> 1;
+		if (nums[mid] == target) {
+			return mid;
+		} else if (nums[mid] > target) {
+			hi = mid - 1;
+		} else {
+			lo = mid + 1;
+		}
+	}
+	return lo;
+}
+
+
+private List<Integer> subList(int[] nums, int index, int len) {
+	List<Integer> res = new ArrayList<>();
+	for (int i = index; i < index + len; i++) {
+		res.add(nums[i]);
+	}
+	return res;
+}
+
+
+class LRUCacheItem {
+	int key, val;
+	LRUCacheItem prev, next;
+
+	public LRUCacheItem(int key, int val) {
+		this.key = key;
+		this.val = val;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.key);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
+		if (o == null || this.getClass() != o.getClass()) {
+			return false;
+		}
+
+		LRUCacheItem other = (LRUCacheItem) o;
+		return Objects.equals(this.key, other.key);
+	}
+}
+
+
+public classs LRUCache {
+	private int final capacity;
+	private Map<Integer, LRUCacheItem> entries; // map
+	private LRUCacheItem head, tail; // doubly linked list
+
+	public LRUCache(int capacity) {
+		if (capacity <= 0) {
+			throw new IllegalArgumentException();
+		}
+
+		this.capacity = capacity;
+		this.entries = new HashMap<>(capacity);
+		head = new LRUCacheItem(0, 0);
+		tail = new LRUCacheItem(0, 0);
+
+		head.next = tail;
+		tail.prev = head;
+	}
+
+	// what if I cannot find the key
+	public int get(int key) {
+		LRUCacheItem entry = this.entries.get(key);
+		if (entry == null) {
+			return -1;
+		}
+
+		moveToHead(entry);
+		return entry.val;
+	}
+
+	public void put(int key, int val) {
+		LRUCacheItem entry = this.entry.computeIfAbsent(key, k -> {
+			LRUCacheItem item = new LRUCacheItem(key, val);
+
+			if (this.entries.size() == this.capacity) {
+				LRUCacheItem end = tail.prev;
+				LRUCacheItem endPrev = end.prev;
+
+				endPrev.next = tail;
+				tail.prev = endPrev;
+
+				end.prev = null;
+				end.next = null;
+			}
+			return item;
+		});
+
+		entry.val = val;
+		moveToHead(entry);
+	}
+
+	private void moveToHead(LRUCacheItem entry) {
+		LRUCacheItem begin = head.next;
+		if (begin == entry) {
+			return;
+		}
+
+		LRUCacheItem prev = entry.prev;
+		LRUCacheItem next = entry.next;
+
+		if (next != null) {
+			next.prev = prev;
+		}
+		if (prev != null) {
+			prev.next = next;
+		}
+
+		head.next = entry;
+		begin.prev = entry;
+
+		entry.prev = head;
+		entry.next = begin;
+	}
+}
+
+LFU:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

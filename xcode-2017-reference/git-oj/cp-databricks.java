@@ -1303,6 +1303,179 @@ public class SQLQueryStringSplit {
 
         return res;
     }
-
 }
+
+
+Sparking Programming
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.SparkConf;
+
+
+String appName = "My Spark App";
+String master = "local"; // or a Spark cluster URL
+SparkConf conf = new SparkConf()
+            .setAppName(appName).setMaster(master);
+JavaSparkContext sc = new JavaSparkContext(conf);
+
+......
+
+//stop sc
+sc.stop();
+sc.close();
+
+// create a distributed dataset
+// 1. from parallelized collections
+List<Integer> data = Arrays.asList(1, 2, 3, 4, 5);
+JavaRDD<Integer> distData = sc.parallelize(data);
+// 2. from external datasets
+// Any storage source supported by Hadoop, including your local file system, HDFS, Cassandra, HBase, Amazon S3, etc. 
+JavaRDD<String> distFile = sc.textFile("data.txt");
+
+
+// Resilient Distributed Dataset - RDDs support two types of operations: transformations, which create a new dataset from an existing one, and actions, which return a value to the driver program after running a computation on the dataset.
+
+
+EXAMPLE 1
+// Add up the sizes of all the lines 
+// reduce is an action that aggregates all the elements of the RDD using some function and returns the final result to the driver program 
+// map is a transformation that passes each dataset element through a function and returns a new RDD representing the results. 
+JavaRDD<Integer> lineLengths = lines.map(s -> s.length()); // transformation into another RDD
+int totalLength = lineLengths.reduce((a, b) -> a + b); // actions
+
+int totalLength = distFile.map(s -> t.length())
+                          .reduce((a, b) -> a + b);
+
+
+
+
+EXAMPLE 2 - KEY-VALUE PAIRS, represented as Tuple2 from Scala library
+// Count how many times each line of text occurs in a file:
+JavaRDD<String> lines = sc.textFile("data.txt");
+JavaPairRDD<String, Integer> pairs = lines.mapToPair(s -> new Tuple2(s, 1));
+JavaPairRDD<String, Integer> counts = pairs.reduceByKey((a, b) -> a + b);
+
+
+scala> val rdd = sc.parallelize(Seq(
+     |                ("math",    55),
+     |                ("math",    56),
+     |                ("english", 57),
+     |                ("english", 58),
+     |                ("science", 59),
+     |                ("science", 54)))
+
+val sorted1 = rdd.sortByKey();
+sorted1.collect();
+
+Array[(String, Int)] = Array((english,57), (english,58), (math,55), (math,56), (science,59), (science,54));
+
+
+EXAMPLE 3 
+JavaRDD<String> lines = sc.textFile("data.txt");
+in maxLength = sc.map(line -> line.split(" ").length).reduce((a, b) -> Math.max(a, b));
+// a and b are length from last distributed dataset
+
+tuple._1
+tuple._2
+
+
+sc.parallelizePairs(collections of Tuple2)
+sc.parallelize(collections)
+
+transformation
+rDD.map(s -> s.length)..
+// one -> one
+pairRDD.mapValues(value -> new Tuple2(value, 1))
+// tuple(k, v) -> tuple(k, tuple(k, v))
+
+rDD.mapToPair(s -> new Tuple2(s, 1)).reduceByKey((a, b) -> a + b); 
+// one -> tuple
+pairRDD.mapToPair((tuple) -> {...}}).
+// tuple -> tuple
+
+// a and b are values with the same key!!
+.flatMap(s -> s.split(" "))...
+// one to many mapping
+
+.filter(s -> !s.isEmpty())...   
+// Return a new dataset formed by selecting those elements of the source on which func returns TRUE.
+
+.distinct()...
+
+.groupByKey().. -> (K, Iterable<V>)
+.reduceByKey((a, b) -> a + b)... -> ((V1, V2) -> func(V1, V2))
+
+
+Actions
+reduce(func);
+collect();
+count();
+first();
+take(n);
+takeOrdered(n, [optional comparator])
+countByKey(); // only available on Tuple2
+
+Sum/Average
+
+
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.PairFunction;
+import scala.Tuple2;
+
+public class SparkAverageCalculation {
+public static void main(String[] args) {
+    SparkConf conf = new SparkConf().setAppName("Average Calculation").setMaster("local[2]");
+    JavaSparkContext sc = new JavaSparkContext(conf);
+    //inputList
+    List<Tuple2<String,Integer>> inputList = new ArrayList<Tuple2<String,Integer>>();
+    inputList.add(new Tuple2<String,Integer>("a1", 30));
+    inputList.add(new Tuple2<String,Integer>("b1", 30));
+    inputList.add(new Tuple2<String,Integer>("a1", 40));
+    inputList.add(new Tuple2<String,Integer>("a1", 20));
+    inputList.add(new Tuple2<String,Integer>("b1", 50));            
+    //parallelizePairs    
+    // pairRDD is a tuple collection, though the outest layer of tuple does not be represented as Tuple2<xx, xx>
+    JavaPairRDD<String, Integer> pairRDD = sc.parallelizePairs(inputList);
+    //count each values per key
+    JavaPairRDD<String, Tuple2<Integer, Integer>> valueCount = pairRDD.mapValues(value -> new Tuple2<Integer, Integer>(value,1));
+    //add values by reduceByKey
+    JavaPairRDD<String, Tuple2<Integer, Integer>> reducedCount = valueCount.reduceByKey((tuple1,tuple2) ->  new Tuple2<Integer, Integer>(tuple1._1 + tuple2._1, tuple1._2 + tuple2._2));
+    //calculate average
+    JavaPairRDD<String, Integer> averagePair = reducedCount.mapToPair((tuple) -> {
+        Tuple2<Integer, Integer> val = tuple._2;
+        int total = val._1;
+        int count = val._2;
+        Tuple2<String, Integer> avgPair = new Tuple2<String, Integer>(tuple._1, total / count);
+        return avgPair
+    });
+
+    // getAverageByKey
+    //print averageByKey
+    averagePair.foreach(data -> {
+        System.out.println("Key="+data._1() + " Average=" + data._2());
+    }); 
+    //stop sc
+    sc.stop();
+    sc.close();
+}
+
+private static PairFunction<Tuple2<String, Tuple2<Integer, Integer>>,String,Integer> getAverageByKey = (tuple) -> {
+     Tuple2<Integer, Integer> val = tuple._2;
+     int total = val._1;
+     int count = val._2;
+     Tuple2<String, Integer> averagePair = new Tuple2<String, Integer>(tuple._1, total / count);
+     return averagePair;
+  };
+}
+
+
+
+
+
+
+
 

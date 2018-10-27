@@ -29,7 +29,7 @@ OOD
 	* scode出来，于是抓瞎了。最后我想了一个办法是用两个array，一个工作array一个 后备array，如果电梯向上而新请求来自上方楼层，或者电梯向下而新请求来自下方楼层， 那就把新请求加入工作array，否则加入后备array。在适当时机，swap两个array，比如需 要变化方向的时候。感觉挺粗糙的，但是能达到需求
 
 
-* 设计linux的find命令
+
 * Design Amazon Features
 	* Lastest 3 view Items by customer
 	* 设计整个亚马逊的物品、 仓库、卡车互动系统。仓库遍布美国，卡车有油量，仓库之间有些有路径有些没 有。我搞了几个类，包括物品、仓库、卡车。要求实现一些功能诸如，从仓库A把一 定的物品分给仓库B，分派卡车，装货、卸货函数。
@@ -323,6 +323,9 @@ Amazon locker, 怎么按照货物的大小取空闲的柜子。一开始没有�
 
 
 ---------- LINUX FIND * START ----------
+
+* 设计linux的find命令
+
 白人大胡子大哥（貌似看到其他一篇里面也提到同样的人，估计就是同一个），问的是怎么设计一个linux里的find function，一模一样。我开始晕了半天，过一会他给我写了个File的class，里面有string name, bool isDir, vector<File> children，children里面是下一层的所有file/dir 名字，然后根据这个我写了一个 find class。基本就是loop当前层的所有file/dir name，判断这个东西是file还是dir，是dir的话继续recursive find。
 
 

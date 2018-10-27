@@ -76,9 +76,9 @@ public class LRUCache {
 				LRUCacheItem end = this.tail.prev;
 				LRUCacheItem endPrev = end.prev;
 				
-				this.entries.remove(end.key);
+				this.entries.remove(end.key); // remove in hashmap
 				
-				endPrev.next = this.tail;
+				endPrev.next = this.tail; // remove in doubly-linked-list
 				this.tail.prev = endPrev;
 
 				end.prev = end.next = null; // eligible for garbage collection
@@ -100,7 +100,7 @@ public class LRUCache {
 		LRUCacheItem next = entry.next;
 		LRUCacheItem previous = entry.prev;
 
-		// remove entry between next and previous
+		// remove entry from the list if it is in list
 		if (next != null) {
 			next.prev = previous;
 		}
@@ -108,11 +108,10 @@ public class LRUCache {
 			previous.next = next;
 		}
 
-		// Add entry between dummy head and begin
+		// Add entry 
 		begin.prev = entry;
 		this.head.next = entry;
 
-		// adjust entry
 		entry.prev = this.head;
 		entry.next = begin;
 	}
@@ -189,6 +188,10 @@ public class LFUCache {
 	}
 
 	public LFUCache(int capacity) {
+		if (capacity <= 0) {
+			throw new IllegalArgumentException();
+		}
+
 		this.capacity = capacity;
 		this.head = new Bucket(Integer.MIN_VALUE);
 		this.tail = new Bucket(Integer.MAX_VALUE);
@@ -210,10 +213,7 @@ public class LFUCache {
 	}
 
 	public void put(int key, int value) {
-		if (this.capacity == 0) {
-			return;
-		}
-
+		// only for create a new entry && size's full
 		if (!this.values.containsKey(key) && this.values.size() >= this.capacity) {
 			// kick out least frequently used key
 			Bucket smallestBucket = this.head.next;
